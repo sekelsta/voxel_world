@@ -164,19 +164,17 @@ public class Window {
         GL.createCapabilities();
 
         // Set window icon
-        GLFWImage.Buffer icons = GLFWImage.malloc(4);
+        GLFWImage.Buffer icons = GLFWImage.malloc(3);
         icons.put(0, loadIcon("/assets/icon/icon16.png"));
         icons.put(1, loadIcon("/assets/icon/icon32.png"));
         icons.put(2, loadIcon("/assets/icon/icon48.png"));
-        icons.put(3, loadIcon("/assets/icon/icon256.png"));
         GLFW.glfwSetWindowIcon(window, icons);
     }
 
     private GLFWImage loadIcon(String name) {
-        BufferedImage image = ImageUtils.loadResource(name);
-        ByteBuffer pixels = ImageUtils.bufferedImageToByteBuffer(image);
+        ImageRGBA image = ImageUtils.loadPNG(name);
         GLFWImage icon = GLFWImage.malloc();
-        icon.set(image.getWidth(), image.getHeight(), pixels);
+        icon.set(image.getWidth(), image.getHeight(), image.pixels);
         return icon;
     }
 
