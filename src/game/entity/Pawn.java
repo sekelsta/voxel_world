@@ -57,11 +57,6 @@ public class Pawn extends Entity {
     }
 
     @Override
-    public boolean mayDespawn() {
-        return false;
-    }
-
-    @Override
     public void encode(ByteVector buffer) {
         super.encode(buffer);
         buffer.putInt(skin);

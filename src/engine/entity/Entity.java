@@ -144,10 +144,6 @@ public class Entity {
         }
     }
 
-    public boolean mayDespawn() {
-        return true;
-    }
-
     public void accelerate(float x, float y, float z) {
         velocityX += x;
         velocityY += y;
