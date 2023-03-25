@@ -56,6 +56,10 @@ public class Pawn extends Entity {
         return false;
     }
 
+    public int getChunkLoadRadius() {
+        return 10;
+    }
+
     @Override
     public void encode(ByteVector buffer) {
         super.encode(buffer);
@@ -65,5 +69,13 @@ public class Pawn extends Entity {
     @Override
     public EntityType getType() {
         return Entities.PAWN;
+    }
+
+    public float getAccelerationXY() {
+        return 0.02f;
+    }
+
+    public float getAccelerationZ() {
+        return 0.02f;
     }
 }

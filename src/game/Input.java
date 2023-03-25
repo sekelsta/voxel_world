@@ -9,18 +9,21 @@ import sekelsta.engine.entity.IController;
 import sekelsta.engine.render.Camera;
 import sekelsta.engine.render.Window;
 import sekelsta.game.entity.Pawn;
+import sekelsta.game.render.Renderer;
 import sekelsta.game.render.gui.Overlay;
 
 public class Input extends InputManager implements IController {
-    Overlay overlay;
-    Camera camera;
-    Pawn pawn;
+    private Overlay overlay;
+    private Camera camera;
+    private Pawn player;
     private Game game;
+    private Renderer renderer;
 
     private ArrayList<Gamepad> gamepads = new ArrayList<>();
 
-    public Input(Game game) {
+    public Input(Game game, Renderer renderer) {
         this.game = game;
+        this.renderer = renderer;
     }
 
     public void setOverlay(Overlay overlay) {
@@ -31,8 +34,8 @@ public class Input extends InputManager implements IController {
         this.camera = camera;
     }
 
-    public void setPawn(Pawn pawn) {
-        this.pawn = pawn;
+    public void setPlayer(Pawn player) {
+        this.player = player;
     }
 
     public void updateConnectedGamepads() {
@@ -122,6 +125,19 @@ public class Input extends InputManager implements IController {
                     return;
                 }
             }
+
+            if (game.getWorld() == null) {
+                return;
+            }
+
+            float lerp = 1; // TODO
+            Ray ray = renderer.rayFromPointer(prevCursorX, prevCursorY, camera, lerp);
+            if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                game.getWorld().removeBlock(ray);
+            }
+            else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+                game.getWorld().addBlock(ray);
+            }
         }
     }
 
@@ -193,6 +209,45 @@ public class Input extends InputManager implements IController {
 
     @Override
     public void preUpdate() {
-        // TODO
+        int rawX = 0;
+        int rawY = 0;
+        if (window.isKeyDown(GLFW.GLFW_KEY_D)) {
+            rawX += 1;
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_A)) {
+            rawX -= 1;
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_W)) {
+            rawY += 1;
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_S)) {
+            rawY -= 1;
+        }
+
+        float x = 0;
+        float y = 0;
+        // Avoid accelerating by NaN
+        if (rawX != 0 || rawY != 0) {
+            double speed = Math.sqrt(rawX * rawX + rawY * rawY);
+            double angle = Math.acos(rawY / speed);
+            if (rawX > 0) {
+                angle *= -1;
+            }
+            // Rotate by camera angle
+            angle = (angle + camera.getYaw()) % (2 * Math.PI);
+            x = (float)Math.cos(angle + Math.PI / 2) * player.getAccelerationXY();
+            y = (float)Math.sin(angle + Math.PI / 2) * player.getAccelerationXY();
+        }
+
+        int rawZ = 0;
+        if (window.isKeyDown(GLFW.GLFW_KEY_Q)) {
+            rawZ += 1;
+        }
+        if (window.isKeyDown(GLFW.GLFW_KEY_Z)) {
+            rawZ -= 1;
+        }
+        float z = rawZ * player.getAccelerationZ();
+
+        player.accelerate(x, y, z);
     }
 }

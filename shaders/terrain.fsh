@@ -11,7 +11,6 @@ in vec3 type_weights;
 uniform vec3 light_pos;
 
 uniform sampler2DArray texture_sampler;
-uniform sampler2DArray emission_sampler;
 
 uniform float reflectance;
 // Range: 0 < scattering <= 1
@@ -38,17 +37,13 @@ void main()
     vec4 tex_b = texture(texture_sampler, vec3(texture_coord, texture_indices.y));
     vec4 tex_c = texture(texture_sampler, vec3(texture_coord, texture_indices.z));
     vec4 tex_color = tex_a * type_weights.x + tex_b * type_weights.y + tex_c * type_weights.z;
-    vec4 em_a = texture(emission_sampler, vec3(texture_coord, texture_indices.x));
-    vec4 em_b = texture(emission_sampler, vec3(texture_coord, texture_indices.y));
-    vec4 em_c = texture(emission_sampler, vec3(texture_coord, texture_indices.z));
-    vec4 emissive = em_a * type_weights.x + em_b * type_weights.y + em_c * type_weights.z;
 
-    float alpha = tex_color.a + emissive.a;
+    float alpha = tex_color.a;
     if (alpha < 0.01) {
         discard;
     }
     tex_color.rgb *= color.rgb;
     vec3 lit = tex_color.rgb * (ambient_str + diffuse_str) + vec3(1, 1, 1) * specular_str;
     // OpenGL automatically clamps color components to the range [0, 1]
-    fragColor = vec4(tex_color.a * lit + emissive.rgb, alpha);
+    fragColor = vec4(tex_color.a * lit, alpha);
 }

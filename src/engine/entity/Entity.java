@@ -8,7 +8,6 @@ import shadowfox.math.Matrix3f;
 import shadowfox.math.Vector3f;
 
 public class Entity {
-    public static final double ONE_METER = 1.0;
     public static final float TAU = 2 * (float)Math.PI; // Full circle
     private int id = -1;
     protected IEntitySpace world;

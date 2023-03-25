@@ -7,30 +7,30 @@ import sekelsta.engine.entity.*;
 import sekelsta.engine.Particle;
 import sekelsta.game.entity.*;
 import sekelsta.game.network.*;
+import sekelsta.game.terrain.*;
 import shadowfox.math.Vector3f;
 
 public class World implements IEntitySpace {
-    private static final double spawnRadius = 1000;
-    private static final int MOB_CAP = 400;
-
-    public final Vector3f lightPos = new Vector3f(0, 0, 0);
+    public final Vector3f lightPos = new Vector3f(0, 0, 100000);
     public final float sunRadius = 100;
 
     public final boolean authoritative;
     private long tick = 0;
     private boolean paused;
 
-    private Random random = new Random();
-    private List<Entity> mobs;
+    private final Random random;
+    private final Terrain terrain;
+    private final Set<Pawn> players = new HashSet<>();
+    private final List<Entity> mobs = new ArrayList<>();
 
     // Mobs to add/remove, to avoid concurrent modififation while updating
-    private List<Entity> killed = new ArrayList<>();
-    private List<Entity> spawned = new ArrayList<>();
+    private final List<Entity> killed = new ArrayList<>();
+    private final List<Entity> spawned = new ArrayList<>();
 
-    private List<Particle> particles = new ArrayList<>();
+    private final List<Particle> particles = new ArrayList<>();
 
     // Players that died and haven't respawned yet
-    private List<Pawn> limbo = new ArrayList<>();
+    private final List<Pawn> limbo = new ArrayList<>();
 
     public Pawn localPlayer;
 
@@ -45,14 +45,19 @@ public class World implements IEntitySpace {
     public World(Game game, boolean authoritative) {
         this.game = game;
         this.authoritative = authoritative;
-        this.mobs = new ArrayList<>();
+        this.random = new Random();
+        this.terrain = new Terrain();
+    }
+
+    public Terrain getTerrain() {
+        return terrain;
     }
 
     public void moveToSpawnPoint(Entity entity) {
         entity.setVelocity(0, 0, 0);
         entity.scaleAngularVelocity(0);
         float angle = random.nextFloat() * 2 * (float)Math.PI;
-        float dist = 400;
+        float dist = 0;
         entity.teleport(dist * (float)Math.cos(angle), dist * (float)Math.sin(angle), 0);
         float yaw = random.nextFloat() * Entity.TAU;
         entity.snapToAngle(yaw, 0, 0);
@@ -161,6 +166,13 @@ public class World implements IEntitySpace {
         }
         killed.clear();
 
+        // TODO: Unload extra terrain
+        for (Pawn player : players) {
+            int blockX = (int)(player.getX() * terrain.blockSize);
+            int blockY = (int)(player.getY() * terrain.blockSize);
+            int blockZ = (int)(player.getZ() * terrain.blockSize);
+            terrain.loadNear(blockX, blockY, blockZ, player.getChunkLoadRadius());
+        }
 
         tick += 1;
     }
@@ -178,6 +190,10 @@ public class World implements IEntitySpace {
     }
 
     public <T extends Entity> T spawn(T entity) {
+        if (entity instanceof Pawn) {
+            players.add((Pawn)entity);
+        }
+
         this.spawned.add(entity);
         entity.enterWorld(this);
         if (authoritative) {
@@ -193,6 +209,11 @@ public class World implements IEntitySpace {
         }
 
         return entity;
+    }
+
+    public void disconnectPlayer(Pawn pawn) {
+        players.remove(pawn);
+        this.killed.add(pawn);
     }
 
     public Entity remove(Entity entity) {
@@ -279,6 +300,20 @@ public class World implements IEntitySpace {
             return false;
         }
         return true;
+    }
+
+    public void addBlock(Ray ray) {
+        RaycastResult r = terrain.findHit(ray);
+        if (r != null) {
+            terrain.setBlock(r.x() + r.direction().x, r.y() + r.direction().y, r.z() + r.direction().z, (short)1);
+        }
+    }
+
+    public void removeBlock(Ray ray) {
+        RaycastResult r = terrain.findHit(ray);
+        if (r != null) {
+            terrain.setBlock(r.x(), r.y(), r.z(), Block.EMPTY);
+        }
     }
 
     private boolean isNetworkServer() {

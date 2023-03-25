@@ -9,15 +9,20 @@ import sekelsta.engine.entity.Entity;
 import sekelsta.engine.render.*;
 import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.engine.render.mesh.RigidMesh;
+import sekelsta.game.Ray;
 import sekelsta.game.World;
 import sekelsta.game.render.gui.Overlay;
+import sekelsta.game.render.terrain.TerrainRenderer;
+import sekelsta.game.terrain.Terrain;
 import shadowfox.math.*;
 import sekelsta.tools.ObjParser;
 
 public class Renderer implements IFramebufferSizeListener {
+    private TerrainRenderer terrainRenderer = null;
     private MaterialShader shader = MaterialShader.load("/shaders/basic.vsh", "/shaders/basic.fsh");
     private ShaderProgram shader2D = ShaderProgram.load("/shaders/2d.vsh", "/shaders/2d.fsh");
     private ShaderProgram fireShader = ShaderProgram.load("/shaders/fire.vsh", "/shaders/fire.fsh");
+    private ShaderProgram terrainShader = ShaderProgram.load("/shaders/terrain.vsh", "/shaders/terrain.fsh");
     private Frustum frustum = new Frustum();
     private Matrix4f perspective = new Matrix4f();
     // Rotate from Y up (-Z forward) to Z up (+Y forward)
@@ -53,6 +58,8 @@ public class Renderer implements IFramebufferSizeListener {
             Matrix4f result = getResult();
             shader.setUniform("modelview", result);
             shader.setUniform("normal_transform", result.normalTransform());
+            terrainShader.setUniform("modelview", result);
+            terrainShader.setUniform("normal_transform", result.normalTransform());
         }
     };
 
@@ -64,6 +71,15 @@ public class Renderer implements IFramebufferSizeListener {
         shader.setInt("emission_sampler", 1);
         shader.setDefaultMaterial();
 
+        shader2D.use();
+        shader2D.setInt("texture_sampler", 0);
+
+        fireShader.use();
+        fireShader.setInt("texture_sampler", 0);
+
+        terrainShader.use();
+        terrainShader.setInt("texture_sampler", 0);
+
         frustum.setFOV(Math.toRadians(30));
 
         // Enable alpha blending (over)
@@ -72,6 +88,16 @@ public class Renderer implements IFramebufferSizeListener {
 
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glClearColor(0.005f, 0.005f, 0.005f, 1f);
+    }
+
+    public void setTerrain(Terrain terrain) {
+        if (terrainRenderer != null) {
+            terrainRenderer.clean();
+            terrainRenderer = null;
+        }
+        if (terrain != null) {
+            terrainRenderer = new TerrainRenderer(terrain);
+        }
     }
 
     public void render(float lerp, Camera camera, World world, Overlay overlay) {
@@ -84,10 +110,6 @@ public class Renderer implements IFramebufferSizeListener {
     }
 
     private void renderWorld(float lerp, Camera camera, World world) {
-        // Set up for three-dimensional rendering    
-        shader.use();
-        shader.setUniform("projection", perspective);
-
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         // Render world
         matrixStack.push();
@@ -102,6 +124,14 @@ public class Renderer implements IFramebufferSizeListener {
         camera.transform(matrixStack, lerp);
         Vector4f tlight = new Vector4f(lightPos);
         matrixStack.getResult().transform(tlight);
+
+        terrainShader.use();
+        terrainShader.setUniform("projection", perspective);
+        terrainShader.setUniform("light_pos", tlight.toVec3());
+        terrainRenderer.render(matrixStack, frustum, lerp);
+
+        shader.use();
+        shader.setUniform("projection", perspective);
         shader.setUniform("light_pos", tlight.toVec3());
 
         // Render skybox
@@ -171,6 +201,29 @@ public class Renderer implements IFramebufferSizeListener {
         }
     }
 
+    // The length of the ray returned is the distance to the other side of the view frustum
+    public Ray rayFromPointer(double xPos, double yPos, Camera camera, float lerp) {
+        double xClipSpace = (xPos / frameWidth) * 2 - 1;
+        double yClipSpace = -1 * ((yPos / frameHeight) * 2 - 1);
+        Vector4f origin4 = new Vector4f((float)xClipSpace, (float)yClipSpace, -1, 1);
+        Vector4f destination = new Vector4f((float)xClipSpace, (float)yClipSpace, 1, 1);
+
+        // TO_OPTIMIZE: matrixStack sends the result to the shader on every change, avoid that
+        matrixStack.push();
+        camera.transform(matrixStack, lerp);
+        Matrix4f matrix = matrixStack.getResult();
+        matrixStack.pop();
+
+        Matrix4f.mul(perspective, matrix, matrix);
+        matrix.invert();
+
+        matrix.transform(origin4);
+        matrix.transform(destination);
+
+        Vector3f origin = origin4.toVec3();
+        return new Ray(origin, destination.toVec3().subtract(origin));
+    }
+
     @Override
     public void windowResized(int width, int height) {
         // Ban 0 width or height
@@ -194,6 +247,8 @@ public class Renderer implements IFramebufferSizeListener {
         shader.delete();
         shader2D.delete();
         fireShader.delete();
+        terrainShader.delete();
         particleRenderer.clean();
+        terrainRenderer.clean();
     }
 }

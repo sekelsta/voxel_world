@@ -43,7 +43,7 @@ public class Game implements ILoopable, INetworked {
             Fonts.load();
             this.renderer = new Renderer();
             this.window.setResizeListener(renderer);
-            this.input = new Input(this);
+            this.input = new Input(this, renderer);
             this.window.setInput(input);
             this.overlay = new Overlay(this);
             this.input.setOverlay(this.overlay);
@@ -74,7 +74,7 @@ public class Game implements ILoopable, INetworked {
         this.world = new World(this, true);
         if (isGraphical()) {
             world.spawnLocalPlayer(input);
-            input.setPawn(world.getLocalPlayer());
+            input.setPlayer(world.getLocalPlayer());
         }
         initGraphical();
     }
@@ -94,14 +94,15 @@ public class Game implements ILoopable, INetworked {
             networkManager = null;
         }
         this.input.setCamera(null);
-        this.input.setPawn(null);
+        this.input.setPlayer(null);
+        this.renderer.setTerrain(null);
         overlay.pushScreen(new MainMenuScreen(overlay, this));
     }
 
     public void takePawn(Pawn pawn) {
         world.localPlayer = pawn;
         pawn.setController(input);
-        input.setPawn(world.getLocalPlayer());
+        input.setPlayer(world.getLocalPlayer());
         if (camera == null) {
             initGraphical();
         }
@@ -118,6 +119,7 @@ public class Game implements ILoopable, INetworked {
         if (isGraphical()) {
             this.camera = new Camera(world.getLocalPlayer());
             this.input.setCamera(camera);
+            this.renderer.setTerrain(world.getTerrain());
             while (overlay.hasScreen()) {
                 overlay.popScreen();
             }
@@ -288,7 +290,12 @@ public class Game implements ILoopable, INetworked {
             for (Entity mob : world.getMobs()) {
                 IController c = mob.getController();
                 if (c instanceof RemotePlayer && connectionID == ((RemotePlayer)c).connectionID) {
-                    world.remove(mob);
+                    if (mob instanceof Pawn) {
+                        world.disconnectPlayer((Pawn)mob);
+                    }
+                    else {
+                        world.remove(mob);
+                    }
                 }
             }
         }
