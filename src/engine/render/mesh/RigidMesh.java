@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
 import sekelsta.tools.ModelData;
-import sekelsta.tools.Vertex;
 
 public class RigidMesh extends Mesh {
 
