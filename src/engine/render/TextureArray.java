@@ -38,12 +38,13 @@ public class TextureArray extends Texture {
         int width = layers[0].getWidth();
         int height = layers[0].getHeight();
         ByteBuffer pixels = ByteBuffer.allocateDirect(4 * width * height * numLayers);
-        for (int i = 1; i < layers.length; ++i) {
+        for (int i = 0; i < layers.length; ++i) {
             assert(layers[i].getWidth() == width);
             assert(layers[i].getHeight() == height);
             pixels.put(layers[i].pixels);
             layers[i].pixels.flip();
         }
+        pixels.flip();
 
         GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
