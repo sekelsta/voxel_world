@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL42;
 
 public class TextureArray extends Texture {
     public final int numLayers;
@@ -46,11 +47,11 @@ public class TextureArray extends Texture {
         }
         pixels.flip();
 
-        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
         GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-        // TO_OPTIMIZE: call GL42.glTexStorage3D to allocate storage for all mipmap levels at once
+
         GL12.glTexImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, GL11.GL_RGBA, width, height, layers.length, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
-        // TODO: mipmapping
+        GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);
     }
 
     @Override
