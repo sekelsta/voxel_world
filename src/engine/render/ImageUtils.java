@@ -27,7 +27,7 @@ public class ImageUtils {
         catch (IOException e) {
             Log.error(e.toString());
         }
-        return new ImageRGBA(image);
+        return ImageRGBA.flip(image);
     }
 
     public static ImageRGBA loadPNG(String name) {
@@ -41,7 +41,7 @@ public class ImageUtils {
             ByteBuffer buffer = ByteBuffer.allocateDirect(4 * png.getWidth() * png.getHeight());
             // TO_OPTIMIZE: Handle grayscale using
             // Format format = png.decideTextureFormat();
-            png.decode(buffer, png.getWidth() * 4, Format.RGBA);
+            png.decodeFlipped(buffer, png.getWidth() * 4, Format.RGBA);
             buffer.flip();
             image = new ImageRGBA(png.getWidth(), png.getHeight(), buffer);
         }

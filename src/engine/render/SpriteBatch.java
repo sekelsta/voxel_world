@@ -100,9 +100,9 @@ public class SpriteBatch extends Mesh {
         }
 
         float u0 = (float)texX / (float)texture.getWidth();
-        float v0 = (float)texY / (float)texture.getHeight();
+        float v0 = 1f - (float)texY / (float)texture.getHeight();
         float u1 = (float)(texX + texWidth) / (float)texture.getWidth();
-        float v1 = (float)(texY + texHeight) / (float)texture.getHeight();
+        float v1 = 1f - (float)(texY + texHeight) / (float)texture.getHeight();
 
         // Top-left
         vertices.put(x).put(-y);

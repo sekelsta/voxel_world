@@ -33,6 +33,8 @@ public class Renderer implements IFramebufferSizeListener {
     private int frameWidth;
     private int frameHeight;
 
+    private SkyRenderer skyRenderer = new SkyRenderer();
+
     private final float[] quadVertices = {
         // Position, normal, texture
         0.5f, 0, 0.5f, 0, -1, 0, 1, 1,
@@ -43,14 +45,6 @@ public class Renderer implements IFramebufferSizeListener {
     private final RigidMesh quadMesh = new RigidMesh(quadVertices, quadFaces);
     private final Texture sunTexture = new Texture("sun.png");
     private final Texture circleTexture = new Texture("white_circle.png");
-
-    private final float CUBE_FACTOR = 1f / (float)Math.sqrt(3);
-    private final RigidMesh skybox = new RigidMesh(
-        ObjParser.parse(
-            new Scanner(Renderer.class.getResourceAsStream("/assets/obj/skybox.obj"))
-        )
-    );
-    private final Texture skyTexture = new Texture("skybox.png");
 
     private MatrixStack matrixStack = new MatrixStack() {
         @Override
@@ -134,14 +128,7 @@ public class Renderer implements IFramebufferSizeListener {
         shader.setUniform("projection", perspective);
         shader.setUniform("light_pos", tlight.toVec3());
 
-        // Render skybox
-        matrixStack.push();
-        matrixStack.center();
-        matrixStack.scale(frustum.getFar() * CUBE_FACTOR);
-        Textures.TRANSPARENT.bind();
-        skyTexture.bindEmission();
-        skybox.render();
-        matrixStack.pop();
+        skyRenderer.renderBackground(matrixStack, frustum.getFar());
 
         // Render entities
         for (Entity entity : world.getMobs()) {

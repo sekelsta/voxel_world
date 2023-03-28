@@ -761,7 +761,7 @@ public class MergedOctahedrons {
             // TODO: If the triangle is the other way up, shift the edge to meet
             newVertices.get(0).texture.y = 0.5f;
             float half_sqrt_three = 0.8660254037844386f;
-            newVertices.get(2).texture.y = 0.5f - half_sqrt_three;
+            newVertices.get(2).texture.y = 0.5f + half_sqrt_three;
             float lerp = (newVertices.get(1).position.z - newVertices.get(0).position.z)
                     / (newVertices.get(2).position.z - newVertices.get(0).position.z);
             newVertices.get(1).texture.y = newVertices.get(0).texture.y * (1 - lerp) + newVertices.get(2).texture.y * lerp;
@@ -836,23 +836,23 @@ public class MergedOctahedrons {
             dz *= -1;
         }
         if (dx < 0) {
-            vertex.texture = new Vector2f(-1 * vy, 1 - vz);
+            vertex.texture = new Vector2f(-1 * vy, vz);
         }
         else if (dx > 0) {
-            vertex.texture = new Vector2f(vy, 1 - vz);
+            vertex.texture = new Vector2f(vy, vz);
         }
         else if (dy < 0) {
-            vertex.texture = new Vector2f(vx, 1 - vz);
+            vertex.texture = new Vector2f(vx, vz);
         }
         else if (dy > 0) {
-            vertex.texture = new Vector2f(-1 * vx, 1 - vz);
+            vertex.texture = new Vector2f(-1 * vx, vz);
         }
         else if (dz > 0) {
-            vertex.texture = new Vector2f(vx, 1 - vy);
+            vertex.texture = new Vector2f(vx, vy);
         }
         else {
             assert(dz < 0);
-            vertex.texture = new Vector2f(vx, vy);
+            vertex.texture = new Vector2f(vx, 1 - vy);
         }
         vertex.texture.scale(0.5f);
 

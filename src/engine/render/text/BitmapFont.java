@@ -87,7 +87,7 @@ public class BitmapFont {
         g.fillRect(cursor.x, cursor.y, cursor.width, cursor.height);
         g.dispose();
 
-        spritebatch.setTexture(new Texture(new ImageRGBA(image), false));
+        spritebatch.setTexture(new Texture(ImageRGBA.flip(image), false));
     }
 
     private Glyph makeGlyph(int charWidth, int charHeight, ArrayList<Integer> lengths) {
