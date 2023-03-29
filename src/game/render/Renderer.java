@@ -23,6 +23,7 @@ public class Renderer implements IFramebufferSizeListener {
     private ShaderProgram shader2D = ShaderProgram.load("/shaders/2d.vsh", "/shaders/2d.fsh");
     private ShaderProgram fireShader = ShaderProgram.load("/shaders/fire.vsh", "/shaders/fire.fsh");
     private ShaderProgram terrainShader = ShaderProgram.load("/shaders/terrain.vsh", "/shaders/terrain.fsh");
+    private ShaderProgram starShader = ShaderProgram.load("/shaders/stars.vsh", "/shaders/stars.fsh");
     private Frustum frustum = new Frustum();
     private Matrix4f perspective = new Matrix4f();
     // Rotate from Y up (-Z forward) to Z up (+Y forward)
@@ -54,6 +55,7 @@ public class Renderer implements IFramebufferSizeListener {
             shader.setUniform("normal_transform", result.normalTransform());
             terrainShader.setUniform("modelview", result);
             terrainShader.setUniform("normal_transform", result.normalTransform());
+            starShader.setUniform("modelview", result);
         }
     };
 
@@ -73,6 +75,9 @@ public class Renderer implements IFramebufferSizeListener {
 
         terrainShader.use();
         terrainShader.setInt("texture_sampler", 0);
+
+        starShader.use();
+        starShader.setInt("texture_sampler", 0);
 
         frustum.setFOV(Math.toRadians(30));
 
@@ -104,7 +109,6 @@ public class Renderer implements IFramebufferSizeListener {
     }
 
     private void renderWorld(float lerp, Camera camera, World world) {
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
         // Render world
         matrixStack.push();
 
@@ -119,6 +123,14 @@ public class Renderer implements IFramebufferSizeListener {
         Vector4f tlight = new Vector4f(lightPos);
         matrixStack.getResult().transform(tlight);
 
+        starShader.use();
+        starShader.setUniform("projection", perspective);
+        // TO_OPTIMIZE: Sort the stars by distance instead of changing blend func
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        skyRenderer.renderBackground(matrixStack, frustum.getFar());
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+
         terrainShader.use();
         terrainShader.setUniform("projection", perspective);
         terrainShader.setUniform("light_pos", tlight.toVec3());
@@ -127,8 +139,6 @@ public class Renderer implements IFramebufferSizeListener {
         shader.use();
         shader.setUniform("projection", perspective);
         shader.setUniform("light_pos", tlight.toVec3());
-
-        skyRenderer.renderBackground(matrixStack, frustum.getFar());
 
         // Render entities
         for (Entity entity : world.getMobs()) {
@@ -237,5 +247,7 @@ public class Renderer implements IFramebufferSizeListener {
         terrainShader.delete();
         particleRenderer.clean();
         terrainRenderer.clean();
+        starShader.delete();
+        skyRenderer.clean();
     }
 }

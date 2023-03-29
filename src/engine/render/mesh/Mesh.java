@@ -81,6 +81,29 @@ public abstract class Mesh {
         MemoryUtil.memFree(vertexBuffer);
     }
 
+    protected void bufferQuads(int numQuads) {
+        // 6 indices per rectangle
+        int maxIndices = numQuads * 6;
+        IntBuffer indices = MemoryUtil.memAllocInt(maxIndices);
+        for (int i = 0; i < numQuads; ++i) {
+            // 0 <- 1
+            // |  / ^
+            // v /  |
+            // 2 -> 3
+            indices.put(4 * i + 1);
+            indices.put(4 * i + 0);
+            indices.put(4 * i + 2);
+            indices.put(4 * i + 2);
+            indices.put(4 * i + 3);
+            indices.put(4 * i + 1);
+        }
+        indices.flip();
+
+        GL20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, EBO);
+        GL20.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER, indices, GL20.GL_STATIC_DRAW);
+        MemoryUtil.memFree(indices);
+    }
+
     protected void bufferFaceElements(int[] faces) {
         IntBuffer indexBuffer = MemoryUtil.memAllocInt(faces.length);
         indexBuffer.put(faces).flip();

@@ -23,26 +23,8 @@ public class SpriteBatch extends Mesh {
         GL20.glBindBuffer(GL20.GL_ARRAY_BUFFER, VBO);
         GL20.glBufferData(GL20.GL_ARRAY_BUFFER, size * Float.BYTES, GL20.GL_DYNAMIC_DRAW);
 
-        // 4 vertices per rectangle, 6 indices per rectangle
-        int maxIndices = (int)(size / 4) * 6;
-        IntBuffer indices = MemoryUtil.memAllocInt(maxIndices);
-        for (int i = 0; i < size / 4; ++i) {
-            // 0 <- 1
-            // |  / ^
-            // v /  |
-            // 2 -> 3
-            indices.put(4 * i + 1);
-            indices.put(4 * i + 0);
-            indices.put(4 * i + 2);
-            indices.put(4 * i + 2);
-            indices.put(4 * i + 3);
-            indices.put(4 * i + 1);
-        }
-        indices.flip();
-
-        GL20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, EBO);
-        GL20.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER, indices, GL20.GL_STATIC_DRAW);
-        MemoryUtil.memFree(indices);
+        // 4 vertices per rectangle
+        bufferQuads(size / 4);
 
         // First argument depends on the layout value in the vertex shader
         // 0 = vertex

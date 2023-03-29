@@ -57,7 +57,7 @@ public class Pawn extends Entity {
     }
 
     public int getChunkLoadRadius() {
-        return 10;
+        return 2;
     }
 
     @Override
