@@ -12,9 +12,10 @@ public class SkyRenderer {
     private final StarMesh stars = new StarMesh(new Random(0));
     private final Texture starTexture = new Texture("star.png");
 
-    public void renderBackground(MatrixStack matrixStack, float viewDistance) {
+    public void renderStars(MatrixStack matrixStack, float viewDistance, float starRotation) {
         matrixStack.push();
         matrixStack.center();
+        matrixStack.rotate(starRotation, 0, -1, 0);
         matrixStack.scale(viewDistance * SAFETY_FACTOR);
         starTexture.bind();
         stars.render();

@@ -127,7 +127,7 @@ public class Renderer implements IFramebufferSizeListener {
         starShader.setUniform("projection", perspective);
         // TO_OPTIMIZE: Sort the stars by distance instead of changing blend func
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        skyRenderer.renderBackground(matrixStack, frustum.getFar());
+        skyRenderer.renderStars(matrixStack, frustum.getFar(), world.getStarRotation(lerp));
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
 

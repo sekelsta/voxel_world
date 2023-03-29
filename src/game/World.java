@@ -3,8 +3,9 @@ package sekelsta.game;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import sekelsta.engine.entity.*;
+import sekelsta.engine.Gameloop;
 import sekelsta.engine.Particle;
+import sekelsta.engine.entity.*;
 import sekelsta.game.entity.*;
 import sekelsta.game.network.*;
 import sekelsta.game.terrain.*;
@@ -314,6 +315,15 @@ public class World implements IEntitySpace {
         if (r != null) {
             terrain.setBlock(r.x(), r.y(), r.z(), Block.EMPTY);
         }
+    }
+
+    private float getTime(float lerp) {
+        int ticks_per_day = 36 * 60 * Gameloop.TICKS_PER_SECOND;
+        return (tick % ticks_per_day + lerp) / (float)ticks_per_day;
+    }
+
+    public float getStarRotation(float lerp) {
+        return (float)Math.PI * 2 * getTime(lerp);
     }
 
     private boolean isNetworkServer() {
