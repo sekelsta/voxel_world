@@ -50,7 +50,7 @@ public class SkyRenderer {
         // Half a degree on the celestial sphere
         float moonScale = (float)Math.sin(Math.PI / 360);
         // Artificially make it look bigger
-        moonScale *= 4;
+        moonScale *= 2;
         matrixStack.transform(new Matrix4f(world.getMoonRotation(lerp)));
         matrixStack.scale(moonScale * viewDistance * SAFETY_FACTOR);
         matrixStack.translate(0, 0, -1 / moonScale);
@@ -67,7 +67,7 @@ public class SkyRenderer {
         // Make bigger to fit the texture's extra glow
         sunRadius *= 512f / 212;
         // Artificially make it look bigger
-        sunRadius *= 4;
+        sunRadius *= 2;
 
         float sunDistance = lightPos.length();
         float scale = viewDistance * SAFETY_FACTOR / sunDistance;
