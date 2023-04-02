@@ -9,11 +9,13 @@ import sekelsta.engine.entity.*;
 import sekelsta.game.entity.*;
 import sekelsta.game.network.*;
 import sekelsta.game.terrain.*;
+import shadowfox.math.Matrix3f;
 import shadowfox.math.Vector3f;
 
 public class World implements IEntitySpace {
-    public final Vector3f lightPos = new Vector3f(0, 0, 100000);
-    public final float sunRadius = 100;
+    private final int TICKS_PER_DAY = 36 * 60 * Gameloop.TICKS_PER_SECOND;
+    private final int TICKS_PER_LUNAR_MONTH = 8 * TICKS_PER_DAY;
+    private final int TICKS_PER_YEAR = 28 * TICKS_PER_DAY;
 
     public final boolean authoritative;
     private long tick = 0;
@@ -98,6 +100,10 @@ public class World implements IEntitySpace {
 
     public boolean isPaused() {
         return paused;
+    }
+
+    public long getSeed() {
+        return 0;
     }
 
     public void runDelayed(Runnable runnable, int delayTicks) {
@@ -317,13 +323,43 @@ public class World implements IEntitySpace {
         }
     }
 
-    private float getTime(float lerp) {
-        int ticks_per_day = 36 * 60 * Gameloop.TICKS_PER_SECOND;
-        return (tick % ticks_per_day + lerp) / (float)ticks_per_day;
+    // 0 is noon durning the northern hemisphere vernal equinox, or midnight during the N. fall equinox
+    public float getPlanetaryRotation(float lerp) {
+        return (tick % TICKS_PER_DAY + lerp) / (float)TICKS_PER_DAY;
     }
 
-    public float getStarRotation(float lerp) {
-        return (float)Math.PI * 2 * getTime(lerp);
+    // 0 is a full moon during the N vernal equinox, or a new moon during the fall
+    private float getAbsoluteMoonCycle(float lerp) {
+        return (tick % TICKS_PER_LUNAR_MONTH + lerp) / (float)TICKS_PER_LUNAR_MONTH;
+    }
+
+    // 0 is the vernal equinox in the northern hemisphere
+    private float getSeason(float lerp) {
+        return (tick % TICKS_PER_YEAR + lerp) / (float)TICKS_PER_YEAR;
+    }
+
+    public Matrix3f getMoonRotation(float lerp) {
+        float lunarOrbitAngle = 18 * (float)Math.PI / 180;
+        Vector3f axis = new Vector3f(0, -1, 0).rotate(lunarOrbitAngle, 0, 0, 1);
+        axis.rotate((float)Math.PI * 2 * getPlanetaryRotation(lerp), 0, -1, 0);
+
+        Matrix3f result = new Matrix3f();
+        result.rotate((float)Math.PI * 2 * getAbsoluteMoonCycle(lerp), axis.x, axis.y, axis.z);
+        result.rotate((float)Math.PI * 2 * getPlanetaryRotation(lerp), 0, -1, 0);
+        return result;
+    }
+
+    public Vector3f getSunPosition(float lerp) {
+        // Roughly 1% of the real-life distance, 150 million km
+        float sunDistance = 1500000000;
+        float axialTilt = 23 * (float)Math.PI / 180;
+        Vector3f axis = new Vector3f(0, -1, 0).rotate(axialTilt, 0, 0, 1);
+        axis.rotate((float)Math.PI * 2 * getPlanetaryRotation(lerp), 0, -1, 0);
+
+        Vector3f pos = new Vector3f(0, 0, sunDistance);
+        pos.rotate((float)Math.PI * 2 * getSeason(lerp), axis.x, axis.y, axis.z);
+        pos.rotate((float)Math.PI * 2 * getPlanetaryRotation(lerp), 0, -1, 0);
+        return pos;
     }
 
     private boolean isNetworkServer() {

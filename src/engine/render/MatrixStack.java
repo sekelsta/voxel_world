@@ -50,6 +50,10 @@ public class MatrixStack {
         onChange();
     }
 
+    public void rotate(float angle, Vector3f axis) {
+        rotate(angle, axis.x, axis.y, axis.z);
+    }
+
     public void rotate(float yaw, float pitch, float roll) {
         stack.get(topIndex()).rotate(yaw, pitch, roll);
         onChange();
@@ -62,6 +66,10 @@ public class MatrixStack {
 
     public void scale(float s) {
         this.scale(s, s, s);
+    }
+
+    public void transform(Matrix4f matrix) {
+        stack.get(topIndex()).multiply(matrix);
     }
 
     private int topIndex() {

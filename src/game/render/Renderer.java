@@ -13,7 +13,6 @@ import sekelsta.game.Ray;
 import sekelsta.game.World;
 import sekelsta.game.render.gui.Overlay;
 import sekelsta.game.render.terrain.TerrainRenderer;
-import sekelsta.game.terrain.Terrain;
 import shadowfox.math.*;
 import sekelsta.tools.ObjParser;
 
@@ -34,17 +33,8 @@ public class Renderer implements IFramebufferSizeListener {
     private int frameWidth;
     private int frameHeight;
 
-    private SkyRenderer skyRenderer = new SkyRenderer();
+    private SkyRenderer skyRenderer = null;
 
-    private final float[] quadVertices = {
-        // Position, normal, texture
-        0.5f, 0, 0.5f, 0, -1, 0, 1, 1,
-        -0.5f, 0, 0.5f, 0, -1, 0, 0, 1,
-        -0.5f, 0, -0.5f, 0, -1, 0, 0, 0,
-        0.5f, 0, -0.5f, 0, -1, 0, 1, 0};
-    private final int[] quadFaces = {0, 1, 2, 2, 3, 0};
-    private final RigidMesh quadMesh = new RigidMesh(quadVertices, quadFaces);
-    private final Texture sunTexture = new Texture("sun.png");
     private final Texture circleTexture = new Texture("white_circle.png");
 
     private MatrixStack matrixStack = new MatrixStack() {
@@ -89,13 +79,20 @@ public class Renderer implements IFramebufferSizeListener {
         GL11.glClearColor(0.005f, 0.005f, 0.005f, 1f);
     }
 
-    public void setTerrain(Terrain terrain) {
+    public void setWorld(World world) {
+        if (skyRenderer != null) {
+            skyRenderer.clean();
+            skyRenderer = null;
+        }
         if (terrainRenderer != null) {
             terrainRenderer.clean();
             terrainRenderer = null;
         }
-        if (terrain != null) {
-            terrainRenderer = new TerrainRenderer(terrain);
+        if (world != null) {
+            skyRenderer = new SkyRenderer(world);
+            if (world.getTerrain() != null) {
+                terrainRenderer = new TerrainRenderer(world.getTerrain());
+            }
         }
     }
 
@@ -116,7 +113,7 @@ public class Renderer implements IFramebufferSizeListener {
             lerp = 0;
         }
 
-        Vector3f lightPos = world.lightPos;
+        Vector3f lightPos = world.getSunPosition(lerp);
 
         // Move to camera coords
         camera.transform(matrixStack, lerp);
@@ -127,7 +124,7 @@ public class Renderer implements IFramebufferSizeListener {
         starShader.setUniform("projection", perspective);
         // TO_OPTIMIZE: Sort the stars by distance instead of changing blend func
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        skyRenderer.renderStars(matrixStack, frustum.getFar(), world.getStarRotation(lerp));
+        skyRenderer.renderStars(matrixStack, lerp, frustum.getFar());
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
 
@@ -139,6 +136,10 @@ public class Renderer implements IFramebufferSizeListener {
         shader.use();
         shader.setUniform("projection", perspective);
         shader.setUniform("light_pos", tlight.toVec3());
+
+        shader.setReflectance(0);
+        skyRenderer.renderMoon(matrixStack, lerp, frustum.getFar());
+        shader.setDefaultMaterial();
 
         // Render entities
         for (Entity entity : world.getMobs()) {
@@ -155,15 +156,7 @@ public class Renderer implements IFramebufferSizeListener {
         particleRenderer.render(camera, matrixStack, particles, fireShader, 0.3f, lerp);
         shader.use();
 
-        // Render the sun
-        matrixStack.push();
-        matrixStack.translate(lightPos.x, lightPos.y, lightPos.z);
-        matrixStack.scale(2 * world.sunRadius);
-        matrixStack.billboard();
-        Textures.TRANSPARENT.bind();
-        sunTexture.bindEmission();
-        quadMesh.render();
-        matrixStack.pop();
+        skyRenderer.renderSun(matrixStack, lerp, frustum.getFar());
 
         matrixStack.pop();
     }
@@ -241,13 +234,12 @@ public class Renderer implements IFramebufferSizeListener {
     }
 
     public void clean() {
+        setWorld(null);
         shader.delete();
         shader2D.delete();
         fireShader.delete();
         terrainShader.delete();
         particleRenderer.clean();
-        terrainRenderer.clean();
         starShader.delete();
-        skyRenderer.clean();
     }
 }

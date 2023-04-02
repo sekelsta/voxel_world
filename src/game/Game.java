@@ -95,7 +95,7 @@ public class Game implements ILoopable, INetworked {
         }
         this.input.setCamera(null);
         this.input.setPlayer(null);
-        this.renderer.setTerrain(null);
+        this.renderer.setWorld(null);
         overlay.pushScreen(new MainMenuScreen(overlay, this));
     }
 
@@ -119,7 +119,7 @@ public class Game implements ILoopable, INetworked {
         if (isGraphical()) {
             this.camera = new Camera(world.getLocalPlayer());
             this.input.setCamera(camera);
-            this.renderer.setTerrain(world.getTerrain());
+            this.renderer.setWorld(world);
             while (overlay.hasScreen()) {
                 overlay.popScreen();
             }
