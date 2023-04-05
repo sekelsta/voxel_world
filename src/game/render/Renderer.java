@@ -3,6 +3,10 @@ package sekelsta.game.render;
 import java.util.*;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL14C;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL30C;
 
 import sekelsta.engine.Particle;
 import sekelsta.engine.entity.Entity;
@@ -23,6 +27,7 @@ public class Renderer implements IFramebufferSizeListener {
     private ShaderProgram fireShader = ShaderProgram.load("/shaders/fire.vsh", "/shaders/fire.fsh");
     private ShaderProgram terrainShader = ShaderProgram.load("/shaders/terrain.vsh", "/shaders/terrain.fsh");
     private ShaderProgram starShader = ShaderProgram.load("/shaders/stars.vsh", "/shaders/stars.fsh");
+    private ShaderProgram atmosphereShader = ShaderProgram.load("/shaders/atmosphere.vsh", "/shaders/atmosphere.fsh");
     private Frustum frustum = new Frustum();
     private Matrix4f perspective = new Matrix4f();
     // Rotate from Y up (-Z forward) to Z up (+Y forward)
@@ -36,6 +41,11 @@ public class Renderer implements IFramebufferSizeListener {
     private SkyRenderer skyRenderer = null;
 
     private final Texture circleTexture = new Texture("white_circle.png");
+
+    private Texture colorTexture = null;
+    private Texture depthTexture = null;
+
+    private int FBO;
 
     private MatrixStack matrixStack = new MatrixStack() {
         @Override
@@ -69,7 +79,14 @@ public class Renderer implements IFramebufferSizeListener {
         starShader.use();
         starShader.setInt("texture_sampler", 0);
 
+        atmosphereShader.use();
+        atmosphereShader.setInt("color_sampler", 0);
+        atmosphereShader.setInt("depth_sampler", 1);
+
         frustum.setFOV(Math.toRadians(30));
+
+        atmosphereShader.setFloat("near", frustum.getNear());
+        atmosphereShader.setFloat("far", frustum.getFar());
 
         // Enable alpha blending (over)
         GL11.glEnable(GL11.GL_BLEND);
@@ -77,6 +94,8 @@ public class Renderer implements IFramebufferSizeListener {
 
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glClearColor(0.005f, 0.005f, 0.005f, 1f);
+
+        FBO = GL30.glGenFramebuffers();
     }
 
     public void setWorld(World world) {
@@ -106,6 +125,10 @@ public class Renderer implements IFramebufferSizeListener {
     }
 
     private void renderWorld(float lerp, Camera camera, World world) {
+        GL30.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, FBO);
+        assert(GL30.glCheckFramebufferStatus(GL30C.GL_FRAMEBUFFER) == GL30C.GL_FRAMEBUFFER_COMPLETE);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
         // Render world
         matrixStack.push();
 
@@ -157,6 +180,13 @@ public class Renderer implements IFramebufferSizeListener {
         shader.use();
 
         skyRenderer.renderSun(matrixStack, lerp, frustum.getFar());
+
+        atmosphereShader.use();
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL30.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
+        colorTexture.bind(GL13.GL_TEXTURE0);
+        depthTexture.bind(GL13.GL_TEXTURE1);
+        AtmosphereMesh.getInstance().render();
 
         matrixStack.pop();
     }
@@ -223,6 +253,19 @@ public class Renderer implements IFramebufferSizeListener {
         frustum.setAspectRatio(frameWidth, frameHeight);
         frustum.calcMatrix(perspective);
         Matrix4f.mul(coordinate_convert, perspective, perspective);
+
+        if (colorTexture != null) {
+            colorTexture.clean();
+        }
+        if (depthTexture != null) {
+            depthTexture.clean();
+        }
+        colorTexture = new Texture(width, height, GL11.GL_RGB, GL11.GL_RGB);
+        depthTexture = new Texture(width, height, GL14C.GL_DEPTH_COMPONENT24, GL11.GL_DEPTH_COMPONENT);
+        GL30.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, FBO);
+        GL30.glFramebufferTexture2D(GL30C.GL_FRAMEBUFFER, GL30C.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, colorTexture.getHandle(), 0);
+        GL30.glFramebufferTexture2D(GL30C.GL_FRAMEBUFFER, GL30C.GL_DEPTH_ATTACHMENT, GL11.GL_TEXTURE_2D, depthTexture.getHandle(), 0);
+        GL30.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
     }
 
     public void enterWireframe() {
@@ -241,5 +284,9 @@ public class Renderer implements IFramebufferSizeListener {
         terrainShader.delete();
         particleRenderer.clean();
         starShader.delete();
+        atmosphereShader.delete();
+        GL30.glDeleteFramebuffers(FBO);
+        colorTexture.clean();
+        depthTexture.clean();
     }
 }

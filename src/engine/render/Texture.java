@@ -32,6 +32,16 @@ public class Texture {
         init(image, needsMipmaps);
     }
 
+    public Texture(int width, int height, int internalFormat, int format) {
+        this.width = width;
+        this.height = height;
+        handle = GL11.glGenTextures();
+        bind();
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL11.GL_UNSIGNED_BYTE, 0);
+    }
+
     protected Texture() {}
 
     private void init(ImageRGBA image, boolean needsMipmaps) {
@@ -60,8 +70,17 @@ public class Texture {
         return height;
     }
 
+    // TODO: This shouldn't need to exist?
+    public int getHandle() {
+        return handle;
+    }
+
+    public void bind(int textureUnit) {
+        GL13.glActiveTexture(textureUnit);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, handle);
+    }
+
     public void bind() {
-        // Activate texture unit before binding texture
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, handle);
     }

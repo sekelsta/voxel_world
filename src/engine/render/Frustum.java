@@ -11,6 +11,10 @@ public class Frustum {
     private Matrix4f matrix = null;
     private Matrix4f inverse = null;
 
+    public float getNear() {
+        return near;
+    }
+
     public float getFar() {
         return far;
     }

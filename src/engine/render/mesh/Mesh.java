@@ -81,6 +81,7 @@ public abstract class Mesh {
         MemoryUtil.memFree(vertexBuffer);
     }
 
+    // TO_OPTIMIZE: All quads can share the same EBO since they have the same data
     protected void bufferQuads(int numQuads) {
         // 6 indices per rectangle
         int maxIndices = numQuads * 6;
