@@ -21,6 +21,7 @@ import shadowfox.math.*;
 import sekelsta.tools.ObjParser;
 
 public class Renderer implements IFramebufferSizeListener {
+    private static final int PLANET_RADIUS = 6360000;
     private TerrainRenderer terrainRenderer = null;
     private MaterialShader shader = MaterialShader.load("/shaders/basic.vsh", "/shaders/basic.fsh");
     private ShaderProgram shader2D = ShaderProgram.load("/shaders/2d.vsh", "/shaders/2d.fsh");
@@ -82,6 +83,15 @@ public class Renderer implements IFramebufferSizeListener {
         atmosphereShader.use();
         atmosphereShader.setInt("color_sampler", 0);
         atmosphereShader.setInt("depth_sampler", 1);
+
+        atmosphereShader.setFloat("planet_radius", PLANET_RADIUS);
+        atmosphereShader.setFloat("atmosphere_radius", 6420000);
+        atmosphereShader.setFloat("sun_intensity", 20f);
+        atmosphereShader.setFloat("rayleigh_height", 8000);
+        atmosphereShader.setUniform("rayleigh_scattering", new Vector3f(0.0000058f, 0.0000135f, 0.0000331f));
+        atmosphereShader.setFloat("mie_height", 1200);
+        atmosphereShader.setFloat("mie_scattering", 0.0021f);
+        atmosphereShader.setFloat("mie_mean_cosine", 0.76f);
 
         frustum.setFOV(Math.toRadians(30));
 
@@ -177,16 +187,19 @@ public class Renderer implements IFramebufferSizeListener {
         fireShader.setUniform("projection", perspective);
         circleTexture.bind();
         particleRenderer.render(camera, matrixStack, particles, fireShader, 0.3f, lerp);
-        shader.use();
-
-        skyRenderer.renderSun(matrixStack, lerp, frustum.getFar());
 
         atmosphereShader.use();
+        atmosphereShader.setUniform("sun_pos", lightPos);
+        atmosphereShader.setUniform("planet_center", new Vector3f(camera.getX(lerp), camera.getZ(lerp), -1 * PLANET_RADIUS));
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL30.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
         colorTexture.bind(GL13.GL_TEXTURE0);
         depthTexture.bind(GL13.GL_TEXTURE1);
-        AtmosphereMesh.getInstance().render();
+        AtmosphereMesh.getInstance().render(matrixStack.getResult(), perspective);
+
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        shader.use();
+        skyRenderer.renderSun(matrixStack, lerp, frustum.getFar());
 
         matrixStack.pop();
     }
