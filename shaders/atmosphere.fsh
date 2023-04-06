@@ -49,12 +49,14 @@ Intersection compute_intersection(vec3 to_center, vec3 direction, float radius) 
 
 void main()
 {
+    vec3 view_dir = ray_end - ray_start;
+    float ray_length = length(view_dir);
+    view_dir /= ray_length;
+
     float z = texture(depth_sampler, uv).r;
-    gl_FragDepth = z;
-    float distance = (2 * far * near) / (far + near - z * (far - near));
+    float distance = ray_length * 2 * near / (far + near - z * (far - near));
     vec3 background_color = texture(color_sampler, uv).rgb;
 
-    vec3 view_dir = normalize(ray_end - ray_start);
     vec3 sun_dir = normalize(sun_pos - ray_start);
     float mu = dot(view_dir, sun_dir);
     float rayleigh_phase = 3 / (16 * PI) * (1 + mu * mu);
@@ -64,13 +66,13 @@ void main()
     Intersection intersection = compute_intersection(planet_center - ray_start, view_dir, atmosphere_radius);
     float tMin = intersection.t0;
     float tMax = intersection.t1;
-    /*if (distance > 0.8) {
-        distance = 1.0 / 0.0;
+    if (distance > 0.95 * far) {
+        distance = 1.0 / 0;
     }
-    tMax = min(tMax, distance);*/
+    tMax = min(tMax, distance);
 
-    int num_samples = 16;
-    int num_light_samples = 8;
+    int num_samples = 6;
+    int num_light_samples = 3;
     float step = (tMax - tMin) / num_samples;
     float tCurrent = tMin + 0.5 * step;
     float rayleigh_optical_depth = 0;
@@ -81,8 +83,10 @@ void main()
         vec3 sample_pos = ray_start + view_dir * tCurrent;
         vec3 sample_sun_dir = normalize(sun_pos - sample_pos);
         float height = length(sample_pos - planet_center) - planet_radius;
-        rayleigh_optical_depth += exp(-height / rayleigh_height) * step;
-        mie_optical_depth += exp(-height / mie_height) * step;
+        float hr = exp(-height / rayleigh_height) * step;
+        float hm = exp(-height / mie_height) * step;
+        rayleigh_optical_depth += hr;
+        mie_optical_depth += hm;
         Intersection light_intersection = compute_intersection(planet_center - sample_pos, sample_sun_dir, atmosphere_radius);
         float light_step = (light_intersection.t1 - light_intersection.t0) / num_light_samples;
         float t_light = light_intersection.t0 + 0.5 * light_step;
@@ -98,8 +102,8 @@ void main()
         vec3 attenuation = rayleigh_scattering * (rayleigh_optical_depth + rayleigh_light_optical_depth)
             + mie_scattering * 1.1 * (mie_optical_depth + mie_light_optical_depth);
         attenuation = exp(-attenuation);
-        rayleigh_sum += attenuation * rayleigh_light_optical_depth;
-        mie_sum += attenuation * mie_light_optical_depth;
+        rayleigh_sum += attenuation * hr;
+        mie_sum += attenuation * hm;
         tCurrent += step;
     }
 
@@ -108,7 +112,8 @@ void main()
     light_color = vec3(pow(light_color.r, 1/2.2), pow(light_color.g, 1/2.2), pow(light_color.b, 1/2.2));
     light_color = max(light_color, 0);
     light_color = min(light_color, 1);
-    light_color *= distance / far;
-    vec3 final_color = light_color + background_color; // TODO
+    vec3 extinction = rayleigh_scattering * rayleigh_optical_depth + mie_scattering * 1.1 * mie_optical_depth;
+    extinction = exp(-extinction);
+    vec3 final_color = light_color + extinction * background_color;
     fragColor = vec4(final_color, 1);
 }

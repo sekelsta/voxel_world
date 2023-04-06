@@ -85,12 +85,13 @@ public class Renderer implements IFramebufferSizeListener {
         atmosphereShader.setInt("depth_sampler", 1);
 
         atmosphereShader.setFloat("planet_radius", PLANET_RADIUS);
-        atmosphereShader.setFloat("atmosphere_radius", 6420000);
-        atmosphereShader.setFloat("sun_intensity", 20f);
+        atmosphereShader.setFloat("atmosphere_radius", 6460000);
+        atmosphereShader.setFloat("sun_intensity", 16f);
         atmosphereShader.setFloat("rayleigh_height", 8000);
         atmosphereShader.setUniform("rayleigh_scattering", new Vector3f(0.0000058f, 0.0000135f, 0.0000331f));
         atmosphereShader.setFloat("mie_height", 1200);
-        atmosphereShader.setFloat("mie_scattering", 0.0021f);
+        // Ref used 0.0021f but that felt too large.
+        atmosphereShader.setFloat("mie_scattering", 0.00002f);
         atmosphereShader.setFloat("mie_mean_cosine", 0.76f);
 
         frustum.setFOV(Math.toRadians(30));
@@ -188,6 +189,9 @@ public class Renderer implements IFramebufferSizeListener {
         circleTexture.bind();
         particleRenderer.render(camera, matrixStack, particles, fireShader, 0.3f, lerp);
 
+        shader.use();
+        skyRenderer.renderSun(matrixStack, lerp, frustum.getFar());
+
         atmosphereShader.use();
         atmosphereShader.setUniform("sun_pos", lightPos);
         atmosphereShader.setUniform("planet_center", new Vector3f(camera.getX(lerp), camera.getZ(lerp), -1 * PLANET_RADIUS));
@@ -196,10 +200,6 @@ public class Renderer implements IFramebufferSizeListener {
         colorTexture.bind(GL13.GL_TEXTURE0);
         depthTexture.bind(GL13.GL_TEXTURE1);
         AtmosphereMesh.getInstance().render(matrixStack.getResult(), perspective);
-
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        shader.use();
-        skyRenderer.renderSun(matrixStack, lerp, frustum.getFar());
 
         matrixStack.pop();
     }
