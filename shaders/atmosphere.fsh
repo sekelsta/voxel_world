@@ -17,7 +17,8 @@ uniform vec3 sun_pos;
 
 uniform float planet_radius;
 uniform float atmosphere_radius;
-uniform float sun_intensity;
+uniform vec3 solar_spectrum;
+uniform vec3 ozone_absorption;
 uniform float rayleigh_height;
 uniform vec3 rayleigh_scattering;
 uniform float mie_height;
@@ -71,8 +72,8 @@ void main()
     }
     tMax = min(tMax, distance);
 
-    int num_samples = 6;
-    int num_light_samples = 3;
+    int num_samples = 5;
+    int num_light_samples = 2;
     float step = (tMax - tMin) / num_samples;
     float tCurrent = tMin + 0.5 * step;
     float rayleigh_optical_depth = 0;
@@ -100,7 +101,8 @@ void main()
             t_light += light_step;
         }
         vec3 attenuation = rayleigh_scattering * (rayleigh_optical_depth + rayleigh_light_optical_depth)
-            + mie_scattering * 1.1 * (mie_optical_depth + mie_light_optical_depth);
+            + mie_scattering * 1.1 * (mie_optical_depth + mie_light_optical_depth)
+            + ozone_absorption * (i * step + light_intersection.t1 - light_intersection.t0);
         attenuation = exp(-attenuation);
         rayleigh_sum += attenuation * hr;
         mie_sum += attenuation * hm;
@@ -108,11 +110,12 @@ void main()
     }
 
     vec3 light_color = rayleigh_sum * rayleigh_scattering * rayleigh_phase + mie_sum * mie_scattering * mie_phase;
-    light_color *= sun_intensity;
-    light_color = vec3(pow(light_color.r, 1/2.2), pow(light_color.g, 1/2.2), pow(light_color.b, 1/2.2));
+    light_color *= solar_spectrum;
+    light_color = vec3(pow(light_color.r, 0.3), pow(light_color.g, 0.3), pow(light_color.b, 0.3));
     light_color = max(light_color, 0);
     light_color = min(light_color, 1);
-    vec3 extinction = rayleigh_scattering * rayleigh_optical_depth + mie_scattering * 1.1 * mie_optical_depth;
+    vec3 extinction = rayleigh_scattering * rayleigh_optical_depth
+        + mie_scattering * 1.1 * mie_optical_depth + ozone_absorption * (tMax - tMin);
     extinction = exp(-extinction);
     vec3 final_color = light_color + extinction * background_color;
     fragColor = vec4(final_color, 1);

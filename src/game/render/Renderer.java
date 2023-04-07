@@ -85,13 +85,17 @@ public class Renderer implements IFramebufferSizeListener {
         atmosphereShader.setInt("depth_sampler", 1);
 
         atmosphereShader.setFloat("planet_radius", PLANET_RADIUS);
-        atmosphereShader.setFloat("atmosphere_radius", 6460000);
-        atmosphereShader.setFloat("sun_intensity", 16f);
+        atmosphereShader.setFloat("atmosphere_radius", 6420000);
+        float s = 1;
+        atmosphereShader.setUniform("solar_spectrum", new Vector3f(1.6f * s, 1.8f * s, 2f * s));
+        Vector3f ozoneAbsorption = new Vector3f(1f, 3f, 0.2f); // Eyeballed off a chart
+        ozoneAbsorption.scale(0.0000005f); // Sized to just barely make a noticable difference
+        atmosphereShader.setUniform("ozone_absorption", ozoneAbsorption);
         atmosphereShader.setFloat("rayleigh_height", 8000);
         atmosphereShader.setUniform("rayleigh_scattering", new Vector3f(0.0000058f, 0.0000135f, 0.0000331f));
         atmosphereShader.setFloat("mie_height", 1200);
         // Ref used 0.0021f but that felt too large.
-        atmosphereShader.setFloat("mie_scattering", 0.00002f);
+        atmosphereShader.setFloat("mie_scattering", 0.0004f);
         atmosphereShader.setFloat("mie_mean_cosine", 0.76f);
 
         frustum.setFOV(Math.toRadians(30));
