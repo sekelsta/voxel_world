@@ -21,7 +21,6 @@ import shadowfox.math.*;
 import sekelsta.tools.ObjParser;
 
 public class Renderer implements IFramebufferSizeListener {
-    private static final int PLANET_RADIUS = 6360000;
     private TerrainRenderer terrainRenderer = null;
     private MaterialShader shader = MaterialShader.load("/shaders/basic.vsh", "/shaders/basic.fsh");
     private ShaderProgram shader2D = ShaderProgram.load("/shaders/2d.vsh", "/shaders/2d.fsh");
@@ -83,20 +82,7 @@ public class Renderer implements IFramebufferSizeListener {
         atmosphereShader.use();
         atmosphereShader.setInt("color_sampler", 0);
         atmosphereShader.setInt("depth_sampler", 1);
-
-        atmosphereShader.setFloat("planet_radius", PLANET_RADIUS);
-        atmosphereShader.setFloat("atmosphere_radius", 6420000);
-        float s = 1;
-        atmosphereShader.setUniform("solar_spectrum", new Vector3f(1.6f * s, 1.8f * s, 2f * s));
-        Vector3f ozoneAbsorption = new Vector3f(1f, 3f, 0.2f); // Eyeballed off a chart
-        ozoneAbsorption.scale(0.0000005f); // Sized to just barely make a noticable difference
-        atmosphereShader.setUniform("ozone_absorption", ozoneAbsorption);
-        atmosphereShader.setFloat("rayleigh_height", 8000);
-        atmosphereShader.setUniform("rayleigh_scattering", new Vector3f(0.0000058f, 0.0000135f, 0.0000331f));
-        atmosphereShader.setFloat("mie_height", 1200);
-        // Ref used 0.0021f but that felt too large.
-        atmosphereShader.setFloat("mie_scattering", 0.0004f);
-        atmosphereShader.setFloat("mie_mean_cosine", 0.76f);
+        SkyRenderer.setAtmosphericParams(atmosphereShader);
 
         frustum.setFOV(Math.toRadians(30));
 
@@ -151,12 +137,14 @@ public class Renderer implements IFramebufferSizeListener {
             lerp = 0;
         }
 
-        Vector3f lightPos = world.getSunPosition(lerp);
+        Vector3f sunPos = world.getSunPosition(lerp);
 
         // Move to camera coords
         camera.transform(matrixStack, lerp);
-        Vector4f tlight = new Vector4f(lightPos);
+        Vector4f tlight = new Vector4f(sunPos);
         matrixStack.getResult().transform(tlight);
+
+        Vector3f sunColor = skyRenderer.getSunColor(new Vector3f(camera.getX(lerp), camera.getY(lerp), camera.getZ(lerp)), sunPos);
 
         starShader.use();
         starShader.setUniform("projection", perspective);
@@ -169,6 +157,7 @@ public class Renderer implements IFramebufferSizeListener {
         terrainShader.use();
         terrainShader.setUniform("projection", perspective);
         terrainShader.setUniform("light_pos", tlight.toVec3());
+        terrainShader.setUniform("light_color", sunColor);
         terrainRenderer.render(matrixStack, frustum, lerp);
 
         shader.use();
@@ -176,8 +165,10 @@ public class Renderer implements IFramebufferSizeListener {
         shader.setUniform("light_pos", tlight.toVec3());
 
         shader.setReflectance(0);
+        shader.setUniform("light_color", SkyRenderer.solar_spectrum);
         skyRenderer.renderMoon(matrixStack, lerp, frustum.getFar());
         shader.setDefaultMaterial();
+        shader.setUniform("light_color", sunColor);
 
         // Render entities
         for (Entity entity : world.getMobs()) {
@@ -197,8 +188,7 @@ public class Renderer implements IFramebufferSizeListener {
         skyRenderer.renderSun(matrixStack, lerp, frustum.getFar());
 
         atmosphereShader.use();
-        atmosphereShader.setUniform("sun_pos", lightPos);
-        atmosphereShader.setUniform("planet_center", new Vector3f(camera.getX(lerp), camera.getZ(lerp), -1 * PLANET_RADIUS));
+        atmosphereShader.setUniform("sun_pos", sunPos);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL30.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
         colorTexture.bind(GL13.GL_TEXTURE0);

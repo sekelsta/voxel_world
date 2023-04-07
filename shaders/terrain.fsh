@@ -9,6 +9,7 @@ flat in ivec3 texture_indices;
 in vec3 type_weights;
 
 uniform vec3 light_pos;
+uniform vec3 light_color;
 
 uniform sampler2DArray texture_sampler;
 
@@ -44,6 +45,7 @@ void main()
     }
     tex_color.rgb *= color.rgb;
     vec3 lit = tex_color.rgb * (ambient_str + diffuse_str) + vec3(1, 1, 1) * specular_str;
+    lit = lit * light_color;
     // OpenGL automatically clamps color components to the range [0, 1]
     fragColor = vec4(tex_color.a * lit, alpha);
 }

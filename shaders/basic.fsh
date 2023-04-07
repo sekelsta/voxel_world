@@ -6,6 +6,7 @@ in vec2 texture_coord;
 in vec3 frag_pos;
 
 uniform vec3 light_pos;
+uniform vec3 light_color;
 
 uniform sampler2D texture_sampler;
 uniform sampler2D emission_sampler;
@@ -38,6 +39,7 @@ void main()
         discard;
     }
     vec3 lit = color.rgb * (ambient_str + diffuse_str) + vec3(1, 1, 1) * specular_str;
+    lit = lit * light_color;
     // OpenGL automatically clamps color components to the range [0, 1]
     fragColor = vec4(color.a * lit + emissive.rgb, alpha);
 }

@@ -12,7 +12,6 @@ uniform sampler2D color_sampler;
 uniform sampler2D depth_sampler;
 uniform float near;
 uniform float far;
-uniform vec3 planet_center;
 uniform vec3 sun_pos;
 
 uniform float planet_radius;
@@ -64,6 +63,7 @@ void main()
     float g = mie_mean_cosine;
     float mie_phase = 3 / (8 * PI) * (1 - g * g) * (1 + mu * mu) / (2 + g * g) / pow(1 + g * g - 2 * g * mu, 1.5);
 
+    vec3 planet_center = vec3(ray_start.xy, -1 * planet_radius);
     Intersection intersection = compute_intersection(planet_center - ray_start, view_dir, atmosphere_radius);
     float tMin = intersection.t0;
     float tMax = intersection.t1;
