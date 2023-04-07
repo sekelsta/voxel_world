@@ -4,6 +4,7 @@ out vec4 fragColor;
 in vec2 texture_coord;
 in vec3 color;
 
+uniform float brightness;
 uniform sampler2D texture_sampler;
 
 void main()
@@ -13,5 +14,5 @@ void main()
         discard;
     }
 
-    fragColor = vec4(color.r * tex_color.r, color.g * tex_color.g, color.b * tex_color.b, tex_color.a);
+    fragColor = vec4(color.rgb * tex_color.rgb * brightness, tex_color.a);
 }

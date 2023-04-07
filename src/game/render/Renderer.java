@@ -148,6 +148,8 @@ public class Renderer implements IFramebufferSizeListener {
 
         starShader.use();
         starShader.setUniform("projection", perspective);
+        float sunBrightness = (sunColor.x + sunColor.y + sunColor.z) / 3;
+        starShader.setFloat("brightness", 1 / (1 + 255 * sunBrightness));
         // TO_OPTIMIZE: Sort the stars by distance instead of changing blend func
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         skyRenderer.renderStars(matrixStack, lerp, frustum.getFar());
