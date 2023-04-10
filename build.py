@@ -13,7 +13,7 @@ test_project = 'sekelsta/test'
 misc_compiler_args = '-Xlint:unchecked'
 output_directory = 'bin'
 source_directory = 'src'
-jar_name = 'spacegame.jar'
+jar_name = 'voxel_world.jar'
 jar_includes = 'assets shaders -C bin . -C libs/bin .'
 
 def join_paths(root, *paths):
