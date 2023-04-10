@@ -24,9 +24,11 @@ public class Terrain {
 
     public void setBlock(int x, int y, int z, short block) {
         Vector2i pos = new Vector2i(Chunk.toChunkPos(x), Chunk.toChunkPos(y));
-        loadedColumns.get(pos).setBlock(x & Chunk.MASK, y & Chunk.MASK, z, block);
+        loadedColumns.get(pos).setBlock(x & Chunk.MASK, y & Chunk.MASK, z, block, generator);
+        // TODO: Trigger on block changed events
     }
 
+    // Note: Don't call setBlock() on the returned column because it won't trigger the right events
     public TerrainColumn getColumnIfLoaded(int chunkX, int chunkY) {
         return loadedColumns.get(new Vector2i(chunkX, chunkY));
     }

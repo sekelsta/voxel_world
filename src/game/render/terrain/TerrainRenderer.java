@@ -1,7 +1,7 @@
 package sekelsta.game.render.terrain;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.*;
 
 import sekelsta.engine.AABB;
 import sekelsta.engine.render.*;
@@ -112,7 +112,8 @@ public class TerrainRenderer {
                 if (column == null) {
                     continue;
                 }
-                for (int z = zStart; z * zDir < zStop * zDir; z += zDir) {
+                List<Integer> chunkLocations = column.getLoadedChunkLocations(zStart, zStop);
+                for (int z : chunkLocations) {
                     Chunk chunk = column.getChunk(z);
                     if (chunk == null || chunk.isEmpty()) {
                         continue;

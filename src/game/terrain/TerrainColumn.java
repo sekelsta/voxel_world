@@ -6,8 +6,7 @@ public class TerrainColumn {
     private final int chunkX;
     private final int chunkY;
 
-    private Chunk highest;
-    private int chunkZ;
+    private Map<Integer, Chunk> loadedChunks = new HashMap<>();
 
     public TerrainColumn(int chunkX, int chunkY) {
         this.chunkX = chunkX;
@@ -15,50 +14,55 @@ public class TerrainColumn {
     }
 
     public short getBlockIfLoaded(int bx, int by, int z) {
-        if (z >> Chunk.TWO_POWER_SIZE > chunkZ) {
-            return Block.EMPTY;
+        int chunkZ = z >> Chunk.TWO_POWER_SIZE;
+        if (loadedChunks.containsKey(chunkZ)) {
+            return loadedChunks.get(chunkZ).getBlock(bx, by, z & Chunk.MASK);
         }
-        else if (z >> Chunk.TWO_POWER_SIZE > chunkZ) {
-            return Block.OCCUPIED;
-        }
-        return highest.getBlock(bx, by, z & Chunk.MASK);
+        return Block.EMPTY;
     }
 
+    // Deliberately package-private
     // Expects x and y to be in chunk coords, z in block coords
-    public void setBlock(int x, int y, int z, short block) {
-        assert(x >= 0);
-        assert(x < Chunk.SIZE);
-        assert(y >= 0);
-        assert(y < Chunk.SIZE);
-        throw new RuntimeException("TODO");
+    void setBlock(int bx, int by, int z, short block, TerrainGenerator generator) {
+        assert(bx >= 0);
+        assert(bx < Chunk.SIZE);
+        assert(by >= 0);
+        assert(by < Chunk.SIZE);
+
+        int chunkZ = z >> Chunk.TWO_POWER_SIZE;
+        if (loadedChunks.containsKey(chunkZ)) {
+            loadedChunks.get(chunkZ).setBlock(bx, by, z & Chunk.MASK, block);
+            return;
+        }
     }
 
     public Chunk getChunk(int chunkZ) {
-        if (chunkZ == this.chunkZ) {
-            return highest;
-        }
-        return null;
+        return loadedChunks.get(chunkZ);
     }
 
-    // If startZ is greated than stopZ, the chunks will be returned in reverse order
-    public List<Integer> getLoadedChunks(int startZ, int stopZ) {
-        int zMin = startZ;
-        int zMax = stopZ;
+    // TO_OPTIMIZE: Ideally if startZ is greated than stopZ, the chunks should be returned in reverse order
+    public List<Integer> getLoadedChunkLocations(int zStart, int zStop) {
+        int zMin = zStart;
+        int zMax = zStop;
         if (zMin > zMax) {
-            zMin = stopZ;
-            zMax = startZ;
+            zMin = zStop;
+            zMax = zStart;
         }
-        ArrayList<Integer> result = new ArrayList<>();
-        if (zMin <= chunkZ && chunkZ <= zMax) {
-            result.add(chunkZ);
+        List<Integer> chunkLocations = new ArrayList<Integer>();
+        for (int z : loadedChunks.keySet()) {
+            if (z >= zMin && z <= zMax) {
+                chunkLocations.add(z);
+            }
         }
-        return result;
+        return chunkLocations;
     }
 
     public void loadChunkRange(int minChunk, int maxChunk, TerrainGenerator generator) {
-        // TODO
-        chunkZ = generator.getHighestChunk(chunkX, chunkY);
-        highest = generator.generateChunk(chunkX, chunkY, chunkZ);
+        // TODO: Don't always assume the highest chunk is the only one needed
+        int chunkZ = generator.getHighestChunk(chunkX, chunkY);
+        if (!loadedChunks.containsKey(chunkZ)) {
+            loadedChunks.put(chunkZ, generator.generateChunk(chunkX, chunkY, chunkZ));
+        }
     }
 
     // TODO: Unload chunks
