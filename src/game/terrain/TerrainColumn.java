@@ -6,11 +6,25 @@ public class TerrainColumn {
     private final int chunkX;
     private final int chunkY;
 
+    private Surface surface;
     private Map<Integer, Chunk> loadedChunks = new HashMap<>();
 
-    public TerrainColumn(int chunkX, int chunkY) {
+    public TerrainColumn(int chunkX, int chunkY, TerrainGenerator generator) {
         this.chunkX = chunkX;
         this.chunkY = chunkY;
+        this.surface = generator.generateSurface(chunkX, chunkY);
+    }
+
+    public Surface getSurface() {
+        return surface;
+    }
+
+    public void loadChunkRange(int minChunk, int maxChunk, TerrainGenerator generator) {
+        // TODO: Don't always assume the highest chunk is the only one needed
+        int chunkZ = generator.getHighestChunk(chunkX, chunkY);
+        if (!loadedChunks.containsKey(chunkZ)) {
+            loadedChunks.put(chunkZ, generator.generateChunk(chunkX, chunkY, chunkZ));
+        }
     }
 
     public short getBlockIfLoaded(int bx, int by, int z) {
@@ -18,7 +32,7 @@ public class TerrainColumn {
         if (loadedChunks.containsKey(chunkZ)) {
             return loadedChunks.get(chunkZ).getBlock(bx, by, z & Chunk.MASK);
         }
-        return Block.EMPTY;
+        return surface.getBlock(bx, by, z);
     }
 
     // Deliberately package-private
@@ -34,6 +48,8 @@ public class TerrainColumn {
             loadedChunks.get(chunkZ).setBlock(bx, by, z & Chunk.MASK, block);
             return;
         }
+
+        surface.setBlockAndChunkify(bx, by, z, block, loadedChunks, chunkX, chunkY, generator);
     }
 
     public Chunk getChunk(int chunkZ) {
@@ -55,14 +71,6 @@ public class TerrainColumn {
             }
         }
         return chunkLocations;
-    }
-
-    public void loadChunkRange(int minChunk, int maxChunk, TerrainGenerator generator) {
-        // TODO: Don't always assume the highest chunk is the only one needed
-        int chunkZ = generator.getHighestChunk(chunkX, chunkY);
-        if (!loadedChunks.containsKey(chunkZ)) {
-            loadedChunks.put(chunkZ, generator.generateChunk(chunkX, chunkY, chunkZ));
-        }
     }
 
     // TODO: Unload chunks

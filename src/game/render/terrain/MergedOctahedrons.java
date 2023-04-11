@@ -11,18 +11,12 @@ import shadowfox.math.Vector3f;
 public class MergedOctahedrons {
     private final Terrain terrain;
     private final TerrainModelData model;
-    private final int chunkX;
-    private final int chunkY;
-    private final int chunkZ;
 
     private HashMap<BlockPos, Vertex> vertexMap = new HashMap<>();
 
-    public MergedOctahedrons(Terrain terrain, int chunkX, int chunkY, int chunkZ) {
+    public MergedOctahedrons(Terrain terrain) {
         this.terrain = terrain;
         this.model = new TerrainModelData();
-        this.chunkX = chunkX;
-        this.chunkY = chunkY;
-        this.chunkZ = chunkZ;
     }
 
     private void addFacing(
@@ -228,7 +222,7 @@ public class MergedOctahedrons {
     }
 
     // Look at a 2x2x2 group of blocks, and add geometry to the center region
-    private void addGeometry(int x, int y, int z) {
+    private void addGeometry(int chunkX, int chunkY, int chunkZ, int x, int y, int z, boolean isChunk) {
         int bx = chunkX * Chunk.SIZE + x;
         int by = chunkY * Chunk.SIZE + y;
         int bz = chunkZ * Chunk.SIZE + z;
@@ -273,22 +267,50 @@ public class MergedOctahedrons {
             return;
         }
 
-        boolean lowerFrontLeftInChunk = x >= 0 && x < Chunk.SIZE 
-            && y >= 0 && y < Chunk.SIZE && z >= 0 && z < Chunk.SIZE;
-        boolean lowerFrontRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
-            && y >= 0 && y < Chunk.SIZE && z >= 0 && z < Chunk.SIZE;
-        boolean lowerBackLeftInChunk = x >= 0 && x < Chunk.SIZE 
-            && y + 1 >= 0 && y + 1 < Chunk.SIZE && z >= 0 && z < Chunk.SIZE;
-        boolean lowerBackRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
-            && y + 1 >= 0 && y + 1 < Chunk.SIZE && z >= 0 && z < Chunk.SIZE;
-        boolean upperFrontLeftInChunk = x >= 0 && x < Chunk.SIZE 
-            && y >= 0 && y < Chunk.SIZE && z + 1 >= 0 && z + 1 < Chunk.SIZE;
-        boolean upperFrontRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
-            && y >= 0 && y < Chunk.SIZE && z + 1 >= 0 && z + 1 < Chunk.SIZE;
-        boolean upperBackLeftInChunk = x >= 0 && x < Chunk.SIZE 
-            && y + 1 >= 0 && y + 1 < Chunk.SIZE && z + 1 >= 0 && z + 1 < Chunk.SIZE;
-        boolean upperBackRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
-            && y + 1 >= 0 && y + 1 < Chunk.SIZE && z + 1 >= 0 && z + 1 < Chunk.SIZE;
+        boolean lowerFrontLeftInChunk;
+        boolean lowerFrontRightInChunk;
+        boolean lowerBackLeftInChunk;
+        boolean lowerBackRightInChunk;
+        boolean upperFrontLeftInChunk;
+        boolean upperFrontRightInChunk;
+        boolean upperBackLeftInChunk;
+        boolean upperBackRightInChunk;
+        if (isChunk) {
+            lowerFrontLeftInChunk = x >= 0 && x < Chunk.SIZE 
+                && y >= 0 && y < Chunk.SIZE && z >= 0 && z < Chunk.SIZE;
+            lowerFrontRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
+                && y >= 0 && y < Chunk.SIZE && z >= 0 && z < Chunk.SIZE;
+            lowerBackLeftInChunk = x >= 0 && x < Chunk.SIZE 
+                && y + 1 >= 0 && y + 1 < Chunk.SIZE && z >= 0 && z < Chunk.SIZE;
+            lowerBackRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
+                && y + 1 >= 0 && y + 1 < Chunk.SIZE && z >= 0 && z < Chunk.SIZE;
+            upperFrontLeftInChunk = x >= 0 && x < Chunk.SIZE 
+                && y >= 0 && y < Chunk.SIZE && z + 1 >= 0 && z + 1 < Chunk.SIZE;
+            upperFrontRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
+                && y >= 0 && y < Chunk.SIZE && z + 1 >= 0 && z + 1 < Chunk.SIZE;
+            upperBackLeftInChunk = x >= 0 && x < Chunk.SIZE 
+                && y + 1 >= 0 && y + 1 < Chunk.SIZE && z + 1 >= 0 && z + 1 < Chunk.SIZE;
+            upperBackRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
+                && y + 1 >= 0 && y + 1 < Chunk.SIZE && z + 1 >= 0 && z + 1 < Chunk.SIZE;
+        }
+        else {
+            lowerFrontLeftInChunk = x >= 0 && x < Chunk.SIZE 
+                && y >= 0 && y < Chunk.SIZE;
+            lowerFrontRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
+                && y >= 0 && y < Chunk.SIZE;
+            lowerBackLeftInChunk = x >= 0 && x < Chunk.SIZE 
+                && y + 1 >= 0 && y + 1 < Chunk.SIZE;
+            lowerBackRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
+                && y + 1 >= 0 && y + 1 < Chunk.SIZE;
+            upperFrontLeftInChunk = x >= 0 && x < Chunk.SIZE 
+                && y >= 0 && y < Chunk.SIZE && z + 1 >= 0;
+            upperFrontRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
+                && y >= 0 && y < Chunk.SIZE && z + 1 >= 0;
+            upperBackLeftInChunk = x >= 0 && x < Chunk.SIZE 
+                && y + 1 >= 0 && y + 1 < Chunk.SIZE && z + 1 >= 0;
+            upperBackRightInChunk = x + 1 >= 0 && x + 1 < Chunk.SIZE 
+                && y + 1 >= 0 && y + 1 < Chunk.SIZE && z + 1 >= 0;
+        }
 
         // Eight-way symmetrical parts
         // Standard orientation
@@ -596,7 +618,8 @@ public class MergedOctahedrons {
         );
     }
 
-    public TerrainMesh getMesh(int numIterations, float weight) {
+    // TO_LATER_DO: Share more code between the surface-based and chunk-based getMesh()
+    public TerrainMesh getMesh(int numIterations, float weight, int chunkX, int chunkY, int chunkZ) {
         Chunk chunk = terrain.getColumnIfLoaded(chunkX, chunkY).getChunk(chunkZ);
         if (chunk.isEmpty()) {
             return null;
@@ -606,7 +629,7 @@ public class MergedOctahedrons {
         for (int z = -1 - margin; z < Chunk.SIZE + margin; ++z) {
             for (int x = -1 - margin; x < Chunk.SIZE + margin; ++x) {
                 for (int y = -1 - margin; y < Chunk.SIZE + margin; ++y) {
-                    addGeometry(x, y, z);
+                    addGeometry(chunkX, chunkY, chunkZ, x, y, z, true);
                 }
             }
         }
@@ -621,7 +644,7 @@ public class MergedOctahedrons {
         }
 
         model.calcNormals();
-        addBumps();
+        addBumps(chunkX, chunkY, chunkZ);
         model.calcNormals();
         model.trim();
         calculateTextureCoords();
@@ -629,7 +652,38 @@ public class MergedOctahedrons {
         return new TerrainMesh(model);
     }
 
-    private void addBumps() {
+    public TerrainMesh getMesh(int numIterations, float weight, int chunkX, int chunkY, Surface surface) {
+        int margin = numIterations + 1;
+        for (int x = -1 - margin; x < Chunk.SIZE + margin; ++x) {
+            for (int y = -1 - margin; y < Chunk.SIZE + margin; ++y) {
+                int nx = (int)Math.max(Chunk.SIZE - 1, Math.min(0, x));
+                int ny = (int)Math.max(Chunk.SIZE - 1, Math.min(0, y));
+                int h = surface.getHeight(nx, ny);
+                for (int z = h - 1 - margin; z <= h + margin; ++z) {
+                    addGeometry(chunkX, chunkY, 0, x, y, z, false);
+                }
+            }
+        }
+        model.addTrim();
+
+        List<Vector3f> originalLocations = new ArrayList<>();
+        for (Vertex vertex : model.getVertices()) {
+            originalLocations.add(new Vector3f(vertex.position));
+        }
+        for (int i = 0; i < numIterations; ++i) {
+            model.contract(originalLocations, 0.5f / terrain.blockSize, weight);
+        }
+
+        model.calcNormals();
+        addBumps(chunkX, chunkY, 0);
+        model.calcNormals();
+        model.trim();
+        calculateTextureCoords();
+        model.triangulate();
+        return new TerrainMesh(model);
+    }
+
+    private void addBumps(int chunkX, int chunkY, int chunkZ) {
         for (Map.Entry<BlockPos, Vertex> entry : vertexMap.entrySet()) {
             BlockPos pos = entry.getKey();
             Vertex v = entry.getValue();

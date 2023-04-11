@@ -6,18 +6,23 @@ import java.util.*;
 import sekelsta.engine.AABB;
 import sekelsta.engine.render.*;
 import sekelsta.engine.render.mesh.RigidMesh;
+import sekelsta.game.Vector2i;
 import sekelsta.game.terrain.*;
 import shadowfox.math.Vector3f;
 import shadowfox.math.Vector4f;
 import shadowfox.math.Matrix4f;
 
 public class TerrainRenderer {
+    private static final int numIterations = 1;
+    private static final int weight = 1;
+
     protected Terrain terrain;
     protected Matrix4f frustumMatrix = new Matrix4f();
 
     protected TextureArray texture;
 
     protected HashMap<ChunkPos, TerrainMesh> meshes = new HashMap<>();
+    protected HashMap<Vector2i, TerrainMesh> surfaceMeshes = new HashMap<>();
 
     protected int neighborhood = 1;
 
@@ -112,6 +117,21 @@ public class TerrainRenderer {
                 if (column == null) {
                     continue;
                 }
+
+                Surface surface = column.getSurface();
+                // TO_OPTIMIZE: Cull if outside of frustum
+                stack.push();
+                float scale = (float)Chunk.SIZE / terrain.blockSize;
+                stack.translate(x * scale, y * scale, 0);
+                Vector2i surfacePos = new Vector2i(x, y);
+                if (!surfaceMeshes.containsKey(surfacePos)) {
+                    surfaceMeshes.put(surfacePos, getSurfaceMesh(surfacePos, surface));
+                }
+                if (surfaceMeshes.get(surfacePos) != null) {
+                    surfaceMeshes.get(surfacePos).render();
+                }
+                stack.pop();
+
                 List<Integer> chunkLocations = column.getLoadedChunkLocations(zStart, zStop);
                 for (int z : chunkLocations) {
                     Chunk chunk = column.getChunk(z);
@@ -125,12 +145,9 @@ public class TerrainRenderer {
                             || clipSpace.z > 1 || clipSpace.z < -1) {
                         continue;
                     }
-                    // TODO: eliminate chunks blocked by other solid chunks
-                    // TODO: This rendering is front to back, good for opaque,
-                    // but should render back to front for transparency
+                    // Rendering is front to back, more performant for opaque things
                     stack.push();
-                    float s = (float)Chunk.SIZE / terrain.blockSize;
-                    stack.translate(x * s, y * s, z * s);
+                    stack.translate(x * scale, y * scale, z * scale);
                     ChunkPos chunkPos = new ChunkPos(x, y, z);
                     if (!meshes.containsKey(chunkPos)) {
                         meshes.put(chunkPos, getMeshForChunk(chunkPos));
@@ -170,9 +187,11 @@ public class TerrainRenderer {
     }
 
     protected TerrainMesh getMeshForChunk(ChunkPos pos) {
-        int numIterations = 1;
-        float weight = 1;
-        return new MergedOctahedrons(terrain, pos.x, pos.y, pos.z).getMesh(numIterations, weight);
+        return new MergedOctahedrons(terrain).getMesh(numIterations, weight, pos.x, pos.y, pos.z);
+    }
+
+    protected TerrainMesh getSurfaceMesh(Vector2i pos, Surface surface) {
+        return new MergedOctahedrons(terrain).getMesh(numIterations, weight, pos.x(), pos.y(), surface);
     }
 
     public void clean() {

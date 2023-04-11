@@ -6,7 +6,7 @@ public class Frustum {
     private final float height = 0.1f; // height from middle to top, AKA half the height
     private float width = height; // distance from middle to side, AKA half width
     private float near = height;
-    private float far = 200;
+    private float far = 400;
 
     private Matrix4f matrix = null;
     private Matrix4f inverse = null;

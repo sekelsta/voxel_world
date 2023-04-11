@@ -6,6 +6,8 @@ public class TerrainGenerator {
     }
 
     public Chunk generateChunk(int chunkX, int chunkY, int chunkZ) {
+        return new RunChunk();
+/*
         RunChunk chunk = new RunChunk();
         if (chunkZ > 0) {
             return chunk;
@@ -21,6 +23,15 @@ public class TerrainGenerator {
             }
         }
         chunk.isEmpty();
-        return chunk;
+        return chunk;*/
+    }
+
+    public Surface generateSurface(int chunkX, int chunkY) {
+        short[] blocks = new short[Chunk.SIZE * Chunk.SIZE];
+        int[] heights = new int[Chunk.SIZE * Chunk.SIZE];
+        for (int i = 0; i < Chunk.SIZE * Chunk.SIZE; ++i) {
+            blocks[i] = Block.STONE;
+        }
+        return new Surface(blocks, heights);
     }
 }

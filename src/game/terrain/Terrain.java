@@ -42,7 +42,9 @@ public class Terrain {
         for (int cx = chunkX - chunkLoadRadius; cx <= chunkX + chunkLoadRadius; ++cx) {
             for (int cy = chunkY - chunkLoadRadius; cy <= chunkY + chunkLoadRadius; ++cy) {
                 Vector2i pos = new Vector2i(cx, cy);
-                TerrainColumn column = loadedColumns.computeIfAbsent(pos, (p) -> new TerrainColumn(chunkX, chunkY));
+                TerrainColumn column = loadedColumns.computeIfAbsent(pos, 
+                    (p) -> new TerrainColumn(chunkX, chunkY, generator)
+                );
                 column.loadChunkRange(chunkZ - chunkLoadRadius, chunkZ + chunkLoadRadius, generator);
             }
         }
