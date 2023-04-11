@@ -13,6 +13,14 @@ public interface Chunk {
         return b >> TWO_POWER_SIZE;
     }
 
+    static int toInnerPos(int b) {
+        return b & MASK;
+    }
+
+    static int toBlockPos(int c, int b) {
+        return (c << TWO_POWER_SIZE) | b;
+    }
+
     void setBlock(int x, int y, int z, short block);
 
     short getBlock(int x, int y, int z);
