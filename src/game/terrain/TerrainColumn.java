@@ -20,11 +20,7 @@ public class TerrainColumn {
     }
 
     public void loadChunkRange(int minChunk, int maxChunk, TerrainGenerator generator) {
-        // TODO: Don't always assume the highest chunk is the only one needed
-        int chunkZ = generator.getHighestChunk(chunkX, chunkY);
-        if (!loadedChunks.containsKey(chunkZ)) {
-            loadedChunks.put(chunkZ, generator.generateChunk(chunkX, chunkY, chunkZ));
-        }
+        generator.loadChunkRange(chunkX, chunkY, loadedChunks, minChunk, maxChunk);
     }
 
     public short getBlockIfLoaded(int bx, int by, int z) {
