@@ -60,7 +60,135 @@ public class RunChunk implements Chunk {
 
     @Override
     public void setBlock(int x, int y, int z, short block) {
-        throw new RuntimeException("not yet implemented");
+        if (blocks == null) {
+            if (block == Block.EMPTY) {
+                return;
+            }
+            init();
+        }
+        int index = getIndex(x, z);
+        if (runs[index] == null) {
+            if (block == Block.EMPTY) {
+                return;
+            }
+            int l = 3;
+            if (y == 0 || y == Chunk.SIZE - 1) {
+                l -= 1;
+            }
+            runs[index] = new byte[l];
+            blocks[index] = new short[l];
+            int i = 1;
+            if (y == 0) {
+                i = 0;
+            }
+            blocks[index][i] = block;
+            runs[index][i] = 1;
+            if (y == 0) {
+                runs[index][1] = Chunk.SIZE - 1;
+            }
+            else if (y == Chunk.SIZE - 1) {
+                runs[index][0] = Chunk.SIZE - 1;
+            }
+            else {
+                runs[index][0] = (byte)y;
+                runs[index][2] = (byte)(Chunk.SIZE - y - 1);
+            }
+            return;
+        }
+
+        byte count = 0;
+        for (int i = 0; i < runs[index].length; ++i) {
+            count += runs[index][i];
+            if (y < count) {
+                if (blocks[index][i] == block) {
+                    // Already set
+                    return;
+                }
+                boolean firstInRun = y == count - runs[index][i];
+                boolean lastInRun = y == count - 1;
+                if (i > 0 && firstInRun && blocks[index][i-1] == block) {
+                    // Merge with previous neighbor
+                    runs[index][i-1] += 1;
+                    shrinkRun(index, i);
+                    return;
+                }
+                if (i + 1 < runs[index].length && lastInRun && blocks[index][i+1] == block) {
+                    // Merge with next neighbor
+                    runs[index][i+1] += 1;
+                    shrinkRun(index, i);
+                    return;
+                }
+                if (runs[index][i] == 1) {
+                    blocks[index][i] = block;
+                    return;
+                }
+                // Split the run
+                int l = 2;
+                if (lastInRun || firstInRun) {
+                    l = 1;
+                }
+                byte[] newRuns = new byte[runs.length + l];
+                short[] newBlocks = new short[blocks.length + l];
+                assert(runs[index].length == blocks[index].length);
+                for (int j = 0; j < runs[index].length; ++j) {
+                    if (i < j) {
+                        newRuns[j+l] = runs[index][j];
+                        newBlocks[j+l] = blocks[index][j];
+                    }
+                    else if (i > j) {
+                        newRuns[j] = runs[index][j];
+                        newBlocks[j] = blocks[index][j];
+                    }
+                }
+                if (firstInRun) {
+                    newRuns[i] = 1;
+                    newRuns[i+1] = (byte)(runs[index][i] - 1);
+                    newBlocks[i] = block;
+                    newBlocks[i+1] = blocks[index][i];
+                }
+                else if (lastInRun) {
+                    newRuns[i+1] = 1;
+                    newRuns[i] = (byte)(runs[index][i] - 1);
+                    newBlocks[i+1] = block;
+                    newBlocks[i] = blocks[index][i];
+                }
+                else {
+                    newRuns[i] = (byte)(runs[index][i] - count + y);
+                    newRuns[i+1] = 1;
+                    newRuns[i+2] = (byte)(count - y - 1);
+                    newBlocks[i] = blocks[index][i];
+                    newBlocks[i+1] = block;
+                    newBlocks[i+2] = blocks[index][i];
+                }
+                runs[index] = newRuns;
+                blocks[index] = newBlocks;
+                return;
+            }
+        }
+        throw new IllegalStateException("Y value " + y + " has no data");
+    }
+
+    private void shrinkRun(int index, int i) {
+        runs[index][i] -= 1;
+        if (runs[index][i] != 0) {
+            return;
+        }
+
+        byte[] newRuns = new byte[runs.length - 1];
+        short[] newBlocks = new short[blocks.length - 1];
+        assert(runs[index].length == blocks[index].length);
+        for (int j = 0; j < runs[index].length; ++j) {
+            if (i < j) {
+                newRuns[j-1] = runs[index][j];
+                newBlocks[j-1] = blocks[index][j];
+            }
+            else if (i > j) {
+                newRuns[j] = runs[index][j];
+                newBlocks[j] = blocks[index][j];
+            }
+        }
+        runs[index] = newRuns;
+        blocks[index] = newBlocks;
     }
 
 
@@ -76,14 +204,17 @@ public class RunChunk implements Chunk {
             return Block.EMPTY;
         }
         int index = getIndex(x, z);
+        if (runs[index] == null) {
+            return Block.EMPTY;
+        }
         int count = 0;
-        for (int i = 0; i < runs.length; ++i) {
+        for (int i = 0; i < runs[index].length; ++i) {
             count += runs[index][i];
             if (y < count) {
                 return blocks[index][i];
             }
         }
-        throw new IllegalArgumentException("Y value " + y + " is out of chunk bounds");
+        throw new IllegalStateException("Y value " + y + " has no data");
     }
 
     @Override
