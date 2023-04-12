@@ -24,7 +24,7 @@ public class TerrainRenderer {
     protected HashMap<ChunkPos, TerrainMesh> meshes = new HashMap<>();
     protected HashMap<Vector2i, TerrainMesh> surfaceMeshes = new HashMap<>();
 
-    protected int neighborhood = 2;
+    protected int neighborhood = 2 + numIterations;
 
     public TerrainRenderer(Terrain terrain) {
         this.terrain = terrain;
@@ -42,11 +42,10 @@ public class TerrainRenderer {
             for (int chunkY = minChunkY; chunkY <= maxChunkY; ++chunkY) {
                 int surfaceZ = getSurfaceChunkHeight(chunkX, chunkY);
                 if (surfaceZ - 1 < maxChunkZ || minChunkZ < surfaceZ + 1) {
-                    surfaceMeshes.remove(new Vector2i(chunkX, chunkY));
+                    updateSurfaceMesh(new Vector2i(chunkX, chunkY));
                 }
                 for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
-                    ChunkPos pos = new ChunkPos(chunkX, chunkY, chunkZ);
-                    meshes.remove(pos);
+                    updateChunkMesh(new ChunkPos(chunkX, chunkY, chunkZ));
                 }
             }
         }
@@ -57,27 +56,27 @@ public class TerrainRenderer {
             for (int cy = chunkY - 1; cy <= chunkY + 1; ++cy) {
                 int surfaceZ = getSurfaceChunkHeight(chunkX, chunkY);
                 if (surfaceZ - 1 < chunkZ || chunkZ < surfaceZ + 1) {
-                    surfaceMeshes.remove(new Vector2i(cx, cy));
+                    updateSurfaceMesh(new Vector2i(cx, cy));
                 }
                 for (int cz = chunkZ - 1; cz <= chunkZ + 1; ++cz) {
                     ChunkPos pos = new ChunkPos(cx, cy, cz);
-                    meshes.remove(pos);
+                    updateChunkMesh(pos);
                 }
             }
         }
     }
 
     public void onSurfaceChanged(int chunkX, int chunkY) {
-        surfaceMeshes.remove(new Vector2i(chunkX, chunkY));
+        updateSurfaceMesh(new Vector2i(chunkX, chunkY));
     }
 
     public void onSurfaceLoaded(int chunkX, int chunkY, Surface surface) {
         int surfaceZ = Chunk.toChunkPos(surface.getHeight(Chunk.SIZE / 2, Chunk.SIZE / 2));
         for (int cx = chunkX - 1; cx <= chunkX + 1; ++cx) {
             for (int cy = chunkY - 1; cy <= chunkY + 1; ++cy) {
-                surfaceMeshes.remove(new Vector2i(cx, cy));
+                updateSurfaceMesh(new Vector2i(cx, cy));
                 for (int chunkZ = surfaceZ - 1; chunkZ <= surfaceZ + 1; ++chunkZ) {
-                    meshes.remove(new ChunkPos(chunkX, chunkY, chunkZ));
+                    updateChunkMesh(new ChunkPos(chunkX, chunkY, chunkZ));
                 }
             }
         }
@@ -226,8 +225,29 @@ public class TerrainRenderer {
         return new MergedOctahedrons(terrain).getMesh(numIterations, weight, pos.x(), pos.y(), surface);
     }
 
+    public void updateChunkMesh(ChunkPos pos) {
+        TerrainMesh mesh = meshes.remove(pos);
+        if (mesh != null) {
+            mesh.clean();
+        }
+    }
+
+    public void updateSurfaceMesh(Vector2i pos) {
+        TerrainMesh mesh = surfaceMeshes.remove(pos);
+        if (mesh != null) {
+            mesh.clean();
+        }
+    }
+
     public void clean() {
-        // TODO
+        for (TerrainMesh mesh : meshes.values()) {
+            mesh.clean();
+        }
+        meshes.clear();
+        for (TerrainMesh mesh : surfaceMeshes.values()) {
+            mesh.clean();
+        }
+        surfaceMeshes.clear();
     }
 
     protected boolean isOpaque(short block) {
