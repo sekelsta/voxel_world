@@ -76,4 +76,19 @@ public class TerrainColumn {
     }
 
     // TODO: Unload chunks
+
+    public void onSurfaceExposed(int x, int y, int z, TerrainGenerator generator, Game game) {
+        // Take advantage of the fact that this is only called for chunks with a neighboring block
+        int bx = Chunk.toInnerPos(x + chunkX - Chunk.toChunkPos(x));
+        int by = Chunk.toInnerPos(y + chunkY - Chunk.toChunkPos(y));
+        int surfaceZ = surface.getHeight(bx, by);
+        if (z >= surfaceZ) {
+            return;
+        }
+        int chunkZ = Chunk.toChunkPos(z);
+        if (loadedChunks.containsKey(chunkZ)) {
+            return;
+        }
+        surface.chunkify(z, loadedChunks, chunkX, chunkY, generator, game);
+    }
 }

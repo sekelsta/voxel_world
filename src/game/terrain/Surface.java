@@ -41,6 +41,16 @@ public class Surface {
             return;
         }
 
+        Chunk chunk = chunkify(z, loadedChunks, chunkX, chunkY, generator, game);
+        boolean changed = chunk.setBlock(bx, by, Chunk.toInnerPos(z), block);
+        if (changed) {
+            game.onBlockChanged(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), z, block);
+        }
+    }
+
+    public Chunk chunkify(int z, Map<Integer, Chunk> loadedChunks, int chunkX, int chunkY, 
+            TerrainGenerator generator, Game game) {
+
         // TO_OPTIMIZE: Cache these values
         int highest = heights[0];
         int lowest = heights[0];
@@ -53,18 +63,14 @@ public class Surface {
         int highestChunkZ = Chunk.toChunkPos(highest);
         assert(!loadedChunks.containsKey(chunkZ));
         Chunk chunk = generator.generateChunk(chunkX, chunkY, chunkZ);
-        if (chunkZ > highestChunkZ || chunkZ < Chunk.toChunkPos(lowest)) {
-            // Ignore return value for setBlock since we're calling onChunkLoaded anyway
-            chunk.setBlock(bx, by, Chunk.toInnerPos(z), block);
-            loadedChunks.put(chunkZ, chunk);
-            game.onChunkLoaded(chunkX, chunkY, chunkZ);
-            return;
+        if (chunkZ <= highestChunkZ && chunkZ >= Chunk.toChunkPos(lowest)) {
+            overwrite(chunk, chunkZ);
         }
-        overwrite(chunk, chunkZ);
-        // Ignore return value for setBlock since we're calling onChunkLoaded anyway
-        chunk.setBlock(bx, by, Chunk.toInnerPos(z), block);
         loadedChunks.put(chunkZ, chunk);
         game.onChunkLoaded(chunkX, chunkY, chunkZ);
+        if (chunkZ > highestChunkZ || chunkZ < Chunk.toChunkPos(lowest)) {
+            return chunk;
+        }
 
         if (chunkZ < highestChunkZ) {
             assert(!loadedChunks.containsKey(highestChunkZ));
@@ -75,8 +81,14 @@ public class Surface {
             game.onChunkLoaded(chunkX, chunkY, highestChunkZ);
         }
 
-        int level = Chunk.toBlockPos(chunkZ, 0) - 1;
+        int targetChunk = chunkZ - 1;
+        while (loadedChunks.containsKey(targetChunk)) {
+            targetChunk--;
+        }
+        int level = Chunk.toBlockPos(targetChunk, Chunk.SIZE - 1);
         for (int i = 0; i < heights.length; ++i) {
+            int bx = i >>> Chunk.TWO_POWER_SIZE;
+            int by = i & Chunk.MASK;
             if (heights[i] > level) {
                 heights[i] = level;
                 blocks[i] = generator.generateBlock(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), level);
@@ -85,6 +97,7 @@ public class Surface {
             }
         }
         game.onSurfaceChanged(chunkX, chunkY);
+        return chunk;
     }
 
     private int getIndex(int bx, int by) {

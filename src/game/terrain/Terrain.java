@@ -31,6 +31,19 @@ public class Terrain {
     public void setBlock(int x, int y, int z, short block) {
         Vector2i pos = new Vector2i(Chunk.toChunkPos(x), Chunk.toChunkPos(y));
         loadedColumns.get(pos).setBlock(x & Chunk.MASK, y & Chunk.MASK, z, block, generator, game);
+        if (block != Block.EMPTY) {
+            return;
+        }
+        for (int cx = Chunk.toChunkPos(x - 1); cx <= Chunk.toChunkPos(x + 1); ++cx) {
+            for (int cy = Chunk.toChunkPos(y - 1); cy <= Chunk.toChunkPos(y + 1); ++cy) {
+                if (cx != pos.x() || cy != pos.y()) {
+                    TerrainColumn neighbor = loadedColumns.get(new Vector2i(cx, cy));
+                    if (neighbor != null) {
+                        neighbor.onSurfaceExposed(x, y, z, generator, game);
+                    }
+                }
+            }
+        }
     }
 
     // Note: Don't call setBlock() on the returned column because it won't trigger the right events
