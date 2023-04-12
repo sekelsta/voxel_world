@@ -25,7 +25,7 @@ public class TerrainGenerator {
                 byte[] runs = new byte[1];
                 short[] blocks = new short[1];
                 runs[0] = Chunk.SIZE;
-                blocks[0] = z >= 0? Block.EMPTY : Block.STONE;
+                blocks[0] = z > 0? Block.EMPTY : Block.STONE;
                 chunk.setRuns(x, z, runs, blocks);
             }
         }
@@ -34,7 +34,7 @@ public class TerrainGenerator {
     }
 
     public short generateBlock(int x, int y, int z) {
-        return z >= 0? Block.EMPTY : Block.STONE;
+        return z > 0? Block.EMPTY : Block.STONE;
     }
 
     public Surface generateSurface(int chunkX, int chunkY) {
