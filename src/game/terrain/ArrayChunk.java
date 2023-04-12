@@ -5,17 +5,18 @@ public class ArrayChunk implements Chunk {
     private short[] blocks = null;
 
     @Override
-    public void setBlock(int x, int y, int z, short block) {
+    public boolean setBlock(int x, int y, int z, short block) {
         if (blocks == null) {
             if (block == Block.EMPTY) {
-                return;
+                return false;
             }
             blocks = new short[SIZE * SIZE * SIZE];
         }
         if (blocks[getIndex(x, y, z)] == block) {
-            return;
+            return false;
         }
         blocks[getIndex(x, y, z)] = block;
+        return true;
     }
 
     @Override

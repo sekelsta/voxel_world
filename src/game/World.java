@@ -49,7 +49,7 @@ public class World implements IEntitySpace {
         this.game = game;
         this.authoritative = authoritative;
         this.random = new Random();
-        this.terrain = new Terrain();
+        this.terrain = new Terrain(game);
     }
 
     public Terrain getTerrain() {

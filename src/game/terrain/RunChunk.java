@@ -59,17 +59,17 @@ public class RunChunk implements Chunk {
 
 
     @Override
-    public void setBlock(int x, int y, int z, short block) {
+    public boolean setBlock(int x, int y, int z, short block) {
         if (blocks == null) {
             if (block == Block.EMPTY) {
-                return;
+                return false;
             }
             init();
         }
         int index = getIndex(x, z);
         if (runs[index] == null) {
             if (block == Block.EMPTY) {
-                return;
+                return false;
             }
             int l = 3;
             if (y == 0 || y == Chunk.SIZE - 1) {
@@ -93,16 +93,18 @@ public class RunChunk implements Chunk {
                 runs[index][0] = (byte)y;
                 runs[index][2] = (byte)(Chunk.SIZE - y - 1);
             }
-            return;
+            assert(runs[index].length <= Chunk.SIZE);
+            return true;
         }
 
+        assert(runs[index].length <= Chunk.SIZE);
         byte count = 0;
         for (int i = 0; i < runs[index].length; ++i) {
             count += runs[index][i];
             if (y < count) {
                 if (blocks[index][i] == block) {
                     // Already set
-                    return;
+                    return false;
                 }
                 boolean firstInRun = y == count - runs[index][i];
                 boolean lastInRun = y == count - 1;
@@ -110,25 +112,25 @@ public class RunChunk implements Chunk {
                     // Merge with previous neighbor
                     runs[index][i-1] += 1;
                     shrinkRun(index, i);
-                    return;
+                    return true;
                 }
                 if (i + 1 < runs[index].length && lastInRun && blocks[index][i+1] == block) {
                     // Merge with next neighbor
                     runs[index][i+1] += 1;
                     shrinkRun(index, i);
-                    return;
+                    return true;
                 }
                 if (runs[index][i] == 1) {
                     blocks[index][i] = block;
-                    return;
+                    return true;
                 }
                 // Split the run
                 int l = 2;
                 if (lastInRun || firstInRun) {
                     l = 1;
                 }
-                byte[] newRuns = new byte[runs.length + l];
-                short[] newBlocks = new short[blocks.length + l];
+                byte[] newRuns = new byte[runs[index].length + l];
+                short[] newBlocks = new short[blocks[index].length + l];
                 assert(runs[index].length == blocks[index].length);
                 for (int j = 0; j < runs[index].length; ++j) {
                     if (i < j) {
@@ -162,7 +164,7 @@ public class RunChunk implements Chunk {
                 }
                 runs[index] = newRuns;
                 blocks[index] = newBlocks;
-                return;
+                return true;
             }
         }
         throw new IllegalStateException("Y value " + y + " has no data");
@@ -174,8 +176,8 @@ public class RunChunk implements Chunk {
             return;
         }
 
-        byte[] newRuns = new byte[runs.length - 1];
-        short[] newBlocks = new short[blocks.length - 1];
+        byte[] newRuns = new byte[runs[index].length - 1];
+        short[] newBlocks = new short[blocks[index].length - 1];
         assert(runs[index].length == blocks[index].length);
         for (int j = 0; j < runs[index].length; ++j) {
             if (i < j) {
@@ -189,6 +191,7 @@ public class RunChunk implements Chunk {
         }
         runs[index] = newRuns;
         blocks[index] = newBlocks;
+        assert(runs[index].length <= Chunk.SIZE);
     }
 
 

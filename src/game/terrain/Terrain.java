@@ -2,6 +2,7 @@ package sekelsta.game.terrain;
 
 import java.util.HashMap;
 
+import sekelsta.game.Game;
 import sekelsta.game.Ray;
 import sekelsta.game.RaycastResult;
 import sekelsta.game.Vector2i;
@@ -12,6 +13,11 @@ public class Terrain {
 
     private HashMap<Vector2i, TerrainColumn> loadedColumns = new HashMap<>();
     private TerrainGenerator generator = new TerrainGenerator();
+    private Game game;
+
+    public Terrain(Game game) {
+        this.game = game;
+    }
 
     public short getBlockIfLoaded(int x, int y, int z) {
         Vector2i pos = new Vector2i(Chunk.toChunkPos(x), Chunk.toChunkPos(y));
@@ -24,8 +30,7 @@ public class Terrain {
 
     public void setBlock(int x, int y, int z, short block) {
         Vector2i pos = new Vector2i(Chunk.toChunkPos(x), Chunk.toChunkPos(y));
-        loadedColumns.get(pos).setBlock(x & Chunk.MASK, y & Chunk.MASK, z, block, generator);
-        // TODO: Trigger on block changed events
+        loadedColumns.get(pos).setBlock(x & Chunk.MASK, y & Chunk.MASK, z, block, generator, game);
     }
 
     // Note: Don't call setBlock() on the returned column because it won't trigger the right events
@@ -42,10 +47,12 @@ public class Terrain {
         for (int cx = chunkX - chunkLoadRadius; cx <= chunkX + chunkLoadRadius; ++cx) {
             for (int cy = chunkY - chunkLoadRadius; cy <= chunkY + chunkLoadRadius; ++cy) {
                 Vector2i pos = new Vector2i(cx, cy);
+                final int columnX = cx;
+                final int columnY = cy;
                 TerrainColumn column = loadedColumns.computeIfAbsent(pos, 
-                    (p) -> new TerrainColumn(chunkX, chunkY, generator)
+                    (p) -> new TerrainColumn(columnX, columnY, generator, game)
                 );
-                column.loadChunkRange(chunkZ - chunkLoadRadius, chunkZ + chunkLoadRadius, generator);
+                column.loadChunkRange(chunkZ - chunkLoadRadius, chunkZ + chunkLoadRadius, generator, game);
             }
         }
     }

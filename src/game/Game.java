@@ -17,6 +17,7 @@ import sekelsta.game.entity.Pawn;
 import sekelsta.game.network.*;
 import sekelsta.game.render.Renderer;
 import sekelsta.game.render.gui.*;
+import sekelsta.game.terrain.Surface;
 
 public class Game implements ILoopable, INetworked {
     public static final int DEFAULT_PORT = 7654;
@@ -351,5 +352,29 @@ public class Game implements ILoopable, INetworked {
 
     public void toggleFullscreen() {
         window.toggleFullscreen();
+    }
+
+    public void onBlockChanged(int x, int y, int z, short block) {
+        if (renderer != null) {
+            renderer.onBlockChanged(x, y, z, block);
+        }
+    }
+
+    public void onChunkLoaded(int chunkX, int chunkY, int chunkZ) {
+        if (renderer != null) {
+            renderer.onChunkLoaded(chunkX, chunkY, chunkZ);
+        }
+    }
+
+    public void onSurfaceChanged(int chunkX, int chunkY) {
+        if (renderer != null) {
+            renderer.onSurfaceChanged(chunkX, chunkY);
+        }
+    }
+
+    public void onSurfaceLoaded(int chunkX, int chunkY, Surface surface) {
+        if (renderer != null) {
+            renderer.onSurfaceLoaded(chunkX, chunkY, surface);
+        }
     }
 }

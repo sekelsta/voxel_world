@@ -2,12 +2,15 @@ package sekelsta.game.terrain;
 
 import java.util.Map;
 
+import sekelsta.game.Game;
+
 public class TerrainGenerator {
     public int getHighestChunk(int chunkX, int chunkY) {
         return 0;
     }
 
-    public void loadChunkRange(int chunkX, int chunkY, Map<Integer, Chunk> loadedChunks, int minChunkZ, int maxChunkZ) {
+    public void loadChunkRange(int chunkX, int chunkY, Map<Integer, Chunk> loadedChunks,
+            int minChunkZ, int maxChunkZ, Game game) {
         // Do nothing (only generate surfaces)
     }
 

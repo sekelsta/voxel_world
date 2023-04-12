@@ -1,6 +1,7 @@
 package sekelsta.game.terrain;
 
 import java.util.*;
+import sekelsta.game.Game;
 
 public class Surface {
     private final short[] blocks;
@@ -32,10 +33,11 @@ public class Surface {
     }
 
     public void setBlockAndChunkify(int bx, int by, int z, short block, Map<Integer, Chunk> loadedChunks, 
-            int chunkX, int chunkY, TerrainGenerator generator) {
+            int chunkX, int chunkY, TerrainGenerator generator, Game game) {
         int index = getIndex(bx, by);
         if (block != Block.EMPTY && heights[index] == z) {
             blocks[index] = block;
+            game.onSurfaceChanged(chunkX, chunkY);
             return;
         }
 
@@ -52,19 +54,24 @@ public class Surface {
 
         Chunk chunk = generator.generateChunk(chunkX, chunkY, chunkZ);
         if (chunkZ > highestChunkZ || chunkZ < Chunk.toChunkPos(lowest)) {
+            // Ignore return value for setBlock since we're calling onChunkLoaded anyway
             chunk.setBlock(bx, by, Chunk.toInnerPos(z), block);
             loadedChunks.put(chunkZ, chunk);
+            game.onChunkLoaded(chunkX, chunkY, chunkZ);
             return;
         }
         overwrite(chunk, chunkZ);
+        // Ignore return value for setBlock since we're calling onChunkLoaded anyway
         chunk.setBlock(bx, by, Chunk.toInnerPos(z), block);
         loadedChunks.put(chunkZ, chunk);
+        game.onChunkLoaded(chunkX, chunkY, chunkZ);
 
         if (chunkZ < highestChunkZ) {
             assert(chunkZ + 1 == highestChunkZ);
             Chunk upperChunk = generator.generateChunk(chunkX, chunkY, highestChunkZ);
             overwrite(upperChunk, highestChunkZ);
             loadedChunks.put(highestChunkZ, upperChunk);
+            game.onChunkLoaded(chunkX, chunkY, highestChunkZ);
         }
 
         int level = Chunk.toBlockPos(chunkZ, 0) - 1;
@@ -76,6 +83,7 @@ public class Surface {
                 assert(blocks[i] != Block.EMPTY);
             }
         }
+        game.onSurfaceChanged(chunkX, chunkY);
     }
 
     private int getIndex(int bx, int by) {

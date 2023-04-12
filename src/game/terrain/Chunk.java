@@ -21,7 +21,8 @@ public interface Chunk {
         return (c << TWO_POWER_SIZE) | b;
     }
 
-    void setBlock(int x, int y, int z, short block);
+    // Returns true if the chunk was changed
+    boolean setBlock(int x, int y, int z, short block);
 
     short getBlock(int x, int y, int z);
 

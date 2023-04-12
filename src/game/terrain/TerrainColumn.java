@@ -2,6 +2,8 @@ package sekelsta.game.terrain;
 
 import java.util.*;
 
+import sekelsta.game.Game;
+
 public class TerrainColumn {
     private final int chunkX;
     private final int chunkY;
@@ -9,18 +11,19 @@ public class TerrainColumn {
     private Surface surface;
     private Map<Integer, Chunk> loadedChunks = new HashMap<>();
 
-    public TerrainColumn(int chunkX, int chunkY, TerrainGenerator generator) {
+    public TerrainColumn(int chunkX, int chunkY, TerrainGenerator generator, Game game) {
         this.chunkX = chunkX;
         this.chunkY = chunkY;
         this.surface = generator.generateSurface(chunkX, chunkY);
+        game.onSurfaceLoaded(chunkX, chunkY, this.surface);
     }
 
     public Surface getSurface() {
         return surface;
     }
 
-    public void loadChunkRange(int minChunk, int maxChunk, TerrainGenerator generator) {
-        generator.loadChunkRange(chunkX, chunkY, loadedChunks, minChunk, maxChunk);
+    public void loadChunkRange(int minChunk, int maxChunk, TerrainGenerator generator, Game game) {
+        generator.loadChunkRange(chunkX, chunkY, loadedChunks, minChunk, maxChunk, game);
     }
 
     public short getBlockIfLoaded(int bx, int by, int z) {
@@ -33,7 +36,7 @@ public class TerrainColumn {
 
     // Deliberately package-private
     // Expects x and y to be in chunk coords, z in block coords
-    void setBlock(int bx, int by, int z, short block, TerrainGenerator generator) {
+    void setBlock(int bx, int by, int z, short block, TerrainGenerator generator, Game game) {
         assert(bx >= 0);
         assert(bx < Chunk.SIZE);
         assert(by >= 0);
@@ -41,11 +44,14 @@ public class TerrainColumn {
 
         int chunkZ = z >> Chunk.TWO_POWER_SIZE;
         if (loadedChunks.containsKey(chunkZ)) {
-            loadedChunks.get(chunkZ).setBlock(bx, by, z & Chunk.MASK, block);
+            boolean changed = loadedChunks.get(chunkZ).setBlock(bx, by, z & Chunk.MASK, block);
+            if (changed) {
+                game.onBlockChanged(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), z, block);
+            }
             return;
         }
 
-        surface.setBlockAndChunkify(bx, by, z, block, loadedChunks, chunkX, chunkY, generator);
+        surface.setBlockAndChunkify(bx, by, z, block, loadedChunks, chunkX, chunkY, generator, game);
     }
 
     public Chunk getChunk(int chunkZ) {
