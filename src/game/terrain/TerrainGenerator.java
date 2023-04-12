@@ -25,7 +25,7 @@ public class TerrainGenerator {
                 byte[] runs = new byte[1];
                 short[] blocks = new short[1];
                 runs[0] = Chunk.SIZE;
-                blocks[0] = z > 0? Block.EMPTY : Block.STONE;
+                blocks[0] = Chunk.toBlockPos(chunkZ, z) > 0? Block.EMPTY : Block.STONE;
                 chunk.setRuns(x, z, runs, blocks);
             }
         }
