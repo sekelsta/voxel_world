@@ -57,7 +57,7 @@ public class TerrainRenderer {
             for (int cy = chunkY - 1; cy <= chunkY + 1; ++cy) {
                 int surfaceZ = getSurfaceChunkHeight(chunkX, chunkY);
                 if (surfaceZ - 1 < chunkZ || chunkZ < surfaceZ + 1) {
-                    surfaceMeshes.remove(new Vector2i(chunkX, chunkY));
+                    surfaceMeshes.remove(new Vector2i(cx, cy));
                 }
                 for (int cz = chunkZ - 1; cz <= chunkZ + 1; ++cz) {
                     ChunkPos pos = new ChunkPos(cx, cy, cz);
