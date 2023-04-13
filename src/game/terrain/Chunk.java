@@ -1,7 +1,5 @@
 package sekelsta.game.terrain;
 
-import java.util.function.Consumer;
-
 public interface Chunk {
     static final int TWO_POWER_SIZE = 6;
     // The number of blocks high, deep, and wide a chunk is. The total
