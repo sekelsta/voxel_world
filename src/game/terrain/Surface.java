@@ -1,7 +1,6 @@
 package sekelsta.game.terrain;
 
 import java.util.*;
-import sekelsta.game.Game;
 
 public class Surface {
     private final short[] blocks;
@@ -33,23 +32,23 @@ public class Surface {
     }
 
     public void setBlockAndChunkify(int bx, int by, int z, short block, Map<Integer, Chunk> loadedChunks, 
-            int chunkX, int chunkY, TerrainGenerator generator, Game game) {
+            int chunkX, int chunkY, TerrainGenerator generator, Terrain terrain) {
         int index = getIndex(bx, by);
         if (block != Block.EMPTY && heights[index] == z) {
             blocks[index] = block;
-            game.onSurfaceChanged(chunkX, chunkY);
+            terrain.onSurfaceChanged(chunkX, chunkY);
             return;
         }
 
-        Chunk chunk = chunkify(z, loadedChunks, chunkX, chunkY, generator, game);
+        Chunk chunk = chunkify(z, loadedChunks, chunkX, chunkY, generator, terrain);
         boolean changed = chunk.setBlock(bx, by, Chunk.toInnerPos(z), block);
         if (changed) {
-            game.onBlockChanged(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), z, block);
+            terrain.onBlockChanged(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), z, block);
         }
     }
 
     public Chunk chunkify(int z, Map<Integer, Chunk> loadedChunks, int chunkX, int chunkY, 
-            TerrainGenerator generator, Game game) {
+            TerrainGenerator generator, Terrain terrain) {
 
         // TO_OPTIMIZE: Cache these values
         int highest = heights[0];
@@ -67,7 +66,7 @@ public class Surface {
             overwrite(chunk, chunkZ);
         }
         loadedChunks.put(chunkZ, chunk);
-        game.onChunkLoaded(chunkX, chunkY, chunkZ);
+        terrain.onChunkLoaded(chunkX, chunkY, chunkZ);
         if (chunkZ > highestChunkZ || chunkZ < Chunk.toChunkPos(lowest)) {
             return chunk;
         }
@@ -78,7 +77,7 @@ public class Surface {
             Chunk upperChunk = generator.generateChunk(chunkX, chunkY, highestChunkZ);
             overwrite(upperChunk, highestChunkZ);
             loadedChunks.put(highestChunkZ, upperChunk);
-            game.onChunkLoaded(chunkX, chunkY, highestChunkZ);
+            terrain.onChunkLoaded(chunkX, chunkY, highestChunkZ);
         }
 
         int targetChunk = chunkZ - 1;
@@ -96,7 +95,7 @@ public class Surface {
                 assert(blocks[i] != Block.EMPTY);
             }
         }
-        game.onSurfaceChanged(chunkX, chunkY);
+        terrain.onSurfaceChanged(chunkX, chunkY);
         return chunk;
     }
 

@@ -2,8 +2,6 @@ package sekelsta.game.terrain;
 
 import java.util.*;
 
-import sekelsta.game.Game;
-
 public class TerrainColumn {
     private final int chunkX;
     private final int chunkY;
@@ -11,19 +9,19 @@ public class TerrainColumn {
     private Surface surface;
     private Map<Integer, Chunk> loadedChunks = new HashMap<>();
 
-    public TerrainColumn(int chunkX, int chunkY, TerrainGenerator generator, Game game) {
+    public TerrainColumn(int chunkX, int chunkY, TerrainGenerator generator, Terrain terrain) {
         this.chunkX = chunkX;
         this.chunkY = chunkY;
         this.surface = generator.generateSurface(chunkX, chunkY);
-        game.onSurfaceLoaded(chunkX, chunkY, this.surface);
+        terrain.onSurfaceLoaded(chunkX, chunkY, this.surface);
     }
 
     public Surface getSurface() {
         return surface;
     }
 
-    public void loadChunkRange(int minChunk, int maxChunk, TerrainGenerator generator, Game game) {
-        generator.loadChunkRange(chunkX, chunkY, loadedChunks, minChunk, maxChunk, game);
+    public void loadChunkRange(int minChunk, int maxChunk, TerrainGenerator generator, Terrain terrain) {
+        generator.loadChunkRange(chunkX, chunkY, loadedChunks, minChunk, maxChunk, terrain);
     }
 
     public short getBlockIfLoaded(int bx, int by, int z) {
@@ -36,7 +34,7 @@ public class TerrainColumn {
 
     // Deliberately package-private
     // Expects x and y to be in chunk coords, z in block coords
-    void setBlock(int bx, int by, int z, short block, TerrainGenerator generator, Game game) {
+    void setBlock(int bx, int by, int z, short block, TerrainGenerator generator, Terrain terrain) {
         assert(bx >= 0);
         assert(bx < Chunk.SIZE);
         assert(by >= 0);
@@ -46,12 +44,12 @@ public class TerrainColumn {
         if (loadedChunks.containsKey(chunkZ)) {
             boolean changed = loadedChunks.get(chunkZ).setBlock(bx, by, z & Chunk.MASK, block);
             if (changed) {
-                game.onBlockChanged(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), z, block);
+                terrain.onBlockChanged(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), z, block);
             }
             return;
         }
 
-        surface.setBlockAndChunkify(bx, by, z, block, loadedChunks, chunkX, chunkY, generator, game);
+        surface.setBlockAndChunkify(bx, by, z, block, loadedChunks, chunkX, chunkY, generator, terrain);
     }
 
     public Chunk getChunk(int chunkZ) {
@@ -77,7 +75,7 @@ public class TerrainColumn {
 
     // TODO: Unload chunks
 
-    public void onSurfaceExposed(int x, int y, int z, TerrainGenerator generator, Game game) {
+    public void onSurfaceExposed(int x, int y, int z, TerrainGenerator generator, Terrain terrain) {
         // Take advantage of the fact that this is only called for chunks with a neighboring block
         int bx = Chunk.toInnerPos(x + chunkX - Chunk.toChunkPos(x));
         int by = Chunk.toInnerPos(y + chunkY - Chunk.toChunkPos(y));
@@ -89,6 +87,6 @@ public class TerrainColumn {
         if (loadedChunks.containsKey(chunkZ)) {
             return;
         }
-        surface.chunkify(z, loadedChunks, chunkX, chunkY, generator, game);
+        surface.chunkify(z, loadedChunks, chunkX, chunkY, generator, terrain);
     }
 }

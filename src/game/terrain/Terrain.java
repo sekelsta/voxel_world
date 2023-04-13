@@ -6,6 +6,7 @@ import sekelsta.game.Game;
 import sekelsta.game.Ray;
 import sekelsta.game.RaycastResult;
 import sekelsta.game.Vector2i;
+import sekelsta.game.render.terrain.TerrainRenderer;
 
 public class Terrain {
     // 1 meter is this many blocks long
@@ -14,9 +15,14 @@ public class Terrain {
     private HashMap<Vector2i, TerrainColumn> loadedColumns = new HashMap<>();
     private TerrainGenerator generator = new TerrainGenerator();
     private Game game;
+    private TerrainRenderer terrainRenderer = null;
 
     public Terrain(Game game) {
         this.game = game;
+    }
+
+    public void setTerrainRenderer(TerrainRenderer terrainRenderer) {
+        this.terrainRenderer = terrainRenderer;
     }
 
     public short getBlockIfLoaded(int x, int y, int z) {
@@ -30,7 +36,7 @@ public class Terrain {
 
     public void setBlock(int x, int y, int z, short block) {
         Vector2i pos = new Vector2i(Chunk.toChunkPos(x), Chunk.toChunkPos(y));
-        loadedColumns.get(pos).setBlock(x & Chunk.MASK, y & Chunk.MASK, z, block, generator, game);
+        loadedColumns.get(pos).setBlock(x & Chunk.MASK, y & Chunk.MASK, z, block, generator, this);
         if (block != Block.EMPTY) {
             return;
         }
@@ -39,7 +45,7 @@ public class Terrain {
                 if (cx != pos.x() || cy != pos.y()) {
                     TerrainColumn neighbor = loadedColumns.get(new Vector2i(cx, cy));
                     if (neighbor != null) {
-                        neighbor.onSurfaceExposed(x, y, z, generator, game);
+                        neighbor.onSurfaceExposed(x, y, z, generator, this);
                     }
                 }
             }
@@ -63,9 +69,9 @@ public class Terrain {
                 final int columnX = cx;
                 final int columnY = cy;
                 TerrainColumn column = loadedColumns.computeIfAbsent(pos, 
-                    (p) -> new TerrainColumn(columnX, columnY, generator, game)
+                    (p) -> new TerrainColumn(columnX, columnY, generator, this)
                 );
-                column.loadChunkRange(chunkZ - chunkLoadRadius, chunkZ + chunkLoadRadius, generator, game);
+                column.loadChunkRange(chunkZ - chunkLoadRadius, chunkZ + chunkLoadRadius, generator, this);
             }
         }
     }
@@ -131,6 +137,30 @@ public class Terrain {
             }
         }
         return null;
+    }
+
+    public void onBlockChanged(int x, int y, int z, short block) {
+        if (terrainRenderer != null) {
+            terrainRenderer.onBlockChanged(x, y, z, block);
+        }
+    }
+
+    public void onChunkLoaded(int chunkX, int chunkY, int chunkZ) {
+        if (terrainRenderer != null) {
+            terrainRenderer.onChunkLoaded(chunkX, chunkY, chunkZ);
+        }
+    }
+
+    public void onSurfaceChanged(int chunkX, int chunkY) {
+        if (terrainRenderer != null) {
+            terrainRenderer.onSurfaceChanged(chunkX, chunkY);
+        }
+    }
+
+    public void onSurfaceLoaded(int chunkX, int chunkY, Surface surface) {
+        if (terrainRenderer != null) {
+            terrainRenderer.onSurfaceLoaded(chunkX, chunkY, surface);
+        }
     }
 
     private boolean canPointAt(short block) {

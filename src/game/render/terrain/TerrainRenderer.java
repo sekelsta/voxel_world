@@ -29,6 +29,7 @@ public class TerrainRenderer {
     public TerrainRenderer(Terrain terrain) {
         this.terrain = terrain;
         this.texture = new TextureArray("stone.png", "dirt.png", "sand.png", "checkers.png", "stripes.png", "snow.png", "sandstone.png");
+        terrain.setTerrainRenderer(this);
     }
 
     public void onBlockChanged(int x, int y, int z, short block) {

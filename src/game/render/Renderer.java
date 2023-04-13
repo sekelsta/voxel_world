@@ -17,7 +17,6 @@ import sekelsta.game.Ray;
 import sekelsta.game.World;
 import sekelsta.game.render.gui.Overlay;
 import sekelsta.game.render.terrain.TerrainRenderer;
-import sekelsta.game.terrain.Surface;
 import shadowfox.math.*;
 import sekelsta.tools.ObjParser;
 
@@ -276,22 +275,6 @@ public class Renderer implements IFramebufferSizeListener {
         GL30.glFramebufferTexture2D(GL30C.GL_FRAMEBUFFER, GL30C.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, colorTexture.getHandle(), 0);
         GL30.glFramebufferTexture2D(GL30C.GL_FRAMEBUFFER, GL30C.GL_DEPTH_ATTACHMENT, GL11.GL_TEXTURE_2D, depthTexture.getHandle(), 0);
         GL30.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
-    }
-
-    public void onBlockChanged(int x, int y, int z, short block) {
-        terrainRenderer.onBlockChanged(x, y, z, block);
-    }
-
-    public void onChunkLoaded(int chunkX, int chunkY, int chunkZ) {
-        terrainRenderer.onChunkLoaded(chunkX, chunkY, chunkZ);
-    }
-
-    public void onSurfaceChanged(int chunkX, int chunkY) {
-        terrainRenderer.onSurfaceChanged(chunkX, chunkY);
-    }
-
-    public void onSurfaceLoaded(int chunkX, int chunkY, Surface surface) {
-        terrainRenderer.onSurfaceLoaded(chunkX, chunkY, surface);
     }
 
     public void enterWireframe() {
