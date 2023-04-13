@@ -46,6 +46,14 @@ public class TerrainColumn {
             if (changed) {
                 terrain.onBlockChanged(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), z, block);
             }
+            int lowerChunk = Chunk.toChunkPos(z - 1);
+            if (lowerChunk != chunkZ && !loadedChunks.containsKey(lowerChunk)) {
+                surface.chunkify(z - 1, loadedChunks, chunkX, chunkY, generator, terrain);
+            }
+            int upperChunk = Chunk.toChunkPos(z + 1);
+            if (upperChunk != chunkZ && !loadedChunks.containsKey(upperChunk)) {
+                surface.chunkify(z + 1, loadedChunks, chunkX, chunkY, generator, terrain);
+            }
             return;
         }
 
