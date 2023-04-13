@@ -620,8 +620,12 @@ public class MergedOctahedrons {
 
     // TO_LATER_DO: Share more code between the surface-based and chunk-based getMesh()
     public TerrainMeshData getMesh(int numIterations, float weight, int chunkX, int chunkY, int chunkZ) {
-        Chunk chunk = terrain.getColumnIfLoaded(chunkX, chunkY).getChunk(chunkZ);
-        if (chunk.isEmpty()) {
+        TerrainColumn column = terrain.getColumnIfLoaded(chunkX, chunkY);
+        if (column == null) {
+            return null;
+        }
+        Chunk chunk = column.getChunk(chunkZ);
+        if (chunk == null || chunk.isEmpty()) {
             return null;
         }
 

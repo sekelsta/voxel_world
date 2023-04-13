@@ -287,6 +287,7 @@ public class Renderer implements IFramebufferSizeListener {
 
     public void clean() {
         setWorld(null);
+        terrainRenderer.clean();
         shader.delete();
         shader2D.delete();
         fireShader.delete();
