@@ -14,7 +14,7 @@ import shadowfox.math.Matrix4f;
 
 public class TerrainRenderer {
     private static final int numIterations = 1;
-    private static final int weight = 1;
+    private static final float weight = 1;
 
     protected Terrain terrain;
     protected Matrix4f frustumMatrix = new Matrix4f();
@@ -219,11 +219,11 @@ public class TerrainRenderer {
     }
 
     protected TerrainMesh getMeshForChunk(ChunkPos pos) {
-        return new MergedOctahedrons(terrain).getMesh(numIterations, weight, pos.x, pos.y, pos.z);
+        return new TerrainMesh(new MergedOctahedrons(terrain).getMesh(numIterations, weight, pos.x, pos.y, pos.z));
     }
 
     protected TerrainMesh getSurfaceMesh(Vector2i pos, Surface surface) {
-        return new MergedOctahedrons(terrain).getMesh(numIterations, weight, pos.x(), pos.y(), surface);
+        return new TerrainMesh(new MergedOctahedrons(terrain).getMesh(numIterations, weight, pos.x(), pos.y(), surface));
     }
 
     public void updateChunkMesh(ChunkPos pos) {

@@ -619,7 +619,7 @@ public class MergedOctahedrons {
     }
 
     // TO_LATER_DO: Share more code between the surface-based and chunk-based getMesh()
-    public TerrainMesh getMesh(int numIterations, float weight, int chunkX, int chunkY, int chunkZ) {
+    public TerrainMeshData getMesh(int numIterations, float weight, int chunkX, int chunkY, int chunkZ) {
         Chunk chunk = terrain.getColumnIfLoaded(chunkX, chunkY).getChunk(chunkZ);
         if (chunk.isEmpty()) {
             return null;
@@ -649,10 +649,10 @@ public class MergedOctahedrons {
         model.trim();
         calculateTextureCoords();
         model.triangulate();
-        return new TerrainMesh(model);
+        return new TerrainMeshData(model);
     }
 
-    public TerrainMesh getMesh(int numIterations, float weight, int chunkX, int chunkY, Surface surface) {
+    public TerrainMeshData getMesh(int numIterations, float weight, int chunkX, int chunkY, Surface surface) {
         int margin = numIterations + 1;
         for (int x = -1 - margin; x < Chunk.SIZE + margin; ++x) {
             for (int y = -1 - margin; y < Chunk.SIZE + margin; ++y) {
@@ -680,7 +680,7 @@ public class MergedOctahedrons {
         model.trim();
         calculateTextureCoords();
         model.triangulate();
-        return new TerrainMesh(model);
+        return new TerrainMeshData(model);
     }
 
     private void addBumps(int chunkX, int chunkY, int chunkZ) {
