@@ -17,13 +17,11 @@ public class Input extends InputManager implements IController {
     private Camera camera;
     private Pawn player;
     private Game game;
-    private Renderer renderer;
 
     private ArrayList<Gamepad> gamepads = new ArrayList<>();
 
-    public Input(Game game, Renderer renderer) {
+    public Input(Game game) {
         this.game = game;
-        this.renderer = renderer;
     }
 
     public void setOverlay(Overlay overlay) {
@@ -36,6 +34,14 @@ public class Input extends InputManager implements IController {
 
     public void setPlayer(Pawn player) {
         this.player = player;
+    }
+
+    public double getPointerX() {
+        return prevCursorX;
+    }
+
+    public double getPointerY() {
+        return prevCursorY;
     }
 
     public void updateConnectedGamepads() {
@@ -61,6 +67,9 @@ public class Input extends InputManager implements IController {
             }
             else if (key == GLFW.GLFW_KEY_F5 && camera != null) {
                 camera.nextMode();
+            }
+            else if (key == GLFW.GLFW_KEY_F3) {
+                overlay.toggleDebugMode();
             }
             else if (key == GLFW.GLFW_KEY_ESCAPE) {
                 game.escape();
@@ -130,8 +139,8 @@ public class Input extends InputManager implements IController {
                 return;
             }
 
-            float lerp = 1; // TODO
-            Ray ray = renderer.rayFromPointer(prevCursorX, prevCursorY, camera, lerp);
+            float lerp = 1;
+            Ray ray = game.getPointerRay();
             if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                 game.getWorld().removeBlock(ray);
             }

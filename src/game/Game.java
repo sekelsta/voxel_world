@@ -44,7 +44,7 @@ public class Game implements ILoopable, INetworked {
             Fonts.load();
             this.renderer = new Renderer();
             this.window.setResizeListener(renderer);
-            this.input = new Input(this, renderer);
+            this.input = new Input(this);
             this.window.setInput(input);
             this.overlay = new Overlay(this);
             this.input.setOverlay(this.overlay);
@@ -376,5 +376,10 @@ public class Game implements ILoopable, INetworked {
         if (renderer != null) {
             renderer.onSurfaceLoaded(chunkX, chunkY, surface);
         }
+    }
+
+    public Ray getPointerRay() {
+        float lerp = 1;
+        return renderer.rayFromPointer(input.getPointerX(), input.getPointerY(), camera, lerp);
     }
 }

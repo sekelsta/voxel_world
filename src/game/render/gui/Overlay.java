@@ -8,6 +8,8 @@ import org.lwjgl.opengl.GL11;
 import sekelsta.engine.render.*;
 import sekelsta.engine.render.gui.TextButton;
 import sekelsta.game.Game;
+import sekelsta.game.Ray;
+import sekelsta.game.RaycastResult;
 import shadowfox.math.Vector2f;
 
 // For rendering 2D text and images in front of the world
@@ -15,6 +17,7 @@ public class Overlay {
     private Deque<Screen> screenStack = new ArrayDeque<>();
     private double xPointer, yPointer;
     private Game game;
+    private boolean debugMode = false;
 
     public Overlay(Game game) {
         this.game = game;
@@ -152,10 +155,24 @@ public class Overlay {
         }
     }
 
+    public void toggleDebugMode() {
+        debugMode = !debugMode;
+    }
+
     public void render(Vector2f uiDimensions) {
+        if (debugMode) {
+            renderDebugText(uiDimensions.x, uiDimensions.y);
+        }
         if (hasScreen()) {
             screenStack.peek().blit(uiDimensions.x, uiDimensions.y);
         }
         Fonts.render();
+    }
+
+    private void renderDebugText(double screenWidth, double screenHeight) {
+        Ray ray = game.getPointerRay();
+        RaycastResult hit = game.getWorld().getTerrain().findHit(ray);
+        String debugText = hit == null? "RaycastResult: null" : hit.toString();
+        Fonts.getTextFont().blit(debugText, 0, 0);
     }
 }
