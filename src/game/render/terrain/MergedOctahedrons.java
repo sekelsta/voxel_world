@@ -44,7 +44,11 @@ public class MergedOctahedrons {
         boolean lowerFrontLeftInChunk,
         boolean lowerFrontRightInChunk,
         boolean lowerBackRightInChunk,
-        boolean lowerBackLeftInChunk)
+        boolean lowerBackLeftInChunk,
+        Vector2f stepUV0,
+        Vector2f stepUV1,
+        Vector2f stepUV2,
+        Vector2f stepUV3)
     {
         if (!isOpaque(upperFrontLeft) && !isOpaque(upperBackLeft)
                 && !isOpaque(upperFrontRight) && !isOpaque(upperBackRight) 
@@ -105,7 +109,8 @@ public class MergedOctahedrons {
             else if (isOpaque(upperBackLeft)) {
                 // Step up
                 if (!isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight) && !isOpaque(lowerBackRight)) {
-                    model.addBoundedQuad(frontLeft, lowerFront, upperBack, upperLeft, lowerFrontLeftInChunk);
+                    model.addBoundedUVQuad(frontLeft, lowerFront, upperBack, upperLeft, lowerFrontLeftInChunk, 
+                        stepUV0, stepUV1, stepUV2, stepUV3);
                 }
             }
             else if (isOpaque(upperFrontRight)) {
@@ -138,7 +143,8 @@ public class MergedOctahedrons {
             else if (isOpaque(upperFrontLeft)) {
                 // Step up
                 if (!isOpaque(upperBackRight) && !isOpaque(lowerBackRight) && !isOpaque(lowerBackLeft)) {
-                    model.addBoundedQuad(frontRight, lowerRight, upperLeft, upperFront, lowerFrontRightInChunk);
+                    model.addBoundedUVQuad(frontRight, lowerRight, upperLeft, upperFront, lowerFrontRightInChunk,
+                        stepUV0, stepUV1, stepUV2, stepUV3);
                 }
             }
             else if (isOpaque(upperBackRight)) {
@@ -171,7 +177,8 @@ public class MergedOctahedrons {
             else if (isOpaque(upperFrontRight)) {
                 // Step up
                 if (!isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft) && !isOpaque(lowerFrontLeft)) {
-                    model.addBoundedQuad(backRight, lowerBack, upperFront, upperRight, lowerBackRightInChunk);
+                    model.addBoundedUVQuad(backRight, lowerBack, upperFront, upperRight, lowerBackRightInChunk,
+                        stepUV0, stepUV1, stepUV2, stepUV3);
                 }
             }
             else if (isOpaque(upperBackLeft)) {
@@ -204,7 +211,8 @@ public class MergedOctahedrons {
             else if (isOpaque(upperBackRight)) {
                 // Step up
                 if (!isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft) && !isOpaque(lowerFrontRight)) {
-                    model.addBoundedQuad(backLeft, lowerLeft, upperRight, upperBack, lowerBackLeftInChunk);
+                    model.addBoundedUVQuad(backLeft, lowerLeft, upperRight, upperBack, lowerBackLeftInChunk,
+                        stepUV0, stepUV1, stepUV2, stepUV3);
                 }
             }
             else if (isOpaque(upperFrontLeft)) {
@@ -469,7 +477,11 @@ public class MergedOctahedrons {
             lowerFrontLeftInChunk,
             lowerFrontRightInChunk,
             lowerBackRightInChunk,
-            lowerBackLeftInChunk
+            lowerBackLeftInChunk,
+            new Vector2f(0.317f, 1.183f),
+            new Vector2f(0.5f, 0.5f),
+            new Vector2f(1.5f, 1.5f),
+            new Vector2f(0.817f, 1.683f)
         );
 
         // Rotated 90 degrees about Y, left/western face on top, then 90 degrees about Z
@@ -498,7 +510,11 @@ public class MergedOctahedrons {
             lowerBackRightInChunk,
             lowerFrontRightInChunk, 
             upperFrontRightInChunk,
-            upperBackRightInChunk
+            upperBackRightInChunk,
+            new Vector2f(1.183f, 1.683f),
+            new Vector2f(0.5f, 1.5f),
+            new Vector2f(1.5f, 0.5f),
+            new Vector2f(1.683f, 1.183f)
         );
 
         // Rotated 180 degrees about Y, bottom face on top
@@ -527,7 +543,11 @@ public class MergedOctahedrons {
             upperFrontRightInChunk,
             upperFrontLeftInChunk, 
             upperBackLeftInChunk,
-            upperBackRightInChunk
+            upperBackRightInChunk,
+            new Vector2f(1.683f, 0.817f),
+            new Vector2f(1.5f, 1.5f),
+            new Vector2f(0.5f, 0.5f),
+            new Vector2f(1.183f, 0.317f)
         );
 
         // Rotated 270 degrees about Y, right/eastern face on top, then 90 degrees about Z
@@ -556,7 +576,11 @@ public class MergedOctahedrons {
             upperBackLeftInChunk,
             upperFrontLeftInChunk,
             lowerFrontLeftInChunk,
-            lowerBackLeftInChunk
+            lowerBackLeftInChunk,
+            new Vector2f(0.817f, 0.317f),
+            new Vector2f(1.5f, 0.5f),
+            new Vector2f(0.5f, 1.5f),
+            new Vector2f(0.317f, 0.817f)
         );
 
         // Rotate 90 degreees about X, back face on top, then 90 degrees about Z
@@ -585,7 +609,11 @@ public class MergedOctahedrons {
             lowerFrontLeftInChunk,
             upperFrontLeftInChunk,
             upperFrontRightInChunk,
-            lowerFrontRightInChunk
+            lowerFrontRightInChunk,
+            new Vector2f(0.817f, 0.317f),
+            new Vector2f(1.5f, 0.5f),
+            new Vector2f(0.5f, 1.5f),
+            new Vector2f(0.317f, 0.817f)
         );
 
         // Rotate 270 degrees about X, front face on top, then 90 degrees about Z
@@ -614,7 +642,11 @@ public class MergedOctahedrons {
             upperBackLeftInChunk,
             lowerBackLeftInChunk,
             lowerBackRightInChunk,
-            upperBackRightInChunk
+            upperBackRightInChunk,
+            new Vector2f(1.183f, 1.683f),
+            new Vector2f(0.5f, 1.5f),
+            new Vector2f(1.5f, 0.5f),
+            new Vector2f(1.683f, 1.183f)
         );
     }
 
@@ -652,8 +684,7 @@ public class MergedOctahedrons {
         model.calcNormals();
         model.trim();
         calculateTextureCoords();
-        model.triangulate();
-        return new TerrainMeshData(model);
+        return new TerrainMeshData(model.finalizeToVertexList());
     }
 
     public TerrainMeshData getMesh(int numIterations, float weight, int chunkX, int chunkY, Surface surface) {
@@ -683,8 +714,7 @@ public class MergedOctahedrons {
         model.calcNormals();
         model.trim();
         calculateTextureCoords();
-        model.triangulate();
-        return new TerrainMeshData(model);
+        return new TerrainMeshData(model.finalizeToVertexList());
     }
 
     private void addBumps(int chunkX, int chunkY, int chunkZ) {
@@ -713,7 +743,7 @@ public class MergedOctahedrons {
         return (byte)r;
     }
 
-    private void calculateTextureCoords() {
+    private void calculateTextureCoords() {/*
         ArrayList<int[]> quadsToKeep = new ArrayList<>();
         ArrayList<Vertex[]> quadsToAdd = new ArrayList<>();
         for (int[] quad : model.quads) {
@@ -851,7 +881,7 @@ public class MergedOctahedrons {
             assert(face.length == 3);
             model.addTriangle(face[0], face[1], face[2]);
         }
-    }
+    */}
 
     private Vertex textureCopy(Vertex v) {
         Vertex n = new Vertex();

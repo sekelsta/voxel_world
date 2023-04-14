@@ -3,7 +3,6 @@ package sekelsta.game.render.terrain;
 import java.util.ArrayList;
 
 import sekelsta.engine.render.mesh.Mesh;
-import sekelsta.tools.ModelData;
 import sekelsta.tools.Vertex;
 
 public class TerrainMeshData {
@@ -11,13 +10,7 @@ public class TerrainMeshData {
     public final float[] vertices;
     public final int[] data;
 
-    public TerrainMeshData(ModelData model) {
-        ArrayList<Vertex> vertexList = new ArrayList<>();
-        for (int[] face : model.faces) {
-            for (int f : face) {
-                vertexList.add(model.getVertices().get(f));
-            }
-        }
+    public TerrainMeshData(ArrayList<Vertex> vertexList) {
         this.numVertices = vertexList.size();
         this.vertices = Mesh.buildVertices(vertexList, TerrainMesh.vertexBufferStride());
 

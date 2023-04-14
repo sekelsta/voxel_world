@@ -15,7 +15,7 @@ import shadowfox.math.Matrix4f;
 
 public class TerrainRenderer {
     private static final int numIterations = 1;
-    private static final float weight = 1;
+    private static final float weight = 5;
 
     protected Terrain terrain;
     protected Matrix4f frustumMatrix = new Matrix4f();
