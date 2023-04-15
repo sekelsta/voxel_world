@@ -321,19 +321,23 @@ public class MergedOctahedrons {
         }
 
         // Eight-way symmetrical parts
+        float half_sqrt_three = 0.8660254037844386f;
+
         // Standard orientation
         if (isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft)) {
             if (isOpaque(upperBackLeft)) {
                 if (isOpaque(upperFrontRight)) {
                     // Chipped block
-                    model.addBoundedTriangle(frontLeft, upperFront, upperLeft, lowerFrontLeftInChunk);
+                    model.addBoundedUVTriangle(frontLeft, upperFront, upperLeft, lowerFrontLeftInChunk, 
+                        new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 1.5f), new Vector2f(0.5f, 0.5f));
                 }
             }
             else if (!isOpaque(lowerBackLeft) && !isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight)
                 && !isOpaque(upperBackRight) && !isOpaque(lowerBackRight))
             {
                 // Single tri
-                model.addBoundedTriangle(frontLeft, lowerFront, lowerLeft, lowerFrontLeftInChunk);
+                model.addBoundedUVTriangle(frontLeft, lowerFront, lowerLeft, lowerFrontLeftInChunk, 
+                    new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
             }
         }
 
@@ -342,14 +346,16 @@ public class MergedOctahedrons {
             if (isOpaque(upperFrontLeft)) {
                 if (isOpaque(upperBackRight)) {
                     // Chipped block
-                    model.addBoundedTriangle(frontRight, upperRight, upperFront, lowerFrontRightInChunk);
+                    model.addBoundedUVTriangle(frontRight, upperRight, upperFront, lowerFrontRightInChunk, 
+                        new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 1.5f), new Vector2f(0.5f, 0.5f));
                 }
             }
             else if (!isOpaque(lowerFrontLeft) && !isOpaque(upperBackRight) && !isOpaque(lowerBackRight)
                 && !isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft))
             {
                 // Single tri
-                model.addBoundedTriangle(frontRight, lowerRight, lowerFront, lowerFrontRightInChunk);
+                model.addBoundedUVTriangle(frontRight, lowerRight, lowerFront, lowerFrontRightInChunk, 
+                    new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
             }
         }
 
@@ -358,14 +364,16 @@ public class MergedOctahedrons {
             if (isOpaque(upperFrontRight)) {
                 if (isOpaque(upperBackLeft)) {
                     // Chipped block
-                    model.addBoundedTriangle(backRight, upperBack, upperRight, lowerBackRightInChunk);
+                    model.addBoundedUVTriangle(backRight, upperBack, upperRight, lowerBackRightInChunk, 
+                        new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 1.5f), new Vector2f(0.5f, 0.5f));
                 }
             }
             else if (!isOpaque(lowerFrontRight) && !isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft)
                 && !isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft))
             {
                 // Single tri
-                model.addBoundedTriangle(backRight, lowerBack, lowerRight, lowerBackRightInChunk);
+                model.addBoundedUVTriangle(backRight, lowerBack, lowerRight, lowerBackRightInChunk, 
+                    new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
             }
         }
 
@@ -374,14 +382,16 @@ public class MergedOctahedrons {
             if (isOpaque(upperBackRight)) {
                 if (isOpaque(upperFrontLeft)) {
                     // Chipped block
-                    model.addBoundedTriangle(backLeft, upperLeft, upperBack, lowerBackLeftInChunk);
+                    model.addBoundedUVTriangle(backLeft, upperLeft, upperBack, lowerBackLeftInChunk, 
+                        new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 1.5f), new Vector2f(0.5f, 0.5f));
                 }
             }
             else if (!isOpaque(lowerBackRight) && !isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft)
                 && !isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight))
             {
                 // Single tri
-                model.addBoundedTriangle(backLeft, lowerLeft, lowerBack, lowerBackLeftInChunk);
+                model.addBoundedUVTriangle(backLeft, lowerLeft, lowerBack, lowerBackLeftInChunk, 
+                    new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
             }
         }
 
@@ -390,14 +400,16 @@ public class MergedOctahedrons {
             if (isOpaque(lowerBackRight)) {
                 if (isOpaque(lowerFrontLeft)) {
                     // Chipped block
-                    model.addBoundedTriangle(frontRight, lowerFront, lowerRight, upperFrontRightInChunk);
+                    model.addBoundedUVTriangle(frontRight, lowerFront, lowerRight, upperFrontRightInChunk, 
+                        new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
                 }
             }
             else if (!isOpaque(upperBackRight) && !isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft)
                 && !isOpaque(lowerBackLeft) && !isOpaque(upperBackLeft))
             {
                 // Single tri
-                model.addBoundedTriangle(frontRight, upperFront, upperRight, upperFrontRightInChunk);
+                model.addBoundedUVTriangle(frontRight, upperFront, upperRight, upperFrontRightInChunk, 
+                    new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
             }
         }
 
@@ -406,14 +418,16 @@ public class MergedOctahedrons {
             if (isOpaque(lowerFrontRight)) {
                 if (isOpaque(lowerBackLeft)) {
                     // Chipped block
-                    model.addBoundedTriangle(frontLeft, lowerLeft, lowerFront, upperFrontLeftInChunk);
+                    model.addBoundedUVTriangle(frontLeft, lowerLeft, lowerFront, upperFrontLeftInChunk, 
+                        new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
                 }
             }
             else if (!isOpaque(upperFrontRight) && !isOpaque(lowerBackLeft) && !isOpaque(upperBackLeft)
                 && !isOpaque(lowerBackRight) && !isOpaque(upperBackRight))
             {
                 // Single tri
-                model.addBoundedTriangle(frontLeft, upperLeft, upperFront, upperFrontLeftInChunk);
+                model.addBoundedUVTriangle(frontLeft, upperLeft, upperFront, upperFrontLeftInChunk, 
+                    new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
             }
         }
 
@@ -422,14 +436,16 @@ public class MergedOctahedrons {
             if (isOpaque(lowerFrontLeft)) {
                 if (isOpaque(lowerBackRight)) {
                     // Chipped block
-                    model.addBoundedTriangle(backLeft, lowerBack, lowerLeft, upperBackLeftInChunk);
+                    model.addBoundedUVTriangle(backLeft, lowerBack, lowerLeft, upperBackLeftInChunk, 
+                        new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
                 }
             }
             else if (!isOpaque(upperFrontLeft) && !isOpaque(lowerBackRight) && !isOpaque(upperBackRight)
                 && !isOpaque(lowerFrontRight) && !isOpaque(upperFrontRight))
             {
                 // Single tri
-                model.addBoundedTriangle(backLeft, upperBack, upperLeft, upperBackLeftInChunk);
+                model.addBoundedUVTriangle(backLeft, upperBack, upperLeft, upperBackLeftInChunk, 
+                    new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
             }
         }
 
@@ -438,14 +454,16 @@ public class MergedOctahedrons {
             if (isOpaque(lowerBackLeft)) {
                 if (isOpaque(lowerFrontRight)) {
                     // Chipped block
-                    model.addBoundedTriangle(backRight, lowerRight, lowerBack, upperBackRightInChunk);
+                    model.addBoundedUVTriangle(backRight, lowerRight, lowerBack, upperBackRightInChunk, 
+                        new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
                 }
             }
             else if (!isOpaque(upperBackLeft) && !isOpaque(lowerFrontRight) && !isOpaque(upperFrontRight)
                 && !isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft))
             {
                 // Single tri
-                model.addBoundedTriangle(backRight, upperRight, upperBack, upperBackRightInChunk);
+                model.addBoundedUVTriangle(backRight, upperRight, upperBack, upperBackRightInChunk, 
+                    new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
             }
         }
 
@@ -743,10 +761,9 @@ public class MergedOctahedrons {
         return (byte)r;
     }
 
-    private void calculateTextureCoords() {/*
-        ArrayList<int[]> quadsToKeep = new ArrayList<>();
-        ArrayList<Vertex[]> quadsToAdd = new ArrayList<>();
-        for (int[] quad : model.quads) {
+    private void calculateTextureCoords() {
+        for (int i = 0; i < model.quads.size(); ++i) {
+            int[] quad = model.quads.get(i);
             assert(quad.length == 4);
             Vertex v0 = model.getVertices().get(quad[0]);
             Vertex v1 = model.getVertices().get(quad[1]);
@@ -765,123 +782,58 @@ public class MergedOctahedrons {
                 && uv12sq < 2 * d12sq && uv12sq > 0.5 * d12sq
                 && uv23sq < 2 * d23sq && uv23sq > 0.5 * d23sq
                 && uv30sq < 2 * d30sq && uv30sq > 0.5 * d30sq) {
-                    quadsToKeep.add(quad);
                     continue;
             }
-            // Else
-            Vertex newv0 = textureCopy(v0);
-            Vertex newv1 = textureCopy(v1);
-            Vertex newv2 = textureCopy(v2);
-            Vertex newv3 = textureCopy(v3);
+            if (model.uvQuadOverrides.size() > i && model.uvQuadOverrides.get(i) != null) {
+                continue;
+            }
 
             // TO_OPTIMIZE: Making and sorting a list may be slow
-            ArrayList<Vertex> newVertices = new ArrayList<>();
-            newVertices.add(newv0);
-            newVertices.add(newv1);
-            newVertices.add(newv2);
-            newVertices.add(newv3);
-            newVertices.sort((va, vb) -> Float.compare(va.position.z, vb.position.z));
-            newVertices.get(0).texture.y = 0.5f;
-            newVertices.get(1).texture.y = 0.5f;
-            newVertices.get(2).texture.y = -0.5f;
-            newVertices.get(3).texture.y = -0.5f;
+            ArrayList<Vector3f> sortList = new ArrayList<>();
+            sortList.add(v0.position);
+            sortList.add(v1.position);
+            sortList.add(v2.position);
+            sortList.add(v3.position);
+            sortList.sort((a, b) -> Float.compare(a.z, b.z));
+            boolean v0first = v0.position == sortList.get(0) || v0.position == sortList.get(1);
+            boolean v1first = v1.position == sortList.get(0) || v1.position == sortList.get(1);
+            boolean v2first = v2.position == sortList.get(0) || v2.position == sortList.get(1);
+            boolean v3first = v3.position == sortList.get(0) || v3.position == sortList.get(1);
+            Vector2f uv0 = new Vector2f(0, v0first ? 0.5f : -0.5f);
+            Vector2f uv1 = new Vector2f(0, v1first ? 0.5f : -0.5f);
+            Vector2f uv2 = new Vector2f(0, v2first ? 0.5f : -0.5f);
+            Vector2f uv3 = new Vector2f(0, v3first ? 0.5f : -0.5f);
 
-            // TODO: Handle "step up" quad
-            Vector3f normal = Vector3f.average(newv0.normal, newv1.normal, newv2.normal, newv3.normal);
+            Vector3f normal = Vector3f.average(v0.normal, v1.normal, v2.normal, v3.normal);
             if (normal.y < 0 && Math.abs(normal.y) > Math.abs(normal.x)) {
-                newVertices.sort((va, vb) -> Float.compare(va.position.x, vb.position.x));
+                sortList.sort((a, b) -> Float.compare(a.x, b.x));
             }
             else if (normal.y > 0 && Math.abs(normal.y) > Math.abs(normal.x)) {
-                newVertices.sort((va, vb) -> Float.compare(-1 * va.position.x, -1 * vb.position.x));
+                sortList.sort((a, b) -> Float.compare(-1 * a.x, -1 * b.x));
             }
             else if (normal.x < 0) {
-                newVertices.sort((va, vb) -> Float.compare(-1 * va.position.y, -1 * vb.position.y));
+                sortList.sort((a, b) -> Float.compare(-1 * a.y, -1 * b.y));
             }
             else {
                 assert(normal.x > 0);
-                newVertices.sort((va, vb) -> Float.compare(va.position.y, vb.position.y));
+                sortList.sort((a, b) -> Float.compare(a.y, b.y));
             }
-            newVertices.get(0).texture.x = 0.5f;
-            newVertices.get(1).texture.x = 0.5f;
-            newVertices.get(2).texture.x = 1.5f;
-            newVertices.get(3).texture.x = 1.5f;
+            v0first = v0.position == sortList.get(0) || v0.position == sortList.get(1);
+            v1first = v1.position == sortList.get(0) || v1.position == sortList.get(1);
+            v2first = v2.position == sortList.get(0) || v2.position == sortList.get(1);
+            v3first = v3.position == sortList.get(0) || v3.position == sortList.get(1);
+            uv0.x = v0first ? 0.5f : 1.5f;
+            uv1.x = v1first ? 0.5f : 1.5f;
+            uv2.x = v2first ? 0.5f : 1.5f;
+            uv3.x = v3first ? 0.5f : 1.5f;
 
-            Vertex[] newFace = {newv0, newv1, newv2, newv3};
-            quadsToAdd.add(newFace);
+            Vector2f[] uvs = {uv0, uv1, uv2,  uv3};
+            while (i >= model.uvQuadOverrides.size()) {
+                model.uvQuadOverrides.add(null);
+            }
+            model.uvQuadOverrides.set(i, uvs);
         }
-        model.quads = quadsToKeep;
-        for (Vertex[] quad : quadsToAdd) {
-            assert(quad.length == 4);
-            model.addQuad(quad[0], quad[1], quad[2], quad[3]);
-        }
-
-        ArrayList<int[]> facesToKeep = new ArrayList<>();
-        ArrayList<Vertex[]> facesToAdd = new ArrayList<>();
-        for (int[] face : model.faces) {
-            assert(face.length == 3);
-            Vertex v0 = model.getVertices().get(face[0]);
-            Vertex v1 = model.getVertices().get(face[1]);
-            Vertex v2 = model.getVertices().get(face[2]);
-            float s = terrain.blockSize * terrain.blockSize;
-            float d01sq = s * v0.position.distanceSquared(v1.position);
-            float d12sq = s * v1.position.distanceSquared(v2.position);
-            float d20sq = s * v2.position.distanceSquared(v0.position);
-            float uv01sq = v0.texture.distanceSquared(v1.texture);
-            float uv12sq = v1.texture.distanceSquared(v2.texture);
-            float uv20sq = v2.texture.distanceSquared(v0.texture);
-            if (uv01sq < 2 * d01sq && uv01sq > 0.5 * d01sq
-                && uv12sq < 2 * d12sq && uv12sq > 0.5 * d12sq
-                && uv20sq < 2 * d20sq && uv20sq > 0.5 * d20sq) {
-                    facesToKeep.add(face);
-                    continue;
-            }
-            // Else
-            Vertex newv0 = textureCopy(v0);
-            Vertex newv1 = textureCopy(v1);
-            Vertex newv2 = textureCopy(v2);
-
-            // TO_OPTIMIZE: Making and sorting a list may be slow
-            ArrayList<Vertex> newVertices = new ArrayList<>();
-            newVertices.add(newv0);
-            newVertices.add(newv1);
-            newVertices.add(newv2);
-            newVertices.sort((va, vb) -> Float.compare(va.position.z, vb.position.z));
-            // TODO: If the triangle is the other way up, shift the edge to meet
-            newVertices.get(0).texture.y = 0.5f;
-            float half_sqrt_three = 0.8660254037844386f;
-            newVertices.get(2).texture.y = 0.5f + half_sqrt_three;
-            float lerp = (newVertices.get(1).position.z - newVertices.get(0).position.z)
-                    / (newVertices.get(2).position.z - newVertices.get(0).position.z);
-            newVertices.get(1).texture.y = newVertices.get(0).texture.y * (1 - lerp) + newVertices.get(2).texture.y * lerp;
-
-            Vector3f normal = Vector3f.average(newv0.normal, newv1.normal, newv2.normal);
-            if (normal.y < 0 && Math.abs(normal.y) > Math.abs(normal.x)) {
-                newVertices.sort((va, vb) -> Float.compare(va.position.x, vb.position.x));
-            }
-            else if (normal.y > 0 && Math.abs(normal.y) > Math.abs(normal.x)) {
-                newVertices.sort((va, vb) -> Float.compare(-1 * va.position.x, -1 * vb.position.x));
-            }
-            else if (normal.x < 0) {
-                newVertices.sort((va, vb) -> Float.compare(-1 * va.position.y, -1 * vb.position.y));
-            }
-            else {
-                assert(normal.x > 0);
-                newVertices.sort((va, vb) -> Float.compare(va.position.y, vb.position.y));
-            }
-            newVertices.get(0).texture.x = 0.5f;
-            newVertices.get(1).texture.x = 1f;
-            newVertices.get(2).texture.x = 1.5f;
-
-            Vertex[] newFace = {newv0, newv1, newv2};
-            facesToAdd.add(newFace);
-        }
-
-        model.faces = facesToKeep;
-        for (Vertex[] face : facesToAdd) {
-            assert(face.length == 3);
-            model.addTriangle(face[0], face[1], face[2]);
-        }
-    */}
+    }
 
     private Vertex textureCopy(Vertex v) {
         Vertex n = new Vertex();

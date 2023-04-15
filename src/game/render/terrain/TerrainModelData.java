@@ -220,6 +220,19 @@ public class TerrainModelData {
         }
     }
 
+    public void addBoundedUVTriangle(Vertex v0, Vertex v1, Vertex v2, boolean inBounds,
+            Vector2f uv0, Vector2f uv1, Vector2f uv2) {
+        addBoundedTriangle(v0, v1, v2, inBounds);
+        if (inBounds) {
+            Vector2f[] uvs = {uv0, uv1, uv2};
+            while (uvTriOverrides.size() < faces.size()) {
+                uvTriOverrides.add(null);
+            }
+            uvTriOverrides.set(faces.size() - 1, uvs);
+        }
+        // Else, it'll get trimmed so we won't care about the UV values
+    }
+
     private void addOutOfBoundsQuad(Vertex v0, Vertex v1, Vertex v2, Vertex v3) {
         Vertex[] face = {v0, v1, v2, v3};
         outOfBoundsFaces.add(face);
