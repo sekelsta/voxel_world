@@ -321,7 +321,10 @@ public class MergedOctahedrons {
         }
 
         // Eight-way symmetrical parts
-        float half_sqrt_three = 0.8660254037844386f;
+        Vector2f tri_middle_lower = new Vector2f(1f, 0.5f - 0.5f * (float)Math.sqrt(1.5));
+        Vector2f tri_middle_upper = new Vector2f(1f, 0.5f + 0.5f * (float)Math.sqrt(1.5));
+        Vector2f tri_left = new Vector2f(1 - 0.5f * (float)Math.sqrt(2), 0.5f);
+        Vector2f tri_right = new Vector2f(1 + 0.5f * (float)Math.sqrt(2), 0.5f);
 
         // Standard orientation
         if (isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft)) {
@@ -329,7 +332,7 @@ public class MergedOctahedrons {
                 if (isOpaque(upperFrontRight)) {
                     // Chipped block
                     model.addBoundedUVTriangle(frontLeft, upperFront, upperLeft, lowerFrontLeftInChunk, 
-                        new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 1.5f), new Vector2f(0.5f, 0.5f));
+                        tri_middle_lower, tri_right, tri_left);
                 }
             }
             else if (!isOpaque(lowerBackLeft) && !isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight)
@@ -337,7 +340,7 @@ public class MergedOctahedrons {
             {
                 // Single tri
                 model.addBoundedUVTriangle(frontLeft, lowerFront, lowerLeft, lowerFrontLeftInChunk, 
-                    new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                    tri_middle_upper, tri_left, tri_right);
             }
         }
 
@@ -347,7 +350,7 @@ public class MergedOctahedrons {
                 if (isOpaque(upperBackRight)) {
                     // Chipped block
                     model.addBoundedUVTriangle(frontRight, upperRight, upperFront, lowerFrontRightInChunk, 
-                        new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 1.5f), new Vector2f(0.5f, 0.5f));
+                        tri_middle_lower, tri_right, tri_left);
                 }
             }
             else if (!isOpaque(lowerFrontLeft) && !isOpaque(upperBackRight) && !isOpaque(lowerBackRight)
@@ -355,7 +358,7 @@ public class MergedOctahedrons {
             {
                 // Single tri
                 model.addBoundedUVTriangle(frontRight, lowerRight, lowerFront, lowerFrontRightInChunk, 
-                    new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                    tri_middle_upper, tri_left, tri_right);
             }
         }
 
@@ -365,7 +368,7 @@ public class MergedOctahedrons {
                 if (isOpaque(upperBackLeft)) {
                     // Chipped block
                     model.addBoundedUVTriangle(backRight, upperBack, upperRight, lowerBackRightInChunk, 
-                        new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 1.5f), new Vector2f(0.5f, 0.5f));
+                        tri_middle_lower, tri_right, tri_left);
                 }
             }
             else if (!isOpaque(lowerFrontRight) && !isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft)
@@ -373,7 +376,7 @@ public class MergedOctahedrons {
             {
                 // Single tri
                 model.addBoundedUVTriangle(backRight, lowerBack, lowerRight, lowerBackRightInChunk, 
-                    new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                    tri_middle_upper, tri_left, tri_right);
             }
         }
 
@@ -383,7 +386,7 @@ public class MergedOctahedrons {
                 if (isOpaque(upperFrontLeft)) {
                     // Chipped block
                     model.addBoundedUVTriangle(backLeft, upperLeft, upperBack, lowerBackLeftInChunk, 
-                        new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 1.5f), new Vector2f(0.5f, 0.5f));
+                        tri_middle_lower, tri_right, tri_left);
                 }
             }
             else if (!isOpaque(lowerBackRight) && !isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft)
@@ -391,7 +394,7 @@ public class MergedOctahedrons {
             {
                 // Single tri
                 model.addBoundedUVTriangle(backLeft, lowerLeft, lowerBack, lowerBackLeftInChunk, 
-                    new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                    tri_middle_upper, tri_left, tri_right);
             }
         }
 
@@ -401,7 +404,7 @@ public class MergedOctahedrons {
                 if (isOpaque(lowerFrontLeft)) {
                     // Chipped block
                     model.addBoundedUVTriangle(frontRight, lowerFront, lowerRight, upperFrontRightInChunk, 
-                        new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                        tri_middle_upper, tri_left, tri_right);
                 }
             }
             else if (!isOpaque(upperBackRight) && !isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft)
@@ -409,7 +412,7 @@ public class MergedOctahedrons {
             {
                 // Single tri
                 model.addBoundedUVTriangle(frontRight, upperFront, upperRight, upperFrontRightInChunk, 
-                    new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                    tri_middle_lower, tri_left, tri_right);
             }
         }
 
@@ -419,7 +422,7 @@ public class MergedOctahedrons {
                 if (isOpaque(lowerBackLeft)) {
                     // Chipped block
                     model.addBoundedUVTriangle(frontLeft, lowerLeft, lowerFront, upperFrontLeftInChunk, 
-                        new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                        tri_middle_upper, tri_left, tri_right);
                 }
             }
             else if (!isOpaque(upperFrontRight) && !isOpaque(lowerBackLeft) && !isOpaque(upperBackLeft)
@@ -427,7 +430,7 @@ public class MergedOctahedrons {
             {
                 // Single tri
                 model.addBoundedUVTriangle(frontLeft, upperLeft, upperFront, upperFrontLeftInChunk, 
-                    new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                    tri_middle_lower, tri_left, tri_right);
             }
         }
 
@@ -437,7 +440,7 @@ public class MergedOctahedrons {
                 if (isOpaque(lowerBackRight)) {
                     // Chipped block
                     model.addBoundedUVTriangle(backLeft, lowerBack, lowerLeft, upperBackLeftInChunk, 
-                        new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                        tri_middle_upper, tri_left, tri_right);
                 }
             }
             else if (!isOpaque(upperFrontLeft) && !isOpaque(lowerBackRight) && !isOpaque(upperBackRight)
@@ -445,7 +448,7 @@ public class MergedOctahedrons {
             {
                 // Single tri
                 model.addBoundedUVTriangle(backLeft, upperBack, upperLeft, upperBackLeftInChunk, 
-                    new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                    tri_middle_lower, tri_left, tri_right);
             }
         }
 
@@ -455,7 +458,7 @@ public class MergedOctahedrons {
                 if (isOpaque(lowerFrontRight)) {
                     // Chipped block
                     model.addBoundedUVTriangle(backRight, lowerRight, lowerBack, upperBackRightInChunk, 
-                        new Vector2f(1f, 0.5f + half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                        tri_middle_upper, tri_left, tri_right);
                 }
             }
             else if (!isOpaque(upperBackLeft) && !isOpaque(lowerFrontRight) && !isOpaque(upperFrontRight)
@@ -463,7 +466,7 @@ public class MergedOctahedrons {
             {
                 // Single tri
                 model.addBoundedUVTriangle(backRight, upperRight, upperBack, upperBackRightInChunk, 
-                    new Vector2f(1f, 0.5f - half_sqrt_three), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 1.5f));
+                    tri_middle_lower, tri_left, tri_right);
             }
         }
 
