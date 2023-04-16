@@ -48,46 +48,90 @@ public class MergedOctahedrons {
         Vector2f stepUV0,
         Vector2f stepUV1,
         Vector2f stepUV2,
-        Vector2f stepUV3)
+        Vector2f stepUV3,
+        boolean edgesVertical)
     {
+
+        Vector2f uv_lower_left = new Vector2f(0.5f, 0.5f);
+        Vector2f uv_lower_right = new Vector2f(1.5f, 0.5f);
+        Vector2f uv_upper_left = new Vector2f(0.5f, 1.5f);
+        Vector2f uv_upper_right = new Vector2f(1.5f, 1.5f);
+
         if (!isOpaque(upperFrontLeft) && !isOpaque(upperBackLeft)
                 && !isOpaque(upperFrontRight) && !isOpaque(upperBackRight) 
                 && isOpaque(lowerFrontLeft) && isOpaque(lowerBackLeft)
                 && isOpaque(lowerFrontRight) && isOpaque(lowerBackRight)) {
-            model.addBoundedQuad(frontLeft, frontRight, backRight, backLeft, lowerFrontLeftInChunk);
+            model.addBoundedUVQuad(frontLeft, frontRight, backRight, backLeft, lowerFrontLeftInChunk,
+                uv_lower_left, uv_lower_right, uv_upper_right, uv_upper_left);
         }
 
-
-        // Twelve-fold symmetry, standard orientation
-        if (isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft)) {
-            if (isOpaque(upperBackLeft)) {
-                if (!isOpaque(upperFrontRight) && isOpaque(lowerFrontRight) && isOpaque(upperBackRight)) {
-                    // Ramp
-                    model.addBoundedQuad(upperLeft, frontLeft, frontRight, upperRight, lowerFrontLeftInChunk);
+        if (edgesVertical) {
+            // Twelve-fold symmetry, standard orientation
+            if (isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft)) {
+                if (isOpaque(upperBackLeft)) {
+                    if (!isOpaque(upperFrontRight) && isOpaque(lowerFrontRight) && isOpaque(upperBackRight)) {
+                        // Ramp
+                        model.addBoundedQuad(upperLeft, frontLeft, frontRight, upperRight, lowerFrontLeftInChunk);
+                    }
+                }
+                else if (isOpaque(lowerBackLeft)) {
+                    if (!isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight) 
+                            && !isOpaque(upperBackRight) && !isOpaque(lowerBackRight)) {
+                        // Edge
+                        model.addBoundedQuad(frontLeft, lowerFront, lowerBack, backLeft, lowerFrontLeftInChunk);
+                    }
                 }
             }
-            else if (isOpaque(lowerBackLeft)) {
-                if (!isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight) 
-                        && !isOpaque(upperBackRight) && !isOpaque(lowerBackRight)) {
-                    // Edge
-                    model.addBoundedQuad(frontLeft, lowerFront, lowerBack, backLeft, lowerFrontLeftInChunk);
+
+            // Twelve-fold symmetry, rotate 180 degrees about Z
+            if (isOpaque(lowerBackRight) && !isOpaque(upperBackRight)) {
+                if (isOpaque(upperFrontRight)) {
+                    if (!isOpaque(upperBackLeft) && isOpaque(lowerBackLeft) && isOpaque(upperFrontLeft)) {
+                        // Ramp
+                        model.addBoundedQuad(upperRight, backRight, backLeft, upperLeft, lowerBackRightInChunk);
+                    }
+                }
+                else if (isOpaque(lowerFrontRight)) {
+                    if (!isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft) 
+                            && !isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft)) {
+                        // Edge
+                        model.addBoundedQuad(backRight, lowerBack, lowerFront, frontRight, lowerBackRightInChunk);
+                    }
                 }
             }
         }
-
-        // Twelve-fold symmetry, rotate 180 degrees about Z
-        if (isOpaque(lowerBackRight) && !isOpaque(upperBackRight)) {
-            if (isOpaque(upperFrontRight)) {
-                if (!isOpaque(upperBackLeft) && isOpaque(lowerBackLeft) && isOpaque(upperFrontLeft)) {
-                    // Ramp
-                    model.addBoundedQuad(upperRight, backRight, backLeft, upperLeft, lowerBackRightInChunk);
+        else {
+            // Twelve-fold symmetry, rotate 90 degrees about z
+            if (isOpaque(lowerBackLeft) && !isOpaque(upperBackLeft)) {
+                if (isOpaque(upperBackRight)) {
+                    if (!isOpaque(upperFrontLeft) && isOpaque(lowerFrontLeft) && isOpaque(upperFrontRight)) {
+                        // Ramp
+                        model.addBoundedQuad(upperBack, backLeft, frontLeft, upperFront, lowerBackLeftInChunk);
+                    }
+                }
+                else if (isOpaque(lowerBackRight)) {
+                    if (!isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft) 
+                            && !isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight)) {
+                        // Edge
+                        model.addBoundedQuad(backLeft, lowerLeft, lowerRight, backRight, lowerBackLeftInChunk);
+                    }
                 }
             }
-            else if (isOpaque(lowerFrontRight)) {
-                if (!isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft) 
-                        && !isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft)) {
-                    // Edge
-                    model.addBoundedQuad(backRight, lowerBack, lowerFront, frontRight, lowerBackRightInChunk);
+
+            // Twelve-fold symmetry, rotate 270 degrees about Z
+            if (isOpaque(lowerFrontRight) && !isOpaque(upperFrontRight)) {
+                if (isOpaque(upperFrontLeft)) {
+                    if (!isOpaque(upperBackRight) && isOpaque(lowerBackRight) && isOpaque(upperBackLeft)) {
+                        // Ramp
+                        model.addBoundedQuad(upperFront, frontRight, backRight, upperBack, lowerFrontRightInChunk);
+                    }
+                }
+                else if (isOpaque(lowerFrontLeft)) {
+                    if (!isOpaque(upperBackRight) && !isOpaque(lowerBackRight) 
+                            && !isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft)) {
+                        // Edge
+                        model.addBoundedQuad(frontRight, lowerRight, lowerLeft, frontLeft, lowerFrontRightInChunk);
+                    }
                 }
             }
         }
@@ -321,10 +365,10 @@ public class MergedOctahedrons {
         }
 
         // Eight-way symmetrical parts
+        Vector2f tri_left = new Vector2f(1 - 0.5f * (float)Math.sqrt(.5), 0.5f);
+        Vector2f tri_right = new Vector2f(1 + 0.5f * (float)Math.sqrt(.5), 0.5f);
         Vector2f tri_middle_lower = new Vector2f(1f, 0.5f - 0.5f * (float)Math.sqrt(1.5));
         Vector2f tri_middle_upper = new Vector2f(1f, 0.5f + 0.5f * (float)Math.sqrt(1.5));
-        Vector2f tri_left = new Vector2f(1 - 0.5f * (float)Math.sqrt(2), 0.5f);
-        Vector2f tri_right = new Vector2f(1 + 0.5f * (float)Math.sqrt(2), 0.5f);
 
         // Standard orientation
         if (isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft)) {
@@ -471,7 +515,6 @@ public class MergedOctahedrons {
         }
 
         // Six-way symmetrical parts
-
         // Standard orientation
         addFacing(
             lowerFrontLeft,
@@ -502,7 +545,8 @@ public class MergedOctahedrons {
             new Vector2f(0.317f, 1.183f),
             new Vector2f(0.5f, 0.5f),
             new Vector2f(1.5f, 1.5f),
-            new Vector2f(0.817f, 1.683f)
+            new Vector2f(0.817f, 1.683f),
+            true
         );
 
         // Rotated 90 degrees about Y, left/western face on top, then 90 degrees about Z
@@ -535,7 +579,8 @@ public class MergedOctahedrons {
             new Vector2f(1.183f, 1.683f),
             new Vector2f(0.5f, 1.5f),
             new Vector2f(1.5f, 0.5f),
-            new Vector2f(1.683f, 1.183f)
+            new Vector2f(1.683f, 1.183f),
+            true
         );
 
         // Rotated 180 degrees about Y, bottom face on top
@@ -568,106 +613,110 @@ public class MergedOctahedrons {
             new Vector2f(1.683f, 0.817f),
             new Vector2f(1.5f, 1.5f),
             new Vector2f(0.5f, 0.5f),
-            new Vector2f(1.183f, 0.317f)
+            new Vector2f(1.183f, 0.317f),
+            true
         );
 
-        // Rotated 270 degrees about Y, right/eastern face on top, then 90 degrees about Z
+        // Rotated 270 degrees about Y, right/eastern face on top, then 270 degrees about Z
         addFacing(
-            upperBackLeft,
-            upperBackRight,
-            lowerBackLeft,
-            lowerBackRight,
-            upperFrontLeft,
-            upperFrontRight,
             lowerFrontLeft,
             lowerFrontRight,
+            upperFrontLeft,
+            upperFrontRight,
+            lowerBackLeft,
+            lowerBackRight,
+            upperBackLeft,
+            upperBackRight,
             center,
-            upperBack,
-            upperFront,
-            lowerBack,
             lowerFront,
-            backLeft,
+            lowerBack,
+            upperFront,
+            upperBack,
             frontLeft,
-            backRight,
+            backLeft,
             frontRight,
-            upperLeft,
+            backRight,
             lowerLeft,
-            upperRight,
+            upperLeft,
             lowerRight,
-            upperBackLeftInChunk,
-            upperFrontLeftInChunk,
+            upperRight,
             lowerFrontLeftInChunk,
             lowerBackLeftInChunk,
+            upperBackLeftInChunk,
+            upperFrontLeftInChunk,
             new Vector2f(0.817f, 0.317f),
             new Vector2f(1.5f, 0.5f),
             new Vector2f(0.5f, 1.5f),
-            new Vector2f(0.317f, 0.817f)
+            new Vector2f(0.317f, 0.817f),
+            true
         );
 
-        // Rotate 90 degreees about X, back face on top, then 90 degrees about Z
+        // Rotate 90 degreees about X, back face on top, then 180 degrees about Z
         addFacing(
-            lowerFrontLeft,
-            lowerBackLeft,
             lowerFrontRight,
             lowerBackRight,
-            upperFrontLeft,
-            upperBackLeft,
             upperFrontRight,
             upperBackRight,
+            lowerFrontLeft,
+            lowerBackLeft,
+            upperFrontLeft,
+            upperBackLeft,
             center,
-            lowerLeft,
-            upperLeft,
             lowerRight,
+            lowerLeft,
             upperRight,
+            upperLeft,
+            frontRight,
+            frontLeft,
+            backRight,
+            backLeft,
             lowerFront,
             upperFront,
             lowerBack,
-            upperBack,
-            frontLeft,
-            frontRight,
-            backLeft,
-            backRight,
+            upperBack, 
+            lowerFrontRightInChunk,
             lowerFrontLeftInChunk,
             upperFrontLeftInChunk,
             upperFrontRightInChunk,
-            lowerFrontRightInChunk,
             new Vector2f(0.817f, 0.317f),
             new Vector2f(1.5f, 0.5f),
             new Vector2f(0.5f, 1.5f),
-            new Vector2f(0.317f, 0.817f)
+            new Vector2f(0.317f, 0.817f),
+            false
         );
 
-        // Rotate 270 degrees about X, front face on top, then 90 degrees about Z
+        // Rotate 270 degrees about X, front face on top
         addFacing(
-            upperBackLeft,
-            upperFrontLeft,
-            upperBackRight,
-            upperFrontRight,
             lowerBackLeft,
             lowerFrontLeft,
+            upperBackLeft,
+            upperFrontLeft,
             lowerBackRight,
             lowerFrontRight,
+            upperBackRight,
+            upperFrontRight,
             center,
-            upperLeft,
             lowerLeft,
-            upperRight,
             lowerRight,
-            upperBack,
-            lowerBack,
-            upperFront,
-            lowerFront,
+            upperLeft,
+            upperRight,
             backLeft,
             backRight,
             frontLeft,
             frontRight,
-            upperBackLeftInChunk,
+            lowerBack,
+            upperBack,
+            lowerFront,
+            upperFront, 
             lowerBackLeftInChunk,
             lowerBackRightInChunk,
             upperBackRightInChunk,
+            upperBackLeftInChunk,
             new Vector2f(1.183f, 1.683f),
             new Vector2f(0.5f, 1.5f),
             new Vector2f(1.5f, 0.5f),
-            new Vector2f(1.683f, 1.183f)
+            new Vector2f(1.683f, 1.183f),
+            false
         );
     }
 
