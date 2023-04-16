@@ -136,17 +136,27 @@ public class MergedOctahedrons {
             }
         }
 
+
+        // Minimizes y = (x - sqrt(.5))^2 + ((1 - x) * sqrt(2) - sqrt(.5))^2 + (sqrt(1 + x^2) - sqrt(11/8))^2
+        // Where y measures distortion when flattening a specific three triangles onto a 2D texture
+        float magic_val = 0.57241f;
+
         // 24-fold symmetry, standard orientation
+        Vector2f magic_top_right = new Vector2f(0.5f + magic_val, 1.5f);
+        Vector2f magic_right_above = new Vector2f(1.5f, 0.5f + magic_val);
         if (isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft)) {
             if (isOpaque(upperBackRight)) {
                 // Upper diagonal
                 if (!isOpaque(upperBackLeft) && !isOpaque(upperFrontRight)) {
-                    model.addBoundedTriangle(frontLeft, upperRight, upperBack, lowerFrontRightInChunk);
+                    model.addBoundedUVTriangle(frontLeft, upperRight, upperBack, lowerFrontRightInChunk,
+                        uv_lower_left, magic_right_above, magic_top_right);
                     if (isOpaque(lowerBackLeft)) {
-                        model.addBoundedTriangle(frontLeft, upperBack, backLeft, lowerFrontRightInChunk);
+                        model.addBoundedUVTriangle(frontLeft, upperBack, backLeft, lowerFrontRightInChunk,
+                            uv_lower_left, magic_top_right, uv_upper_left);
                     }
                     if (isOpaque(lowerFrontRight)) {
-                        model.addBoundedTriangle(frontLeft, frontRight, upperRight, lowerFrontRightInChunk);
+                        model.addBoundedUVTriangle(frontLeft, frontRight, upperRight, lowerFrontRightInChunk,
+                            uv_lower_left, uv_lower_right, magic_right_above);
                     }
                 }
             }
@@ -166,21 +176,27 @@ public class MergedOctahedrons {
                 }
             }
             else if (isOpaque(lowerBackLeft) && isOpaque(lowerFrontRight) && !isOpaque(lowerBackRight)) {
-                model.addBoundedTriangle(backLeft, frontLeft, frontRight, lowerFrontLeftInChunk);
+                model.addBoundedUVTriangle(backLeft, frontLeft, frontRight, lowerFrontLeftInChunk,
+                    uv_upper_left, uv_lower_left, uv_lower_right);
             }
         }
 
         // 24-fold symmetry, rotate 90 degrees about Z
+        Vector2f magic_top_left = new Vector2f(1.5f - magic_val, 1.5f);
+        Vector2f magic_left_above = new Vector2f(0.5f, 0.5f + magic_val);
         if (isOpaque(lowerFrontRight) && !isOpaque(upperFrontRight)) {
             if (isOpaque(upperBackLeft)) {
                 // Upper diagonal
                 if (!isOpaque(upperFrontLeft) && !isOpaque(upperBackRight)) {
-                    model.addBoundedTriangle(frontRight, upperBack, upperLeft, lowerBackRightInChunk);
+                    model.addBoundedUVTriangle(frontRight, upperBack, upperLeft, lowerBackRightInChunk,
+                        uv_lower_right, magic_top_left, magic_left_above);
                     if (isOpaque(lowerFrontLeft)) {
-                        model.addBoundedTriangle(frontRight, upperLeft, frontLeft, lowerBackRightInChunk);
+                        model.addBoundedUVTriangle(frontRight, upperLeft, frontLeft, lowerBackRightInChunk,
+                            uv_lower_right, magic_left_above, uv_lower_left);
                     }
                     if (isOpaque(lowerBackRight)) {
-                        model.addBoundedTriangle(frontRight, backRight, upperBack, lowerBackRightInChunk);
+                        model.addBoundedUVTriangle(frontRight, backRight, upperBack, lowerBackRightInChunk,
+                            uv_lower_right, uv_upper_right, magic_top_left);
                     }
                 }
             }
@@ -200,21 +216,27 @@ public class MergedOctahedrons {
                 }
             }
             else if (isOpaque(lowerFrontLeft) && isOpaque(lowerBackRight) && !isOpaque(lowerBackLeft)) {
-                model.addBoundedTriangle(frontLeft, frontRight, backRight, lowerFrontRightInChunk);
+                model.addBoundedUVTriangle(frontLeft, frontRight, backRight, lowerFrontRightInChunk,
+                    uv_lower_left, uv_lower_right, uv_upper_right);
             }
         }
 
         // 24-fold symmetry, rotate 180 degrees about Z
+        Vector2f magic_bottom_left = new Vector2f(1.5f - magic_val, 0.5f);
+        Vector2f magic_left_below = new Vector2f(0.5f, 1.5f - magic_val);
         if (isOpaque(lowerBackRight) && !isOpaque(upperBackRight)) {
             if (isOpaque(upperFrontLeft)) {
                 // Upper diagonal
                 if (!isOpaque(upperFrontRight) && !isOpaque(upperBackLeft)) {
-                    model.addBoundedTriangle(backRight, upperLeft, upperFront, lowerBackLeftInChunk);
+                    model.addBoundedUVTriangle(backRight, upperLeft, upperFront, lowerBackLeftInChunk,
+                        uv_upper_right, magic_left_below, magic_bottom_left);
                     if (isOpaque(lowerFrontRight)) {
-                        model.addBoundedTriangle(backRight, upperFront, frontRight, lowerBackLeftInChunk);
+                        model.addBoundedUVTriangle(backRight, upperFront, frontRight, lowerBackLeftInChunk,
+                            uv_upper_right, magic_bottom_left, uv_lower_right);
                     }
                     if (isOpaque(lowerBackLeft)) {
-                        model.addBoundedTriangle(backRight, backLeft, upperLeft, lowerBackLeftInChunk);
+                        model.addBoundedUVTriangle(backRight, backLeft, upperLeft, lowerBackLeftInChunk,
+                            uv_upper_right, uv_upper_left, magic_left_below);
                     }
                 }
             }
@@ -234,21 +256,27 @@ public class MergedOctahedrons {
                 }
             }
             else if (isOpaque(lowerFrontRight) && isOpaque(lowerBackLeft) && !isOpaque(lowerFrontLeft)) {
-                model.addBoundedTriangle(frontRight, backRight, backLeft, lowerBackRightInChunk);
+                model.addBoundedUVTriangle(frontRight, backRight, backLeft, lowerBackRightInChunk,
+                    uv_lower_right, uv_upper_right, uv_upper_left);
             }
         }
 
         // 24-fold symmetry, rotate 270 degrees about Z
+        Vector2f magic_bottom_right = new Vector2f(0.5f + magic_val, 0.5f);
+        Vector2f magic_right_below = new Vector2f(1.5f, 1.5f - magic_val);
         if (isOpaque(lowerBackLeft) && !isOpaque(upperBackLeft)) {
             if (isOpaque(upperFrontRight)) {
                 // Upper diagonal
                 if (!isOpaque(upperBackRight) && !isOpaque(upperFrontLeft)) {
-                    model.addBoundedTriangle(backLeft, upperFront, upperRight, lowerFrontLeftInChunk);
+                    model.addBoundedUVTriangle(backLeft, upperFront, upperRight, lowerFrontLeftInChunk,
+                        uv_upper_left, magic_bottom_right, magic_right_below);
                     if (isOpaque(lowerBackRight)) {
-                        model.addBoundedTriangle(backLeft, upperRight, backRight, lowerFrontLeftInChunk);
+                        model.addBoundedUVTriangle(backLeft, upperRight, backRight, lowerFrontLeftInChunk,
+                            uv_upper_left, magic_right_below, uv_upper_right);
                     }
                     if (isOpaque(lowerFrontLeft)) {
-                        model.addBoundedTriangle(backLeft, frontLeft, upperFront, lowerFrontLeftInChunk);
+                        model.addBoundedUVTriangle(backLeft, frontLeft, upperFront, lowerFrontLeftInChunk,
+                            uv_upper_left, uv_lower_left, magic_bottom_right);
                     }
                 }
             }
@@ -268,7 +296,8 @@ public class MergedOctahedrons {
                 }
             }
             else if (isOpaque(lowerBackRight) && isOpaque(lowerFrontLeft) && !isOpaque(lowerFrontRight)) {
-                model.addBoundedTriangle(backRight, backLeft, frontLeft, lowerBackLeftInChunk);
+                model.addBoundedUVTriangle(backRight, backLeft, frontLeft, lowerBackLeftInChunk,
+                    uv_upper_right, uv_upper_left, uv_lower_left);
             }
         }
     }
