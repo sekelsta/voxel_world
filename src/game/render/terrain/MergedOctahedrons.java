@@ -57,11 +57,21 @@ public class MergedOctahedrons {
         Vector2f uv_upper_left = new Vector2f(0.5f, 1.5f);
         Vector2f uv_upper_right = new Vector2f(1.5f, 1.5f);
 
+        Vector2f edge_lower_left = new Vector2f(0.5f, 1.5f - (float)Math.sqrt(.5));
+        Vector2f edge_lower_right = new Vector2f(1.5f, 1.5f - (float)Math.sqrt(.5));
+        Vector2f edge_upper_left = uv_upper_left;
+        Vector2f edge_upper_right = uv_upper_right;
+
+        Vector2f ramp_lower_left = uv_lower_left;
+        Vector2f ramp_lower_right = uv_lower_right;
+        Vector2f ramp_upper_left = new Vector2f(0.5f, 0.5f + (float)Math.sqrt(.5));
+        Vector2f ramp_upper_right = new Vector2f(1.5f, 0.5f + (float)Math.sqrt(.5));
+
         if (!isOpaque(upperFrontLeft) && !isOpaque(upperBackLeft)
                 && !isOpaque(upperFrontRight) && !isOpaque(upperBackRight) 
                 && isOpaque(lowerFrontLeft) && isOpaque(lowerBackLeft)
                 && isOpaque(lowerFrontRight) && isOpaque(lowerBackRight)) {
-            model.addBoundedUVQuad(frontLeft, frontRight, backRight, backLeft, lowerFrontLeftInChunk,
+            model.addBoundedQuad(frontLeft, frontRight, backRight, backLeft, lowerFrontLeftInChunk,
                 uv_lower_left, uv_lower_right, uv_upper_right, uv_upper_left);
         }
 
@@ -71,14 +81,16 @@ public class MergedOctahedrons {
                 if (isOpaque(upperBackLeft)) {
                     if (!isOpaque(upperFrontRight) && isOpaque(lowerFrontRight) && isOpaque(upperBackRight)) {
                         // Ramp
-                        model.addBoundedQuad(upperLeft, frontLeft, frontRight, upperRight, lowerFrontLeftInChunk);
+                        model.addBoundedQuad(upperLeft, frontLeft, frontRight, upperRight, lowerFrontLeftInChunk,
+                                            ramp_upper_left, ramp_lower_left, ramp_lower_right, ramp_upper_right);
                     }
                 }
                 else if (isOpaque(lowerBackLeft)) {
                     if (!isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight) 
                             && !isOpaque(upperBackRight) && !isOpaque(lowerBackRight)) {
                         // Edge
-                        model.addBoundedQuad(frontLeft, lowerFront, lowerBack, backLeft, lowerFrontLeftInChunk);
+                        model.addBoundedQuad(frontLeft, lowerFront, lowerBack, backLeft, lowerFrontLeftInChunk, 
+                            edge_upper_left, edge_lower_left, edge_lower_right, edge_upper_right);
                     }
                 }
             }
@@ -88,14 +100,16 @@ public class MergedOctahedrons {
                 if (isOpaque(upperFrontRight)) {
                     if (!isOpaque(upperBackLeft) && isOpaque(lowerBackLeft) && isOpaque(upperFrontLeft)) {
                         // Ramp
-                        model.addBoundedQuad(upperRight, backRight, backLeft, upperLeft, lowerBackRightInChunk);
+                        model.addBoundedQuad(upperRight, backRight, backLeft, upperLeft, lowerBackRightInChunk,
+                                        ramp_upper_left, ramp_lower_left, ramp_lower_right, ramp_upper_right);
                     }
                 }
                 else if (isOpaque(lowerFrontRight)) {
                     if (!isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft) 
                             && !isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft)) {
                         // Edge
-                        model.addBoundedQuad(backRight, lowerBack, lowerFront, frontRight, lowerBackRightInChunk);
+                        model.addBoundedQuad(backRight, lowerBack, lowerFront, frontRight, lowerBackRightInChunk, 
+                            edge_upper_left, edge_lower_left, edge_lower_right, edge_upper_right);
                     }
                 }
             }
@@ -106,14 +120,16 @@ public class MergedOctahedrons {
                 if (isOpaque(upperBackRight)) {
                     if (!isOpaque(upperFrontLeft) && isOpaque(lowerFrontLeft) && isOpaque(upperFrontRight)) {
                         // Ramp
-                        model.addBoundedQuad(upperBack, backLeft, frontLeft, upperFront, lowerBackLeftInChunk);
+                        model.addBoundedQuad(upperBack, backLeft, frontLeft, upperFront, lowerBackLeftInChunk,
+                            ramp_upper_left, ramp_lower_left, ramp_lower_right, ramp_upper_right);
                     }
                 }
                 else if (isOpaque(lowerBackRight)) {
                     if (!isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft) 
                             && !isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight)) {
                         // Edge
-                        model.addBoundedQuad(backLeft, lowerLeft, lowerRight, backRight, lowerBackLeftInChunk);
+                        model.addBoundedQuad(backLeft, lowerLeft, lowerRight, backRight, lowerBackLeftInChunk, 
+                            edge_upper_left, edge_lower_left, edge_lower_right, edge_upper_right);
                     }
                 }
             }
@@ -123,14 +139,16 @@ public class MergedOctahedrons {
                 if (isOpaque(upperFrontLeft)) {
                     if (!isOpaque(upperBackRight) && isOpaque(lowerBackRight) && isOpaque(upperBackLeft)) {
                         // Ramp
-                        model.addBoundedQuad(upperFront, frontRight, backRight, upperBack, lowerFrontRightInChunk);
+                        model.addBoundedQuad(upperFront, frontRight, backRight, upperBack, lowerFrontRightInChunk,
+                            ramp_upper_left, ramp_lower_left, ramp_lower_right, ramp_upper_right);
                     }
                 }
                 else if (isOpaque(lowerFrontLeft)) {
                     if (!isOpaque(upperBackRight) && !isOpaque(lowerBackRight) 
                             && !isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft)) {
                         // Edge
-                        model.addBoundedQuad(frontRight, lowerRight, lowerLeft, frontLeft, lowerFrontRightInChunk);
+                        model.addBoundedQuad(frontRight, lowerRight, lowerLeft, frontLeft, lowerFrontRightInChunk, 
+                            edge_upper_left, edge_lower_left, edge_lower_right, edge_upper_right);
                     }
                 }
             }
@@ -163,7 +181,7 @@ public class MergedOctahedrons {
             else if (isOpaque(upperBackLeft)) {
                 // Step up
                 if (!isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight) && !isOpaque(lowerBackRight)) {
-                    model.addBoundedUVQuad(frontLeft, lowerFront, upperBack, upperLeft, lowerFrontLeftInChunk, 
+                    model.addBoundedQuad(frontLeft, lowerFront, upperBack, upperLeft, lowerFrontLeftInChunk, 
                         stepUV0, stepUV1, stepUV2, stepUV3);
                 }
             }
@@ -203,7 +221,7 @@ public class MergedOctahedrons {
             else if (isOpaque(upperFrontLeft)) {
                 // Step up
                 if (!isOpaque(upperBackRight) && !isOpaque(lowerBackRight) && !isOpaque(lowerBackLeft)) {
-                    model.addBoundedUVQuad(frontRight, lowerRight, upperLeft, upperFront, lowerFrontRightInChunk,
+                    model.addBoundedQuad(frontRight, lowerRight, upperLeft, upperFront, lowerFrontRightInChunk,
                         stepUV0, stepUV1, stepUV2, stepUV3);
                 }
             }
@@ -243,7 +261,7 @@ public class MergedOctahedrons {
             else if (isOpaque(upperFrontRight)) {
                 // Step up
                 if (!isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft) && !isOpaque(lowerFrontLeft)) {
-                    model.addBoundedUVQuad(backRight, lowerBack, upperFront, upperRight, lowerBackRightInChunk,
+                    model.addBoundedQuad(backRight, lowerBack, upperFront, upperRight, lowerBackRightInChunk,
                         stepUV0, stepUV1, stepUV2, stepUV3);
                 }
             }
@@ -283,7 +301,7 @@ public class MergedOctahedrons {
             else if (isOpaque(upperBackRight)) {
                 // Step up
                 if (!isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft) && !isOpaque(lowerFrontRight)) {
-                    model.addBoundedUVQuad(backLeft, lowerLeft, upperRight, upperBack, lowerBackLeftInChunk,
+                    model.addBoundedQuad(backLeft, lowerLeft, upperRight, upperBack, lowerBackLeftInChunk,
                         stepUV0, stepUV1, stepUV2, stepUV3);
                 }
             }
@@ -782,7 +800,6 @@ public class MergedOctahedrons {
         addBumps(chunkX, chunkY, chunkZ);
         model.calcNormals();
         model.trim();
-        calculateTextureCoords();
         return new TerrainMeshData(model.finalizeToVertexList());
     }
 
@@ -812,7 +829,6 @@ public class MergedOctahedrons {
         addBumps(chunkX, chunkY, 0);
         model.calcNormals();
         model.trim();
-        calculateTextureCoords();
         return new TerrainMeshData(model.finalizeToVertexList());
     }
 
@@ -840,80 +856,6 @@ public class MergedOctahedrons {
         r = 15 * r + y * y * y;
         r = 15 * r + z * z * z;
         return (byte)r;
-    }
-
-    private void calculateTextureCoords() {
-        for (int i = 0; i < model.quads.size(); ++i) {
-            int[] quad = model.quads.get(i);
-            assert(quad.length == 4);
-            Vertex v0 = model.getVertices().get(quad[0]);
-            Vertex v1 = model.getVertices().get(quad[1]);
-            Vertex v2 = model.getVertices().get(quad[2]);
-            Vertex v3 = model.getVertices().get(quad[3]);
-            float s = terrain.blockSize * terrain.blockSize;
-            float d01sq = s * v0.position.distanceSquared(v1.position);
-            float d12sq = s * v1.position.distanceSquared(v2.position);
-            float d23sq = s * v2.position.distanceSquared(v3.position);
-            float d30sq = s * v3.position.distanceSquared(v0.position);
-            float uv01sq = v0.texture.distanceSquared(v1.texture);
-            float uv12sq = v1.texture.distanceSquared(v2.texture);
-            float uv23sq = v2.texture.distanceSquared(v3.texture);
-            float uv30sq = v3.texture.distanceSquared(v0.texture);
-            if (uv01sq < 2 * d01sq && uv01sq > 0.5 * d01sq
-                && uv12sq < 2 * d12sq && uv12sq > 0.5 * d12sq
-                && uv23sq < 2 * d23sq && uv23sq > 0.5 * d23sq
-                && uv30sq < 2 * d30sq && uv30sq > 0.5 * d30sq) {
-                    continue;
-            }
-            if (model.uvQuadOverrides.size() > i && model.uvQuadOverrides.get(i) != null) {
-                continue;
-            }
-
-            // TO_OPTIMIZE: Making and sorting a list may be slow
-            ArrayList<Vector3f> sortList = new ArrayList<>();
-            sortList.add(v0.position);
-            sortList.add(v1.position);
-            sortList.add(v2.position);
-            sortList.add(v3.position);
-            sortList.sort((a, b) -> Float.compare(a.z, b.z));
-            boolean v0first = v0.position == sortList.get(0) || v0.position == sortList.get(1);
-            boolean v1first = v1.position == sortList.get(0) || v1.position == sortList.get(1);
-            boolean v2first = v2.position == sortList.get(0) || v2.position == sortList.get(1);
-            boolean v3first = v3.position == sortList.get(0) || v3.position == sortList.get(1);
-            Vector2f uv0 = new Vector2f(0, v0first ? 0.5f : -0.5f);
-            Vector2f uv1 = new Vector2f(0, v1first ? 0.5f : -0.5f);
-            Vector2f uv2 = new Vector2f(0, v2first ? 0.5f : -0.5f);
-            Vector2f uv3 = new Vector2f(0, v3first ? 0.5f : -0.5f);
-
-            Vector3f normal = Vector3f.average(v0.normal, v1.normal, v2.normal, v3.normal);
-            if (normal.y < 0 && Math.abs(normal.y) > Math.abs(normal.x)) {
-                sortList.sort((a, b) -> Float.compare(a.x, b.x));
-            }
-            else if (normal.y > 0 && Math.abs(normal.y) > Math.abs(normal.x)) {
-                sortList.sort((a, b) -> Float.compare(-1 * a.x, -1 * b.x));
-            }
-            else if (normal.x < 0) {
-                sortList.sort((a, b) -> Float.compare(-1 * a.y, -1 * b.y));
-            }
-            else {
-                assert(normal.x > 0);
-                sortList.sort((a, b) -> Float.compare(a.y, b.y));
-            }
-            v0first = v0.position == sortList.get(0) || v0.position == sortList.get(1);
-            v1first = v1.position == sortList.get(0) || v1.position == sortList.get(1);
-            v2first = v2.position == sortList.get(0) || v2.position == sortList.get(1);
-            v3first = v3.position == sortList.get(0) || v3.position == sortList.get(1);
-            uv0.x = v0first ? 0.5f : 1.5f;
-            uv1.x = v1first ? 0.5f : 1.5f;
-            uv2.x = v2first ? 0.5f : 1.5f;
-            uv3.x = v3first ? 0.5f : 1.5f;
-
-            Vector2f[] uvs = {uv0, uv1, uv2,  uv3};
-            while (i >= model.uvQuadOverrides.size()) {
-                model.uvQuadOverrides.add(null);
-            }
-            model.uvQuadOverrides.set(i, uvs);
-        }
     }
 
     private Vertex textureCopy(Vertex v) {
@@ -947,35 +889,7 @@ public class MergedOctahedrons {
         int dx = direction.x;
         int dy = direction.y;
         int dz = direction.z;
-        if (isOpaque(a)) {
-            vertex.type = a;
-        }
-        else {
-            vertex.type = b;
-            dx *= -1;
-            dy *= -1;
-            dz *= -1;
-        }
-        if (dx < 0) {
-            vertex.texture = new Vector2f(-1 * vy, vz);
-        }
-        else if (dx > 0) {
-            vertex.texture = new Vector2f(vy, vz);
-        }
-        else if (dy < 0) {
-            vertex.texture = new Vector2f(vx, vz);
-        }
-        else if (dy > 0) {
-            vertex.texture = new Vector2f(-1 * vx, vz);
-        }
-        else if (dz > 0) {
-            vertex.texture = new Vector2f(vx, vy);
-        }
-        else {
-            assert(dz < 0);
-            vertex.texture = new Vector2f(vx, 1 - vy);
-        }
-        vertex.texture.scale(0.5f);
+        vertex.type = isOpaque(a) ? a : b;
 
         return vertex;
     }

@@ -239,30 +239,22 @@ public class TerrainModelData {
         connectivity = null;
     }
 
-    public void addBoundedQuad(Vertex v0, Vertex v1, Vertex v2, Vertex v3, boolean inBounds) {
+    public void addBoundedQuad(Vertex v0, Vertex v1, Vertex v2, Vertex v3, boolean inBounds,
+            Vector2f uv0, Vector2f uv1, Vector2f uv2, Vector2f uv3) {
         assert(v0 != null);
         assert(v1 != null);
         assert(v2 != null);
         assert(v3 != null);
+
         if (inBounds) {
             addQuad(v0, v1, v2, v3);
+            Vector2f[] uvs = {uv0, uv1, uv2, uv3};
+            uvQuadOverrides.add(uvs);
         }
         else {
             addOutOfBoundsQuad(v0, v1, v2, v3);
+            // It'll get trimmed so we won't care about the UV values
         }
-    }
-
-    public void addBoundedUVQuad(Vertex v0, Vertex v1, Vertex v2, Vertex v3, boolean inBounds,
-            Vector2f uv0, Vector2f uv1, Vector2f uv2, Vector2f uv3) {
-        addBoundedQuad(v0, v1, v2, v3, inBounds);
-        if (inBounds) {
-            Vector2f[] uvs = {uv0, uv1, uv2, uv3};
-            while (uvQuadOverrides.size() < quads.size()) {
-                uvQuadOverrides.add(null);
-            }
-            uvQuadOverrides.set(quads.size() - 1, uvs);
-        }
-        // Else, it'll get trimmed so we won't care about the UV values
     }
 
     public void addTrim() {
