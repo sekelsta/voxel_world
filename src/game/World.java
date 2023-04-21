@@ -14,7 +14,7 @@ import shadowfox.math.Vector3f;
 
 public class World implements IEntitySpace {
     private final int TICKS_PER_DAY = 36 * 60 * Gameloop.TICKS_PER_SECOND;
-    private final int TICKS_PER_LUNAR_MONTH = 8 * TICKS_PER_DAY;
+    private final int TICKS_PER_LUNAR_MONTH = 13 * TICKS_PER_DAY;
     private final int TICKS_PER_YEAR = 28 * TICKS_PER_DAY;
 
     public final boolean authoritative;
@@ -312,7 +312,7 @@ public class World implements IEntitySpace {
     public void addBlock(Ray ray) {
         RaycastResult r = terrain.findHit(ray);
         if (r != null) {
-            terrain.setBlock(r.x() + r.direction().x, r.y() + r.direction().y, r.z() + r.direction().z, (short)1);
+            terrain.setBlock(r.x() + r.direction().x, r.y() + r.direction().y, r.z() + r.direction().z, Block.GRASS);
         }
     }
 
@@ -344,7 +344,7 @@ public class World implements IEntitySpace {
         axis.rotate((float)Math.PI * 2 * getPlanetaryRotation(lerp), 0, -1, 0);
 
         Matrix3f result = new Matrix3f();
-        result.rotate((float)Math.PI * 2 * getAbsoluteMoonCycle(lerp), axis.x, axis.y, axis.z);
+        result.rotate(-1 * (float)Math.PI * 2 * getAbsoluteMoonCycle(lerp), axis.x, axis.y, axis.z);
         result.rotate((float)Math.PI * 2 * getPlanetaryRotation(lerp), 0, -1, 0);
         return result;
     }
