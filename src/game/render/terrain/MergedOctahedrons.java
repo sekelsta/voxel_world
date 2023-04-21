@@ -14,6 +14,11 @@ public class MergedOctahedrons {
 
     private HashMap<BlockPos, Vertex> vertexMap = new HashMap<>();
 
+    private Vector2f tri_left = new Vector2f(1 - 0.5f * (float)Math.sqrt(.5), 0.5f);
+    private Vector2f tri_right = new Vector2f(1 + 0.5f * (float)Math.sqrt(.5), 0.5f);
+    private Vector2f tri_middle_lower = new Vector2f(1f, 0.5f - 0.5f * (float)Math.sqrt(1.5));
+    private Vector2f tri_middle_upper = new Vector2f(1f, 0.5f + 0.5f * (float)Math.sqrt(1.5));
+
     public MergedOctahedrons(Terrain terrain) {
         this.terrain = terrain;
         this.model = new TerrainModelData();
@@ -166,14 +171,14 @@ public class MergedOctahedrons {
             if (isOpaque(upperBackRight)) {
                 // Upper diagonal
                 if (!isOpaque(upperBackLeft) && !isOpaque(upperFrontRight)) {
-                    model.addBoundedUVTriangle(frontLeft, upperRight, upperBack, lowerFrontRightInChunk,
+                    model.addBoundedTriangle(frontLeft, upperRight, upperBack, lowerFrontRightInChunk,
                         uv_lower_left, magic_right_above, magic_top_right);
                     if (isOpaque(lowerBackLeft)) {
-                        model.addBoundedUVTriangle(frontLeft, upperBack, backLeft, lowerFrontRightInChunk,
+                        model.addBoundedTriangle(frontLeft, upperBack, backLeft, lowerFrontRightInChunk,
                             uv_lower_left, magic_top_right, uv_upper_left);
                     }
                     if (isOpaque(lowerFrontRight)) {
-                        model.addBoundedUVTriangle(frontLeft, frontRight, upperRight, lowerFrontRightInChunk,
+                        model.addBoundedTriangle(frontLeft, frontRight, upperRight, lowerFrontRightInChunk,
                             uv_lower_left, uv_lower_right, magic_right_above);
                     }
                 }
@@ -189,12 +194,14 @@ public class MergedOctahedrons {
                 // Cutoff
                 if (!isOpaque(lowerBackLeft) && isOpaque(lowerBackRight)) {
                     center.type = lowerFrontLeft;
-                    model.addBoundedTriangle(frontLeft, center, lowerLeft, lowerFrontLeftInChunk);
-                    model.addBoundedTriangle(frontLeft, upperFront, center, lowerFrontLeftInChunk);
+                    model.addBoundedTriangle(frontLeft, center, lowerLeft, lowerFrontLeftInChunk, 
+                        tri_right, tri_left, tri_middle_lower);
+                    model.addBoundedTriangle(frontLeft, upperFront, center, lowerFrontLeftInChunk,
+                        tri_right, tri_middle_upper, tri_left);
                 }
             }
             else if (isOpaque(lowerBackLeft) && isOpaque(lowerFrontRight) && !isOpaque(lowerBackRight)) {
-                model.addBoundedUVTriangle(backLeft, frontLeft, frontRight, lowerFrontLeftInChunk,
+                model.addBoundedTriangle(backLeft, frontLeft, frontRight, lowerFrontLeftInChunk,
                     uv_upper_left, uv_lower_left, uv_lower_right);
             }
         }
@@ -206,14 +213,14 @@ public class MergedOctahedrons {
             if (isOpaque(upperBackLeft)) {
                 // Upper diagonal
                 if (!isOpaque(upperFrontLeft) && !isOpaque(upperBackRight)) {
-                    model.addBoundedUVTriangle(frontRight, upperBack, upperLeft, lowerBackRightInChunk,
+                    model.addBoundedTriangle(frontRight, upperBack, upperLeft, lowerBackRightInChunk,
                         uv_lower_right, magic_top_left, magic_left_above);
                     if (isOpaque(lowerFrontLeft)) {
-                        model.addBoundedUVTriangle(frontRight, upperLeft, frontLeft, lowerBackRightInChunk,
+                        model.addBoundedTriangle(frontRight, upperLeft, frontLeft, lowerBackRightInChunk,
                             uv_lower_right, magic_left_above, uv_lower_left);
                     }
                     if (isOpaque(lowerBackRight)) {
-                        model.addBoundedUVTriangle(frontRight, backRight, upperBack, lowerBackRightInChunk,
+                        model.addBoundedTriangle(frontRight, backRight, upperBack, lowerBackRightInChunk,
                             uv_lower_right, uv_upper_right, magic_top_left);
                     }
                 }
@@ -229,12 +236,14 @@ public class MergedOctahedrons {
                 // Cutoff
                 if (!isOpaque(lowerFrontLeft) && isOpaque(lowerBackLeft)) {
                     center.type = lowerFrontRight;
-                    model.addBoundedTriangle(frontRight, center, lowerFront, lowerFrontRightInChunk);
-                    model.addBoundedTriangle(frontRight, upperRight, center, lowerFrontRightInChunk);
+                    model.addBoundedTriangle(frontRight, center, lowerFront, lowerFrontRightInChunk,
+                        tri_right, tri_left, tri_middle_lower);
+                    model.addBoundedTriangle(frontRight, upperRight, center, lowerFrontRightInChunk,
+                        tri_right, tri_middle_upper, tri_left);
                 }
             }
             else if (isOpaque(lowerFrontLeft) && isOpaque(lowerBackRight) && !isOpaque(lowerBackLeft)) {
-                model.addBoundedUVTriangle(frontLeft, frontRight, backRight, lowerFrontRightInChunk,
+                model.addBoundedTriangle(frontLeft, frontRight, backRight, lowerFrontRightInChunk,
                     uv_lower_left, uv_lower_right, uv_upper_right);
             }
         }
@@ -246,14 +255,14 @@ public class MergedOctahedrons {
             if (isOpaque(upperFrontLeft)) {
                 // Upper diagonal
                 if (!isOpaque(upperFrontRight) && !isOpaque(upperBackLeft)) {
-                    model.addBoundedUVTriangle(backRight, upperLeft, upperFront, lowerBackLeftInChunk,
+                    model.addBoundedTriangle(backRight, upperLeft, upperFront, lowerBackLeftInChunk,
                         uv_upper_right, magic_left_below, magic_bottom_left);
                     if (isOpaque(lowerFrontRight)) {
-                        model.addBoundedUVTriangle(backRight, upperFront, frontRight, lowerBackLeftInChunk,
+                        model.addBoundedTriangle(backRight, upperFront, frontRight, lowerBackLeftInChunk,
                             uv_upper_right, magic_bottom_left, uv_lower_right);
                     }
                     if (isOpaque(lowerBackLeft)) {
-                        model.addBoundedUVTriangle(backRight, backLeft, upperLeft, lowerBackLeftInChunk,
+                        model.addBoundedTriangle(backRight, backLeft, upperLeft, lowerBackLeftInChunk,
                             uv_upper_right, uv_upper_left, magic_left_below);
                     }
                 }
@@ -269,12 +278,14 @@ public class MergedOctahedrons {
                 // Cutoff
                 if (!isOpaque(lowerFrontRight) && isOpaque(lowerFrontLeft)) {
                     center.type = lowerBackRight;
-                    model.addBoundedTriangle(backRight, center, lowerRight, lowerBackRightInChunk);
-                    model.addBoundedTriangle(backRight, upperBack, center, lowerBackRightInChunk);
+                    model.addBoundedTriangle(backRight, center, lowerRight, lowerBackRightInChunk, 
+                        tri_right, tri_left, tri_middle_lower);
+                    model.addBoundedTriangle(backRight, upperBack, center, lowerBackRightInChunk,
+                        tri_right, tri_middle_upper, tri_left);
                 }
             }
             else if (isOpaque(lowerFrontRight) && isOpaque(lowerBackLeft) && !isOpaque(lowerFrontLeft)) {
-                model.addBoundedUVTriangle(frontRight, backRight, backLeft, lowerBackRightInChunk,
+                model.addBoundedTriangle(frontRight, backRight, backLeft, lowerBackRightInChunk,
                     uv_lower_right, uv_upper_right, uv_upper_left);
             }
         }
@@ -286,14 +297,14 @@ public class MergedOctahedrons {
             if (isOpaque(upperFrontRight)) {
                 // Upper diagonal
                 if (!isOpaque(upperBackRight) && !isOpaque(upperFrontLeft)) {
-                    model.addBoundedUVTriangle(backLeft, upperFront, upperRight, lowerFrontLeftInChunk,
+                    model.addBoundedTriangle(backLeft, upperFront, upperRight, lowerFrontLeftInChunk,
                         uv_upper_left, magic_bottom_right, magic_right_below);
                     if (isOpaque(lowerBackRight)) {
-                        model.addBoundedUVTriangle(backLeft, upperRight, backRight, lowerFrontLeftInChunk,
+                        model.addBoundedTriangle(backLeft, upperRight, backRight, lowerFrontLeftInChunk,
                             uv_upper_left, magic_right_below, uv_upper_right);
                     }
                     if (isOpaque(lowerFrontLeft)) {
-                        model.addBoundedUVTriangle(backLeft, frontLeft, upperFront, lowerFrontLeftInChunk,
+                        model.addBoundedTriangle(backLeft, frontLeft, upperFront, lowerFrontLeftInChunk,
                             uv_upper_left, uv_lower_left, magic_bottom_right);
                     }
                 }
@@ -309,12 +320,14 @@ public class MergedOctahedrons {
                 // Cutoff
                 if (!isOpaque(lowerBackRight) && isOpaque(lowerFrontRight)) {
                     center.type = lowerBackLeft;
-                    model.addBoundedTriangle(backLeft, center, lowerBack, lowerBackLeftInChunk);
-                    model.addBoundedTriangle(backLeft, upperLeft, center, lowerBackLeftInChunk);
+                    model.addBoundedTriangle(backLeft, center, lowerBack, lowerBackLeftInChunk, 
+                        tri_right, tri_left, tri_middle_lower);
+                    model.addBoundedTriangle(backLeft, upperLeft, center, lowerBackLeftInChunk,
+                        tri_right, tri_middle_upper, tri_left);
                 }
             }
             else if (isOpaque(lowerBackRight) && isOpaque(lowerFrontLeft) && !isOpaque(lowerFrontRight)) {
-                model.addBoundedUVTriangle(backRight, backLeft, frontLeft, lowerBackLeftInChunk,
+                model.addBoundedTriangle(backRight, backLeft, frontLeft, lowerBackLeftInChunk,
                     uv_upper_right, uv_upper_left, uv_lower_left);
             }
         }
@@ -412,17 +425,12 @@ public class MergedOctahedrons {
         }
 
         // Eight-way symmetrical parts
-        Vector2f tri_left = new Vector2f(1 - 0.5f * (float)Math.sqrt(.5), 0.5f);
-        Vector2f tri_right = new Vector2f(1 + 0.5f * (float)Math.sqrt(.5), 0.5f);
-        Vector2f tri_middle_lower = new Vector2f(1f, 0.5f - 0.5f * (float)Math.sqrt(1.5));
-        Vector2f tri_middle_upper = new Vector2f(1f, 0.5f + 0.5f * (float)Math.sqrt(1.5));
-
         // Standard orientation
         if (isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft)) {
             if (isOpaque(upperBackLeft)) {
                 if (isOpaque(upperFrontRight)) {
                     // Chipped block
-                    model.addBoundedUVTriangle(frontLeft, upperFront, upperLeft, lowerFrontLeftInChunk, 
+                    model.addBoundedTriangle(frontLeft, upperFront, upperLeft, lowerFrontLeftInChunk, 
                         tri_middle_lower, tri_right, tri_left);
                 }
             }
@@ -430,7 +438,7 @@ public class MergedOctahedrons {
                 && !isOpaque(upperBackRight) && !isOpaque(lowerBackRight))
             {
                 // Single tri
-                model.addBoundedUVTriangle(frontLeft, lowerFront, lowerLeft, lowerFrontLeftInChunk, 
+                model.addBoundedTriangle(frontLeft, lowerFront, lowerLeft, lowerFrontLeftInChunk, 
                     tri_middle_upper, tri_left, tri_right);
             }
         }
@@ -440,7 +448,7 @@ public class MergedOctahedrons {
             if (isOpaque(upperFrontLeft)) {
                 if (isOpaque(upperBackRight)) {
                     // Chipped block
-                    model.addBoundedUVTriangle(frontRight, upperRight, upperFront, lowerFrontRightInChunk, 
+                    model.addBoundedTriangle(frontRight, upperRight, upperFront, lowerFrontRightInChunk, 
                         tri_middle_lower, tri_right, tri_left);
                 }
             }
@@ -448,7 +456,7 @@ public class MergedOctahedrons {
                 && !isOpaque(upperBackLeft) && !isOpaque(lowerBackLeft))
             {
                 // Single tri
-                model.addBoundedUVTriangle(frontRight, lowerRight, lowerFront, lowerFrontRightInChunk, 
+                model.addBoundedTriangle(frontRight, lowerRight, lowerFront, lowerFrontRightInChunk, 
                     tri_middle_upper, tri_left, tri_right);
             }
         }
@@ -458,7 +466,7 @@ public class MergedOctahedrons {
             if (isOpaque(upperFrontRight)) {
                 if (isOpaque(upperBackLeft)) {
                     // Chipped block
-                    model.addBoundedUVTriangle(backRight, upperBack, upperRight, lowerBackRightInChunk, 
+                    model.addBoundedTriangle(backRight, upperBack, upperRight, lowerBackRightInChunk, 
                         tri_middle_lower, tri_right, tri_left);
                 }
             }
@@ -466,7 +474,7 @@ public class MergedOctahedrons {
                 && !isOpaque(upperFrontLeft) && !isOpaque(lowerFrontLeft))
             {
                 // Single tri
-                model.addBoundedUVTriangle(backRight, lowerBack, lowerRight, lowerBackRightInChunk, 
+                model.addBoundedTriangle(backRight, lowerBack, lowerRight, lowerBackRightInChunk, 
                     tri_middle_upper, tri_left, tri_right);
             }
         }
@@ -476,7 +484,7 @@ public class MergedOctahedrons {
             if (isOpaque(upperBackRight)) {
                 if (isOpaque(upperFrontLeft)) {
                     // Chipped block
-                    model.addBoundedUVTriangle(backLeft, upperLeft, upperBack, lowerBackLeftInChunk, 
+                    model.addBoundedTriangle(backLeft, upperLeft, upperBack, lowerBackLeftInChunk, 
                         tri_middle_lower, tri_right, tri_left);
                 }
             }
@@ -484,7 +492,7 @@ public class MergedOctahedrons {
                 && !isOpaque(upperFrontRight) && !isOpaque(lowerFrontRight))
             {
                 // Single tri
-                model.addBoundedUVTriangle(backLeft, lowerLeft, lowerBack, lowerBackLeftInChunk, 
+                model.addBoundedTriangle(backLeft, lowerLeft, lowerBack, lowerBackLeftInChunk, 
                     tri_middle_upper, tri_left, tri_right);
             }
         }
@@ -494,7 +502,7 @@ public class MergedOctahedrons {
             if (isOpaque(lowerBackRight)) {
                 if (isOpaque(lowerFrontLeft)) {
                     // Chipped block
-                    model.addBoundedUVTriangle(frontRight, lowerFront, lowerRight, upperFrontRightInChunk, 
+                    model.addBoundedTriangle(frontRight, lowerFront, lowerRight, upperFrontRightInChunk, 
                         tri_middle_upper, tri_left, tri_right);
                 }
             }
@@ -502,7 +510,7 @@ public class MergedOctahedrons {
                 && !isOpaque(lowerBackLeft) && !isOpaque(upperBackLeft))
             {
                 // Single tri
-                model.addBoundedUVTriangle(frontRight, upperFront, upperRight, upperFrontRightInChunk, 
+                model.addBoundedTriangle(frontRight, upperFront, upperRight, upperFrontRightInChunk, 
                     tri_middle_lower, tri_left, tri_right);
             }
         }
@@ -512,7 +520,7 @@ public class MergedOctahedrons {
             if (isOpaque(lowerFrontRight)) {
                 if (isOpaque(lowerBackLeft)) {
                     // Chipped block
-                    model.addBoundedUVTriangle(frontLeft, lowerLeft, lowerFront, upperFrontLeftInChunk, 
+                    model.addBoundedTriangle(frontLeft, lowerLeft, lowerFront, upperFrontLeftInChunk, 
                         tri_middle_upper, tri_left, tri_right);
                 }
             }
@@ -520,7 +528,7 @@ public class MergedOctahedrons {
                 && !isOpaque(lowerBackRight) && !isOpaque(upperBackRight))
             {
                 // Single tri
-                model.addBoundedUVTriangle(frontLeft, upperLeft, upperFront, upperFrontLeftInChunk, 
+                model.addBoundedTriangle(frontLeft, upperLeft, upperFront, upperFrontLeftInChunk, 
                     tri_middle_lower, tri_left, tri_right);
             }
         }
@@ -530,7 +538,7 @@ public class MergedOctahedrons {
             if (isOpaque(lowerFrontLeft)) {
                 if (isOpaque(lowerBackRight)) {
                     // Chipped block
-                    model.addBoundedUVTriangle(backLeft, lowerBack, lowerLeft, upperBackLeftInChunk, 
+                    model.addBoundedTriangle(backLeft, lowerBack, lowerLeft, upperBackLeftInChunk, 
                         tri_middle_upper, tri_left, tri_right);
                 }
             }
@@ -538,7 +546,7 @@ public class MergedOctahedrons {
                 && !isOpaque(lowerFrontRight) && !isOpaque(upperFrontRight))
             {
                 // Single tri
-                model.addBoundedUVTriangle(backLeft, upperBack, upperLeft, upperBackLeftInChunk, 
+                model.addBoundedTriangle(backLeft, upperBack, upperLeft, upperBackLeftInChunk, 
                     tri_middle_lower, tri_left, tri_right);
             }
         }
@@ -548,7 +556,7 @@ public class MergedOctahedrons {
             if (isOpaque(lowerBackLeft)) {
                 if (isOpaque(lowerFrontRight)) {
                     // Chipped block
-                    model.addBoundedUVTriangle(backRight, lowerRight, lowerBack, upperBackRightInChunk, 
+                    model.addBoundedTriangle(backRight, lowerRight, lowerBack, upperBackRightInChunk, 
                         tri_middle_upper, tri_left, tri_right);
                 }
             }
@@ -556,7 +564,7 @@ public class MergedOctahedrons {
                 && !isOpaque(lowerFrontLeft) && !isOpaque(upperFrontLeft))
             {
                 // Single tri
-                model.addBoundedUVTriangle(backRight, upperRight, upperBack, upperBackRightInChunk, 
+                model.addBoundedTriangle(backRight, upperRight, upperBack, upperBackRightInChunk, 
                     tri_middle_lower, tri_left, tri_right);
             }
         }

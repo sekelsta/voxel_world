@@ -206,31 +206,22 @@ public class TerrainModelData {
         connectivity = null;
     }
 
-    public void addBoundedTriangle(Vertex v0, Vertex v1, Vertex v2, boolean inBounds) {
+    public void addBoundedTriangle(Vertex v0, Vertex v1, Vertex v2, boolean inBounds,
+            Vector2f uv0, Vector2f uv1, Vector2f uv2) {
         assert(v0 != null);
         assert(v1 != null);
         assert(v2 != null);
         if (inBounds) {
             addTriangle(v0, v1, v2);
+            Vector2f[] uvs = {uv0, uv1, uv2};
+            uvTriOverrides.add(uvs);
         }
         else {
             Vertex[] face = {v0, v1, v2};
             outOfBoundsFaces.add(face);
             connectivity = null;
+            // It'll get trimmed so we won't care about the UV values
         }
-    }
-
-    public void addBoundedUVTriangle(Vertex v0, Vertex v1, Vertex v2, boolean inBounds,
-            Vector2f uv0, Vector2f uv1, Vector2f uv2) {
-        addBoundedTriangle(v0, v1, v2, inBounds);
-        if (inBounds) {
-            Vector2f[] uvs = {uv0, uv1, uv2};
-            while (uvTriOverrides.size() < faces.size()) {
-                uvTriOverrides.add(null);
-            }
-            uvTriOverrides.set(faces.size() - 1, uvs);
-        }
-        // Else, it'll get trimmed so we won't care about the UV values
     }
 
     private void addOutOfBoundsQuad(Vertex v0, Vertex v1, Vertex v2, Vertex v3) {
