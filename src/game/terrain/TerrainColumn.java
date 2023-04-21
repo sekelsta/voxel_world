@@ -3,8 +3,8 @@ package sekelsta.game.terrain;
 import java.util.*;
 
 public class TerrainColumn {
-    private final int chunkX;
-    private final int chunkY;
+    public final int chunkX;
+    public final int chunkY;
 
     private Surface surface;
     private Map<Integer, Chunk> loadedChunks = new HashMap<>();

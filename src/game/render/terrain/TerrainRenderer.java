@@ -160,94 +160,55 @@ public class TerrainRenderer {
         int minZ = (int)Math.floor(bound.getMinZ() / Chunk.SIZE * terrain.blockSize);
         int maxZ = (int)Math.ceil(bound.getMaxZ() / Chunk.SIZE * terrain.blockSize);
 
-        // Rendering is front to back, more performant for opaque things
-        Vector3f near = Vector3f.average(upperNearLeft, upperNearRight, lowerNearLeft, lowerNearRight);
-        Vector3f far = Vector3f.average(upperFarLeft, upperFarRight, lowerFarLeft, lowerFarRight);
-        int xStart, xStop, xDir;
-        if (near.x <= far.x) {
-            xStart = minX;
-            xStop = maxX;
-            xDir = 1;
-        }
-        else {
-            xStart = maxX;
-            xStop = minX;
-            xDir = -1;
-        }
-
-        int yStart, yStop, yDir;
-        if (near.y <= far.y) {
-            yStart = minY;
-            yStop = maxY;
-            yDir = 1;
-        }
-        else {
-            yStart = maxY;
-            yStop = minY;
-            yDir = -1;
-        }
-
-        int zStart, zStop, zDir;
-        if (near.z <= far.z) {
-            zStart = minZ;
-            zStop = maxZ;
-            zDir = 1;
-        }
-        else {
-            zStart = maxZ;
-            zStop = minZ;
-            zDir = -1;
-        }
-
         // Expand frustum by 1/2 chunk in each direction for chunk culling
         float chunkSize = (float)Chunk.SIZE / terrain.blockSize;
         frustum.grown(frustumMatrix, chunkSize * 0.87f); // 0.87 > sqrt(3)/2
         frustumMatrix.multiply(stack.getResult());
 
-        for (int x = xStart; x * xDir <= xStop * xDir; x += xDir) {
-            for (int y = yStart; y * yDir <= yStop * yDir; y += yDir) {
-                TerrainColumn column = terrain.getColumnIfLoaded(x, y);
-                if (column == null) {
+        // TO_OPTIMIZE: Sort columns front to back, more performant for opaque things
+        for (TerrainColumn column : terrain.getRenderableColumns()) {
+            if (column.chunkX < minX || column.chunkX > maxX || column.chunkY < minY || column.chunkY > maxY) {
+                continue;
+            }
+
+            // TO_OPTIMIZE: Cull if outside of frustum
+            int x = column.chunkX;
+            int y = column.chunkY;
+            Vector2i surfacePos = new Vector2i(x, y);
+            float scale = (float)Chunk.SIZE / terrain.blockSize;
+            if (surfaceMeshes.containsKey(surfacePos)) {
+                stack.push();
+                stack.translate(x * scale, y * scale, 0);
+                surfaceMeshes.get(surfacePos).render();
+                stack.pop();
+            }
+            else {
+                surfaceMeshingThread.queueTask(surfacePos);
+            }
+
+            List<Integer> chunkLocations = column.getLoadedChunkLocations(minZ, maxZ);
+            for (int z : chunkLocations) {
+                Chunk chunk = column.getChunk(z);
+                if (chunk == null || chunk.isEmpty()) {
+                    continue;
+                }
+                Vector4f chunkCenter = new Vector4f((x + 0.5f) * chunkSize, (y + 0.5f) * chunkSize, (z + 0.5f) * chunkSize);
+                Vector3f clipSpace = frustumMatrix.transform(chunkCenter).toVec3();
+                if (clipSpace.x > 1 || clipSpace.x < -1
+                        || clipSpace.y > 1 || clipSpace.y < -1
+                        || clipSpace.z > 1 || clipSpace.z < -1) {
                     continue;
                 }
 
-                // TO_OPTIMIZE: Cull if outside of frustum
-                Vector2i surfacePos = new Vector2i(x, y);
-                float scale = (float)Chunk.SIZE / terrain.blockSize;
-                if (surfaceMeshes.containsKey(surfacePos)) {
+                ChunkPos chunkPos = new ChunkPos(x, y, z);
+                if (meshes.containsKey(chunkPos)) {
                     stack.push();
-                    stack.translate(x * scale, y * scale, 0);
-                    surfaceMeshes.get(surfacePos).render();
+                    stack.translate(x * scale, y * scale, z * scale);
+                    meshes.get(chunkPos).render();
                     stack.pop();
                 }
                 else {
-                    surfaceMeshingThread.queueTask(surfacePos);
-                }
-
-                List<Integer> chunkLocations = column.getLoadedChunkLocations(zStart, zStop);
-                for (int z : chunkLocations) {
-                    Chunk chunk = column.getChunk(z);
-                    if (chunk == null || chunk.isEmpty()) {
-                        continue;
-                    }
-                    Vector4f chunkCenter = new Vector4f((x + 0.5f) * chunkSize, (y + 0.5f) * chunkSize, (z + 0.5f) * chunkSize);
-                    Vector3f clipSpace = frustumMatrix.transform(chunkCenter).toVec3();
-                    if (clipSpace.x > 1 || clipSpace.x < -1
-                            || clipSpace.y > 1 || clipSpace.y < -1
-                            || clipSpace.z > 1 || clipSpace.z < -1) {
-                        continue;
-                    }
-
-                    ChunkPos chunkPos = new ChunkPos(x, y, z);
-                    if (meshes.containsKey(chunkPos)) {
-                        stack.push();
-                        stack.translate(x * scale, y * scale, z * scale);
-                        meshes.get(chunkPos).render();
-                        stack.pop();
-                    }
-                    else {
-                        chunkMeshingThread.queueTask(chunkPos);
-                    }
+                    chunkMeshingThread.queueTask(chunkPos);
                 }
             }
         }

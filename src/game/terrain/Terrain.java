@@ -1,6 +1,6 @@
 package sekelsta.game.terrain;
 
-import java.util.HashMap;
+import java.util.*;
 
 import sekelsta.game.Game;
 import sekelsta.game.Ray;
@@ -13,6 +13,7 @@ public class Terrain {
     public final int blockSize = 4;
 
     private HashMap<Vector2i, TerrainColumn> loadedColumns = new HashMap<>();
+    private List<TerrainColumn> renderableColumns = new ArrayList<>();
     private TerrainGenerator generator = new TerrainGenerator();
     private Game game;
     private TerrainRenderer terrainRenderer = null;
@@ -65,18 +66,43 @@ public class Terrain {
         // TO_OPTIMIZE: Load a cylinder or sphere of chunks instead of a rectangle
         for (int cx = chunkX - chunkLoadRadius; cx <= chunkX + chunkLoadRadius; ++cx) {
             for (int cy = chunkY - chunkLoadRadius; cy <= chunkY + chunkLoadRadius; ++cy) {
-                Vector2i pos = new Vector2i(cx, cy);
-                final int columnX = cx;
-                final int columnY = cy;
-                TerrainColumn column = loadedColumns.computeIfAbsent(pos, 
-                    (p) -> new TerrainColumn(columnX, columnY, generator, this)
-                );
+                TerrainColumn column = getOrLoadColumn(cx, cy);
                 column.loadChunkRange(chunkZ - chunkLoadRadius, chunkZ + chunkLoadRadius, generator, this);
             }
         }
     }
 
+    private TerrainColumn getOrLoadColumn(int chunkX, int chunkY) {
+        Vector2i pos = new Vector2i(chunkX, chunkY);
+        if (!loadedColumns.containsKey(pos)) {
+            loadedColumns.put(pos, new TerrainColumn(chunkX, chunkY, generator, this));
+            for (int cx = chunkX - 1; cx <= chunkX + 1; ++cx) {
+                for (int cy = chunkY - 1; cy <= chunkY + 1; ++cy) {
+                    Vector2i neighbor = new Vector2i(cx, cy);
+                    if (!loadedColumns.containsKey(neighbor)) {
+                        continue;
+                    }
+                    boolean neighborsLoaded = true;
+                    for (int nx = cx - 1; nx <= cx + 1; ++nx) {
+                        for (int ny = cy - 1; ny <= cy + 1; ++ny) {
+                            Vector2i nn = new Vector2i(nx, ny);
+                            neighborsLoaded &= loadedColumns.containsKey(nn);
+                        }
+                    }
+                    if (neighborsLoaded) {
+                        renderableColumns.add(loadedColumns.get(neighbor));
+                    }
+                }
+            }
+        }
+        return loadedColumns.get(pos);
+    }
+
     // TODO: Unload columns
+
+    public List<TerrainColumn> getRenderableColumns() {
+        return renderableColumns;
+    }
 
     public RaycastResult findHit(Ray ray) {
         float s = blockSize;
