@@ -210,7 +210,7 @@ public class Game implements ILoopable, INetworked {
             return;
         }
         window.updateInput();
-        renderer.render(interpolation, camera, world, overlay);
+        renderer.render(interpolation, camera, this, overlay);
         window.swapBuffers();
     }
 

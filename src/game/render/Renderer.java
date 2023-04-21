@@ -13,7 +13,9 @@ import sekelsta.engine.entity.Entity;
 import sekelsta.engine.render.*;
 import sekelsta.engine.render.entity.EntityRenderer;
 import sekelsta.engine.render.mesh.RigidMesh;
+import sekelsta.game.Game;
 import sekelsta.game.Ray;
+import sekelsta.game.RaycastResult;
 import sekelsta.game.World;
 import sekelsta.game.render.gui.Overlay;
 import sekelsta.game.render.terrain.TerrainRenderer;
@@ -116,16 +118,16 @@ public class Renderer implements IFramebufferSizeListener {
         }
     }
 
-    public void render(float lerp, Camera camera, World world, Overlay overlay) {
+    public void render(float lerp, Camera camera, Game game, Overlay overlay) {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
         if (camera != null) {
-            renderWorld(lerp, camera, world);
+            renderWorld(lerp, camera, game);
         }
         renderOverlay(overlay);
     }
 
-    private void renderWorld(float lerp, Camera camera, World world) {
+    private void renderWorld(float lerp, Camera camera, Game game) {
         GL30.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, FBO);
         assert(GL30.glCheckFramebufferStatus(GL30C.GL_FRAMEBUFFER) == GL30C.GL_FRAMEBUFFER_COMPLETE);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -133,6 +135,7 @@ public class Renderer implements IFramebufferSizeListener {
         // Render world
         matrixStack.push();
 
+        World world = game.getWorld();
         if (world.isPaused()) {
             lerp = 0;
         }
@@ -189,6 +192,23 @@ public class Renderer implements IFramebufferSizeListener {
         shader.use();
         skyRenderer.renderSun(matrixStack, lerp, frustum.getFar());
 
+        Ray ray = game.getPointerRay();
+        RaycastResult hit = world.getTerrain().findHit(ray);
+        if (hit != null) {
+            shader.setReflectance(0);
+            matrixStack.push();
+            float s = 1.5f;
+            matrixStack.scale(s / world.getTerrain().blockSize);
+            matrixStack.translate((.5f + hit.x()) / s, (0.5f + hit.y()) / s, (0.5f + hit.z()) / s);
+            enterWireframe();
+            Textures.BLACK.bind();
+            Textures.BLACK.bindEmission();
+            Meshes.cube().render();
+            exitWireframe();
+            matrixStack.pop();
+            shader.setDefaultMaterial();
+        }
+
         atmosphereShader.use();
         atmosphereShader.setUniform("sun_pos", sunPos);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -237,7 +257,7 @@ public class Renderer implements IFramebufferSizeListener {
         Vector4f origin4 = new Vector4f((float)xClipSpace, (float)yClipSpace, -1, 1);
         Vector4f destination = new Vector4f((float)xClipSpace, (float)yClipSpace, 1, 1);
 
-        // TO_OPTIMIZE: matrixStack sends the result to the shader on every change, avoid that
+        MatrixStack matrixStack = new MatrixStack();
         matrixStack.push();
         camera.transform(matrixStack, lerp);
         Matrix4f matrix = matrixStack.getResult();
