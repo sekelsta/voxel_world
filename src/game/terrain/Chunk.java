@@ -1,7 +1,7 @@
 package sekelsta.game.terrain;
 
 public interface Chunk {
-    static final int TWO_POWER_SIZE = 6;
+    static final int TWO_POWER_SIZE = 5;
     // The number of blocks high, deep, and wide a chunk is. The total
     // number of blocks in a chunk is SIZE cubed.
     static final int SIZE = 1 << TWO_POWER_SIZE;
