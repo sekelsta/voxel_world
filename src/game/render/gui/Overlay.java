@@ -170,9 +170,22 @@ public class Overlay {
     }
 
     private void renderDebugText(double screenWidth, double screenHeight) {
-        Ray ray = game.getPointerRay();
-        RaycastResult hit = game.getWorld().getTerrain().findHit(ray);
-        String debugText = hit == null? "RaycastResult: null" : hit.toString();
-        Fonts.getTextFont().blit(debugText, 0, 0);
+        ArrayList<String> debugText = new ArrayList<>();
+        float ticksPerSecond = 1000000000f * game.updateTotalTimes.size() / game.updateTotalTimes.sum();
+        String tps = String.format("%.1f", ticksPerSecond);
+        String updatems = String.format("%.1f", game.updateTimes.sum() / 1000000f / game.updateTimes.size());
+        String mspt = String.format("%.1f", 1000 / ticksPerSecond);
+        debugText.add("TPS: " + tps + " (" + updatems + " of " + mspt + " ms)");
+        float framesPerSecond = 1000000000f * game.renderTotalTimes.size() / game.renderTotalTimes.sum();
+        String fps = String.format("%.1f", framesPerSecond);
+        String renderms = String.format("%.1f", game.renderTimes.sum() / 1000000f / game.renderTimes.size());
+        String mspr = String.format("%.1f", 1000 / framesPerSecond);
+        debugText.add("FPS: " + fps + " (" + renderms + " of " + mspr + " ms)");
+        if (game.getWorld() != null) {
+            Ray ray = game.getPointerRay();
+            RaycastResult hit = game.getWorld().getTerrain().findHit(ray);
+            debugText.add(hit == null? "RaycastResult: null" : hit.toString());
+        }
+        Fonts.getTextFont().blitLines(debugText, 0, 0);
     }
 }

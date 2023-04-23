@@ -6,7 +6,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.*;
 
 import sekelsta.engine.render.ImageRGBA;
 import sekelsta.engine.render.SpriteBatch;
@@ -159,6 +159,13 @@ public class BitmapFont {
 
     public void blitCursor(int x, int y, float r, float g, float b) {
         spritebatch.blit(x, y, cursor.width, cursor.height, cursor.x, cursor.y, r, g, b);
+    }
+
+    public void blitLines(List<String> text, int x, int y) {
+        for (String s : text) {
+            blit(s, x, y);
+            y += getHeight();
+        }
     }
 
     public void render() {

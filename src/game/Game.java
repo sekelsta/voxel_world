@@ -36,6 +36,13 @@ public class Game implements ILoopable, INetworked {
     private Overlay overlay;
     private Clip music;
 
+    private long prevUpdateEnd;
+    private long prevRenderStart;
+    public final CircularLongArray updateTimes;
+    public final CircularLongArray updateTotalTimes;
+    public final CircularLongArray renderTimes;
+    public final CircularLongArray renderTotalTimes;
+
     public Game(boolean graphical) {
         if (graphical) {
             this.initialConfig = new InitialConfig(DataFolders.getUserMachineFolder("initconfig.toml"));
@@ -68,6 +75,12 @@ public class Game implements ILoopable, INetworked {
         }
         this.world = null;
         Entities.init();
+
+        int timesStored = 30;
+        updateTimes = new CircularLongArray(timesStored);
+        updateTotalTimes = new CircularLongArray(timesStored);
+        renderTimes = new CircularLongArray(timesStored);
+        renderTotalTimes = new CircularLongArray(timesStored);
     }
 
     public void enterWorld() {
@@ -184,6 +197,7 @@ public class Game implements ILoopable, INetworked {
 
     @Override
     public void update() {
+        long updateStart = System.nanoTime();
         if (window != null) {
             window.updateInput();
         }
@@ -202,6 +216,10 @@ public class Game implements ILoopable, INetworked {
             }
             networkManager.update(this);
         }
+        long updateEnd = System.nanoTime();
+        updateTimes.add(updateEnd - updateStart);
+        updateTotalTimes.add(updateEnd - prevUpdateEnd);
+        prevUpdateEnd = updateEnd;
     }
 
     @Override
@@ -209,9 +227,14 @@ public class Game implements ILoopable, INetworked {
         if (window == null) {
             return;
         }
+        long renderStart = System.nanoTime();
         window.updateInput();
         renderer.render(interpolation, camera, this, overlay);
+        long renderEnd = System.nanoTime(); // Avoid timing window.swapBuffers() since that may wait
         window.swapBuffers();
+        renderTimes.add(renderEnd - renderStart);
+        renderTotalTimes.add(renderStart - prevRenderStart);
+        prevRenderStart = renderStart;
     }
 
     public void stop() {
