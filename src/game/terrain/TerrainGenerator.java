@@ -3,13 +3,16 @@ package sekelsta.game.terrain;
 import java.util.Map;
 
 public class TerrainGenerator {
-    public int getHighestChunk(int chunkX, int chunkY) {
-        return 0;
-    }
-
     public void loadChunkRange(int chunkX, int chunkY, Map<Integer, Chunk> loadedChunks,
             int minChunkZ, int maxChunkZ, Terrain terrain) {
         // Do nothing (only generate surfaces)
+    }
+
+    public void loadSurfaceChunks(int chunkX, int chunkY, Map<Integer, Chunk> loadedChunks, Terrain terrain) {
+        int chunkZ = 0;
+        Chunk chunk = generateChunk(chunkX, chunkY, chunkZ);
+        loadedChunks.put(chunkZ, chunk);
+        terrain.onChunkLoaded(chunkX, chunkY, chunkZ);
     }
 
     public Chunk generateChunk(int chunkX, int chunkY, int chunkZ) {
@@ -33,14 +36,5 @@ public class TerrainGenerator {
 
     public short generateBlock(int x, int y, int z) {
         return z > 0? Block.EMPTY : Block.DIRT;
-    }
-
-    public Surface generateSurface(int chunkX, int chunkY) {
-        short[] blocks = new short[Chunk.SIZE * Chunk.SIZE];
-        int[] heights = new int[Chunk.SIZE * Chunk.SIZE];
-        for (int i = 0; i < Chunk.SIZE * Chunk.SIZE; ++i) {
-            blocks[i] = Block.DIRT;
-        }
-        return new Surface(blocks, heights);
     }
 }

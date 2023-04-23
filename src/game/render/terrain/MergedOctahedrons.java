@@ -775,7 +775,6 @@ public class MergedOctahedrons {
         );
     }
 
-    // TO_LATER_DO: Share more code between the surface-based and chunk-based getMesh()
     public TerrainMeshData getMesh(int numIterations, float weight, int chunkX, int chunkY, int chunkZ) {
         TerrainColumn column = terrain.getColumnIfLoaded(chunkX, chunkY);
         if (column == null) {
@@ -806,35 +805,6 @@ public class MergedOctahedrons {
 
         model.calcNormals();
         addBumps(chunkX, chunkY, chunkZ);
-        model.calcNormals();
-        model.trim();
-        return new TerrainMeshData(model.finalizeToVertexList());
-    }
-
-    public TerrainMeshData getMesh(int numIterations, float weight, int chunkX, int chunkY, Surface surface) {
-        int margin = numIterations + 1;
-        for (int x = -1 - margin; x < Chunk.SIZE + margin; ++x) {
-            for (int y = -1 - margin; y < Chunk.SIZE + margin; ++y) {
-                int nx = (int)Math.max(Chunk.SIZE - 1, Math.min(0, x));
-                int ny = (int)Math.max(Chunk.SIZE - 1, Math.min(0, y));
-                int h = surface.getHeight(nx, ny);
-                for (int z = h - 1 - margin; z <= h + margin; ++z) {
-                    addGeometry(chunkX, chunkY, 0, x, y, z, false);
-                }
-            }
-        }
-        model.addTrim();
-
-        List<Vector3f> originalLocations = new ArrayList<>();
-        for (Vertex vertex : model.getVertices()) {
-            originalLocations.add(new Vector3f(vertex.position));
-        }
-        for (int i = 0; i < numIterations; ++i) {
-            model.contract(originalLocations, 0.5f / terrain.blockSize, weight);
-        }
-
-        model.calcNormals();
-        addBumps(chunkX, chunkY, 0);
         model.calcNormals();
         model.trim();
         return new TerrainMeshData(model.finalizeToVertexList());

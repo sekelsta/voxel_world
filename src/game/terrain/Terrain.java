@@ -46,7 +46,7 @@ public class Terrain {
                 if (cx != pos.x() || cy != pos.y()) {
                     TerrainColumn neighbor = loadedColumns.get(new Vector2i(cx, cy));
                     if (neighbor != null) {
-                        neighbor.onSurfaceExposed(x, y, z, generator, this);
+                        neighbor.onChunkMaybeExposed(z, generator, this);
                     }
                 }
             }
@@ -174,18 +174,6 @@ public class Terrain {
     public void onChunkLoaded(int chunkX, int chunkY, int chunkZ) {
         if (terrainRenderer != null) {
             terrainRenderer.onChunkLoaded(chunkX, chunkY, chunkZ);
-        }
-    }
-
-    public void onSurfaceChanged(int chunkX, int chunkY) {
-        if (terrainRenderer != null) {
-            terrainRenderer.onSurfaceChanged(chunkX, chunkY);
-        }
-    }
-
-    public void onSurfaceLoaded(int chunkX, int chunkY, Surface surface) {
-        if (terrainRenderer != null) {
-            terrainRenderer.onSurfaceLoaded(chunkX, chunkY, surface);
         }
     }
 
