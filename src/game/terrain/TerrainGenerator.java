@@ -16,7 +16,7 @@ public class TerrainGenerator {
     }
 
     public Chunk generateChunk(int chunkX, int chunkY, int chunkZ) {
-        RunChunk chunk = new RunChunk();
+        Chunk chunk = new Chunk();
         if (chunkZ > 0) {
             return chunk;
         }

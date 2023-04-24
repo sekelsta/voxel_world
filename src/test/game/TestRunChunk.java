@@ -6,12 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import sekelsta.game.terrain.Block;
 import sekelsta.game.terrain.Chunk;
-import sekelsta.game.terrain.RunChunk;
 
 class TestRunChunk {
     @Test
     void setEmptyToEmpty() {
-        RunChunk chunk = new RunChunk();
+        Chunk chunk = new Chunk();
         assert(Chunk.SIZE > 3);
         int x = 1;
         int y = 2;
@@ -22,7 +21,7 @@ class TestRunChunk {
 
     @Test
     void setEmptyToNonempty() {
-        RunChunk chunk = new RunChunk();
+        Chunk chunk = new Chunk();
         assert(Chunk.SIZE > 3);
         int x = 1;
         int y = 2;
@@ -36,7 +35,7 @@ class TestRunChunk {
 
     @Test
     void setEmptyAfterNonempty() {
-        RunChunk chunk = new RunChunk();
+        Chunk chunk = new Chunk();
         assert(Chunk.SIZE > 3);
         int x = 1;
         int y = 2;
@@ -51,7 +50,7 @@ class TestRunChunk {
 
     @Test
     void setDifferentRuns() {
-        RunChunk chunk = new RunChunk();
+        Chunk chunk = new Chunk();
         assert(Chunk.SIZE > 3);
         int x = 1;
         int y = 2;
@@ -66,7 +65,7 @@ class TestRunChunk {
 
     @Test
     void setRunStart() {
-        RunChunk chunk = new RunChunk();
+        Chunk chunk = new Chunk();
         assert(Chunk.SIZE > 3);
         int x = 1;
         int y = 0;
@@ -80,7 +79,7 @@ class TestRunChunk {
 
     @Test
     void setDifferentTypes() {
-        RunChunk chunk = new RunChunk();
+        Chunk chunk = new Chunk();
         assert(Chunk.SIZE > 3);
         int x = 1;
         int y = 2;
@@ -93,7 +92,7 @@ class TestRunChunk {
 
     @Test
     void setIslands() {
-        RunChunk chunk = new RunChunk();
+        Chunk chunk = new Chunk();
         assert(Chunk.SIZE > 3);
         int x = 1;
         int y = 2;
