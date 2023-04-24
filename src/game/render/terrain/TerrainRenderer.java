@@ -71,6 +71,9 @@ public class TerrainRenderer {
     }
 
     public void onChunkLoaded(int chunkX, int chunkY, int chunkZ) {
+        if (meshingThread.hasTask(l -> l.contains(new ChunkPos(chunkX, chunkY, chunkZ)))) {
+            return;
+        }
         for (int cx = chunkX - 1; cx <= chunkX + 1; ++cx) {
             for (int cy = chunkY - 1; cy <= chunkY + 1; ++cy) {
                 for (int cz = chunkZ - 1; cz <= chunkZ + 1; ++cz) {

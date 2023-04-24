@@ -1,7 +1,7 @@
 package sekelsta.game.render.terrain;
 
 import java.util.concurrent.*;
-import java.util.function.Function;
+import java.util.function.*;
 
 import sekelsta.engine.Pair;
 
@@ -11,6 +11,7 @@ public class TaskThread<In, Out> extends Thread {
     private BlockingQueue<In> tasks = new LinkedBlockingQueue<>();
     private Function<In, Out> function;
     private boolean running = true;
+    private In currentTask = null;
 
     public TaskThread(String name, Function<In, Out> function) {
         super(name);
@@ -22,10 +23,13 @@ public class TaskThread<In, Out> extends Thread {
     public void run() {
         while(running) {
             try {
-                In task = tasks.take();
-                Out result = function.apply(task);
+                currentTask = tasks.take();
+                Out result = function.apply(currentTask);
                 if (result != null) {
-                    completed.add(new Pair<In, Out>(task, result));
+                    completed.add(new Pair<In, Out>(currentTask, result));
+                }
+                synchronized (this) {
+                    currentTask = null;
                 }
             }
             catch (InterruptedException e) {}
@@ -37,8 +41,25 @@ public class TaskThread<In, Out> extends Thread {
     }
 
     public synchronized void queueTask(In task) {
-        if (!tasks.contains(task)) {
+        if (!tasks.contains(task) && !task.equals(currentTask)) {
             tasks.add(task);
         }
+    }
+
+    public synchronized boolean hasTask(Predicate<In> predicate) {
+        for (In task : tasks) {
+            if (predicate.test(task)) {
+                return true;
+            }
+        }
+        if (currentTask != null && predicate.test(currentTask)) {
+            return true;
+        }
+        for (Pair<In, Out> result : completed) {
+            if (predicate.test(result.getKey())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
