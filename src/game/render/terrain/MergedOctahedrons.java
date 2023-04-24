@@ -776,15 +776,6 @@ public class MergedOctahedrons {
     }
 
     public TerrainMeshData getMesh(int numIterations, float weight, int chunkX, int chunkY, int chunkZ) {
-        TerrainColumn column = terrain.getColumnIfLoaded(chunkX, chunkY);
-        if (column == null) {
-            return null;
-        }
-        Chunk chunk = column.getChunk(chunkZ);
-        if (chunk == null || chunk.isEmpty()) {
-            return null;
-        }
-
         int margin = numIterations + 1;
         for (int z = -1 - margin; z < Chunk.SIZE + margin; ++z) {
             for (int x = -1 - margin; x < Chunk.SIZE + margin; ++x) {

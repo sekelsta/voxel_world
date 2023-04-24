@@ -26,30 +26,58 @@ public class TerrainRenderer {
 
     protected int neighborhood = 2 + numIterations;
 
-    TaskThread<ChunkPos, TerrainMeshData> chunkMeshingThread;
-    TaskThread<ArrayList<ChunkPos>, ArrayList<TerrainMeshData>> meshingThread;
+    MeshingThread meshingThread;
 
     public TerrainRenderer(Terrain terrain) {
         this.terrain = terrain;
         this.texture = new TextureArray("stone.png", "dirt.png", "sand.png", "checkers.png", "stripes.png", "snow.png", "sandstone.png");
         terrain.setTerrainRenderer(this);
-        chunkMeshingThread = new TaskThread<>("Chunk meshing thread", (pos) -> calculateChunk(pos));
-        chunkMeshingThread.start();
-
-        meshingThread = new TaskThread<>("Meshing thread", (batch) -> calculateBatch(batch));
+        meshingThread = new MeshingThread("Meshing thread", (batch) -> calculateBatch(batch));
         meshingThread.start();
-    }
-
-    private TerrainMeshData calculateChunk(ChunkPos pos) {
-        return new MergedOctahedrons(terrain).getMesh(numIterations, weight, pos.x, pos.y, pos.z);
     }
 
     private ArrayList<TerrainMeshData> calculateBatch(ArrayList<ChunkPos> batchChunks) {
         ArrayList<TerrainMeshData> chunks = new ArrayList<>();
         for (ChunkPos chunkPos : batchChunks) {
-            chunks.add(calculateChunk(chunkPos));
+            lockNearby(chunkPos.x, chunkPos.y, chunkPos.z);
+        }
+        for (ChunkPos chunkPos : batchChunks) {
+            chunks.add(
+                new MergedOctahedrons(terrain).getMesh(numIterations, weight, chunkPos.x, chunkPos.y, chunkPos.z)
+            );
+        }
+        for (ChunkPos chunkPos : batchChunks) {
+            unlockNearby(chunkPos.x, chunkPos.y, chunkPos.z);
         }
         return chunks;
+    }
+
+    private void lockNearby(int chunkX, int chunkY, int chunkZ) {
+        for (int cx = chunkX - 1; cx <= chunkX + 1; ++cx) {
+            for (int cy = chunkY - 1; cy <= chunkY + 1; ++cy) {
+                TerrainColumn column = terrain.getColumnIfLoaded(cx, cy);
+                for (int cz = chunkZ - 1; cz <= chunkZ + 1; ++cz) {
+                    Chunk chunk = column.getChunk(cz);
+                    if (chunk != null) {
+                        chunk.lock();
+                    }
+                }
+            }
+        }
+    }
+
+    private void unlockNearby(int chunkX, int chunkY, int chunkZ) {
+        for (int cx = chunkX - 1; cx <= chunkX + 1; ++cx) {
+            for (int cy = chunkY - 1; cy <= chunkY + 1; ++cy) {
+                TerrainColumn column = terrain.getColumnIfLoaded(cx, cy);
+                for (int cz = chunkZ - 1; cz <= chunkZ + 1; ++cz) {
+                    Chunk chunk = column.getChunk(cz);
+                    if (chunk != null) {
+                        chunk.unlock();
+                    }
+                }
+            }
+        }
     }
 
     public void onBlockChanged(int x, int y, int z, short block) {
@@ -70,17 +98,9 @@ public class TerrainRenderer {
         meshingThread.queueTask(chunksToRecalculate);
     }
 
-    public void onChunkLoaded(int chunkX, int chunkY, int chunkZ) {
-        if (meshingThread.hasTask(l -> l.contains(new ChunkPos(chunkX, chunkY, chunkZ)))) {
-            return;
-        }
-        for (int cx = chunkX - 1; cx <= chunkX + 1; ++cx) {
-            for (int cy = chunkY - 1; cy <= chunkY + 1; ++cy) {
-                for (int cz = chunkZ - 1; cz <= chunkZ + 1; ++cz) {
-                    ChunkPos pos = new ChunkPos(cx, cy, cz);
-                    chunkMeshingThread.queueTask(pos);
-                }
-            }
+    public void onColumnRenderable(TerrainColumn column) {
+        for (int chunkZ : column.getLoadedChunkLocations()) {
+            meshingThread.queueTask(new ChunkPos(column.chunkX, column.chunkY, chunkZ));
         }
     }
 
@@ -92,11 +112,6 @@ public class TerrainRenderer {
     }
 
     public void render(MatrixStack stack, Frustum frustum, float lerp) {
-        while (!chunkMeshingThread.completed.isEmpty()) {
-            Pair<ChunkPos, TerrainMeshData> pair = chunkMeshingThread.completed.remove();
-            replaceChunkMesh(pair.getKey(), pair.getValue());
-        }
-
         while (!meshingThread.completed.isEmpty()) {
             Pair<ArrayList<ChunkPos>, ArrayList<TerrainMeshData>> pair = meshingThread.completed.remove();
             ArrayList<ChunkPos> chunkPositions = pair.getKey();
@@ -161,8 +176,11 @@ public class TerrainRenderer {
             int y = column.chunkY;
             float scale = (float)Chunk.SIZE / terrain.blockSize;
 
-            List<Integer> chunkLocations = column.getLoadedChunkLocations(minZ, maxZ);
+            Set<Integer> chunkLocations = column.getLoadedChunkLocations();
             for (int z : chunkLocations) {
+                if (z < minZ || z > maxZ) {
+                    continue;
+                }
                 Chunk chunk = column.getChunk(z);
                 if (chunk == null || chunk.isEmpty()) {
                     continue;
@@ -187,7 +205,6 @@ public class TerrainRenderer {
     }
 
     public void clean() {
-        chunkMeshingThread.setDone();
         meshingThread.setDone();
         for (TerrainMesh mesh : meshes.values()) {
             mesh.clean();

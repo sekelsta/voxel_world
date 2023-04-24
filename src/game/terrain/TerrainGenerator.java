@@ -8,11 +8,10 @@ public class TerrainGenerator {
         // Do nothing (only generate surfaces)
     }
 
-    public void loadSurfaceChunks(int chunkX, int chunkY, Map<Integer, Chunk> loadedChunks, Terrain terrain) {
+    public void loadSurfaceChunks(int chunkX, int chunkY, Map<Integer, Chunk> loadedChunks) {
         int chunkZ = 0;
         Chunk chunk = generateChunk(chunkX, chunkY, chunkZ);
         loadedChunks.put(chunkZ, chunk);
-        terrain.onChunkLoaded(chunkX, chunkY, chunkZ);
     }
 
     public Chunk generateChunk(int chunkX, int chunkY, int chunkZ) {

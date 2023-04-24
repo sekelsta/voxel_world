@@ -46,7 +46,7 @@ public class Terrain {
                 if (cx != pos.x() || cy != pos.y()) {
                     TerrainColumn neighbor = loadedColumns.get(new Vector2i(cx, cy));
                     if (neighbor != null) {
-                        neighbor.onChunkMaybeExposed(z, generator, this);
+                        neighbor.onChunkMaybeExposed(z, generator);
                     }
                 }
             }
@@ -75,7 +75,7 @@ public class Terrain {
     private TerrainColumn getOrLoadColumn(int chunkX, int chunkY) {
         Vector2i pos = new Vector2i(chunkX, chunkY);
         if (!loadedColumns.containsKey(pos)) {
-            loadedColumns.put(pos, new TerrainColumn(chunkX, chunkY, generator, this));
+            loadedColumns.put(pos, new TerrainColumn(chunkX, chunkY, generator));
             for (int cx = chunkX - 1; cx <= chunkX + 1; ++cx) {
                 for (int cy = chunkY - 1; cy <= chunkY + 1; ++cy) {
                     Vector2i neighbor = new Vector2i(cx, cy);
@@ -90,7 +90,11 @@ public class Terrain {
                         }
                     }
                     if (neighborsLoaded) {
-                        renderableColumns.add(loadedColumns.get(neighbor));
+                        TerrainColumn renderableColumn = loadedColumns.get(neighbor);
+                        renderableColumns.add(renderableColumn);
+                        if (terrainRenderer != null) {
+                            terrainRenderer.onColumnRenderable(renderableColumn);
+                        }
                     }
                 }
             }
@@ -168,12 +172,6 @@ public class Terrain {
     public void onBlockChanged(int x, int y, int z, short block) {
         if (terrainRenderer != null) {
             terrainRenderer.onBlockChanged(x, y, z, block);
-        }
-    }
-
-    public void onChunkLoaded(int chunkX, int chunkY, int chunkZ) {
-        if (terrainRenderer != null) {
-            terrainRenderer.onChunkLoaded(chunkX, chunkY, chunkZ);
         }
     }
 

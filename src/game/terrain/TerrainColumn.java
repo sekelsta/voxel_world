@@ -9,10 +9,10 @@ public class TerrainColumn {
     private int surfaceChunkZ;
     private Map<Integer, Chunk> loadedChunks = new HashMap<>();
 
-    public TerrainColumn(int chunkX, int chunkY, TerrainGenerator generator, Terrain terrain) {
+    public TerrainColumn(int chunkX, int chunkY, TerrainGenerator generator) {
         this.chunkX = chunkX;
         this.chunkY = chunkY;
-        generator.loadSurfaceChunks(chunkX, chunkY, loadedChunks, terrain);
+        generator.loadSurfaceChunks(chunkX, chunkY, loadedChunks);
     }
 
     public void loadChunkRange(int minChunk, int maxChunk, TerrainGenerator generator, Terrain terrain) {
@@ -45,8 +45,8 @@ public class TerrainColumn {
         if (!changed) {
             return;
         }
-        onChunkMaybeExposed(z - 1, generator, terrain);
-        onChunkMaybeExposed(z + 1, generator, terrain);
+        onChunkMaybeExposed(z - 1, generator);
+        onChunkMaybeExposed(z + 1, generator);
         terrain.onBlockChanged(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), z, block);
     }
 
@@ -54,26 +54,13 @@ public class TerrainColumn {
         return loadedChunks.get(chunkZ);
     }
 
-    // TO_OPTIMIZE: Ideally if startZ is greated than stopZ, the chunks should be returned in reverse order
-    public List<Integer> getLoadedChunkLocations(int zStart, int zStop) {
-        int zMin = zStart;
-        int zMax = zStop;
-        if (zMin > zMax) {
-            zMin = zStop;
-            zMax = zStart;
-        }
-        List<Integer> chunkLocations = new ArrayList<Integer>();
-        for (int z : loadedChunks.keySet()) {
-            if (z >= zMin && z <= zMax) {
-                chunkLocations.add(z);
-            }
-        }
-        return chunkLocations;
+    public Set<Integer> getLoadedChunkLocations() {
+        return loadedChunks.keySet();
     }
 
     // TODO: Unload chunks
 
-    public void onChunkMaybeExposed(int z, TerrainGenerator generator, Terrain terrain) {
+    public void onChunkMaybeExposed(int z, TerrainGenerator generator) {
         int chunkZ = Chunk.toChunkPos(z);
 
         if (chunkZ >= surfaceChunkZ) {
@@ -87,6 +74,5 @@ public class TerrainColumn {
         while (loadedChunks.containsKey(surfaceChunkZ - 1)) {
             surfaceChunkZ -= 1;
         }
-        terrain.onChunkLoaded(chunkX, chunkY, chunkZ);
     }
 }

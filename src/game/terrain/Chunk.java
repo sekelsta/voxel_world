@@ -1,6 +1,7 @@
 package sekelsta.game.terrain;
 
-import java.util.ArrayList;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 public class Chunk {
     static final int TWO_POWER_SIZE = 5;
@@ -12,6 +13,11 @@ public class Chunk {
     // Runs are along the Y direction. X and Z are combined into a flat array.
     private byte[][] runs;
     private short[][] blocks;
+    private boolean locked = false;
+
+    private static record SetBlockTask(int x, int y, int z, short block) {}
+
+    private Queue<SetBlockTask> taskQueue = new ArrayDeque<>();
 
     public static int toChunkPos(int b) {
         return b >> TWO_POWER_SIZE;
@@ -33,7 +39,15 @@ public class Chunk {
     }
 
     // Returns true if the chunk was changed
-    public boolean setBlock(int x, int y, int z, short block) {
+    public synchronized boolean setBlock(int x, int y, int z, short block) {
+        if (!locked) {
+            return setBlockInternal(x, y, z, block);
+        }
+        taskQueue.add(new SetBlockTask(x, y, z, block));
+        return true;
+    }
+
+    public boolean setBlockInternal(int x, int y, int z, short block) {
         if (blocks == null) {
             if (block == Block.EMPTY) {
                 return false;
@@ -224,5 +238,16 @@ public class Chunk {
 
     private int getIndex(int x, int z) {
         return x + Chunk.SIZE * z;
+    }
+
+    public synchronized void lock() {
+        locked = true;
+    }
+
+    public synchronized void unlock() {
+        locked = false;
+        for (SetBlockTask task : taskQueue) {
+            setBlockInternal(task.x(), task.y(), task.z(), task.block());
+        }
     }
 }
