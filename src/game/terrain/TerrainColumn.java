@@ -45,9 +45,9 @@ public class TerrainColumn {
         if (!changed) {
             return;
         }
-        terrain.onBlockChanged(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), z, block);
         onChunkMaybeExposed(z - 1, generator, terrain);
         onChunkMaybeExposed(z + 1, generator, terrain);
+        terrain.onBlockChanged(Chunk.toBlockPos(chunkX, bx), Chunk.toBlockPos(chunkY, by), z, block);
     }
 
     public Chunk getChunk(int chunkZ) {
