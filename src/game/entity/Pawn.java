@@ -11,7 +11,7 @@ import sekelsta.game.World;
 import shadowfox.math.Vector3f;
 
 public class Pawn extends Entity {
-    public static final int NUM_SKINS = 3;
+    public static final int NUM_SKINS = 1;
 
     public int skin;
 

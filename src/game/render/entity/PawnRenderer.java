@@ -15,8 +15,6 @@ public final class PawnRenderer extends EntityRenderer<Pawn> {
     public PawnRenderer() {
         this.mesh = new RigidMesh(ObjParser.parse(new Scanner(EntityRenderer.class.getResourceAsStream("/assets/obj/player.obj"))));
         skins[0] = Textures.WHITE;
-        skins[1] = Textures.BLACK;
-        skins[2] = Textures.TRANSPARENT;
     }
 
     @Override
