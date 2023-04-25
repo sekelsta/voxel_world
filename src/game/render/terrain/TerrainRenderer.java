@@ -36,20 +36,20 @@ public class TerrainRenderer {
         meshingThread.start();
     }
 
-    private ArrayList<TerrainMeshData> calculateBatch(ArrayList<ChunkPos> batchChunks) {
-        ArrayList<TerrainMeshData> chunks = new ArrayList<>();
+    private Set<Pair<ChunkPos, TerrainMeshData>> calculateBatch(Set<ChunkPos> batchChunks) {
+        Set<Pair<ChunkPos, TerrainMeshData>> results = new HashSet<>();
         for (ChunkPos chunkPos : batchChunks) {
             lockNearby(chunkPos.x, chunkPos.y, chunkPos.z);
         }
         for (ChunkPos chunkPos : batchChunks) {
-            chunks.add(
+            results.add(new Pair<>(chunkPos,
                 new MergedOctahedrons(terrain).getMesh(numIterations, weight, chunkPos.x, chunkPos.y, chunkPos.z)
-            );
+            ));
         }
         for (ChunkPos chunkPos : batchChunks) {
             unlockNearby(chunkPos.x, chunkPos.y, chunkPos.z);
         }
-        return chunks;
+        return results;
     }
 
     private void lockNearby(int chunkX, int chunkY, int chunkZ) {
@@ -87,7 +87,7 @@ public class TerrainRenderer {
         int maxChunkY = Chunk.toChunkPos(y + neighborhood);
         int minChunkZ = Chunk.toChunkPos(z - neighborhood);
         int maxChunkZ = Chunk.toChunkPos(z + neighborhood);
-        ArrayList<ChunkPos> chunksToRecalculate = new ArrayList<>();
+        Set<ChunkPos> chunksToRecalculate = new HashSet<>();
         for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
             for (int chunkY = minChunkY; chunkY <= maxChunkY; ++chunkY) {
                 for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
@@ -113,14 +113,10 @@ public class TerrainRenderer {
 
     public void render(MatrixStack stack, Frustum frustum, float lerp) {
         while (!meshingThread.completed.isEmpty()) {
-            Pair<ArrayList<ChunkPos>, ArrayList<TerrainMeshData>> pair = meshingThread.completed.remove();
-            ArrayList<ChunkPos> chunkPositions = pair.getKey();
-            ArrayList<TerrainMeshData> chunks = pair.getValue();
-            assert(chunkPositions.size() == chunks.size());
-            for (int i = 0; i < chunks.size(); ++i) {
-                TerrainMeshData result = chunks.get(i);
-                if (result != null) {
-                    replaceChunkMesh(chunkPositions.get(i), result);
+            Set<Pair<ChunkPos, TerrainMeshData>> results = meshingThread.completed.remove();
+            for (Pair<ChunkPos, TerrainMeshData> pair : results) {
+                if (pair.getValue() != null) {
+                    replaceChunkMesh(pair.getKey(), pair.getValue());
                 }
             }
         }

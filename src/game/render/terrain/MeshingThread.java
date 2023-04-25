@@ -8,14 +8,14 @@ import sekelsta.engine.Pair;
 import sekelsta.game.terrain.ChunkPos;
 
 public class MeshingThread extends Thread {
-    public final BlockingQueue<Pair<ArrayList<ChunkPos>, ArrayList<TerrainMeshData>>> completed = new LinkedBlockingQueue<>();
+    public final BlockingQueue<Set<Pair<ChunkPos, TerrainMeshData>>> completed = new LinkedBlockingQueue<>();
 
-    private BlockingQueue<ArrayList<ChunkPos>> tasks = new LinkedBlockingQueue<>();
-    private Function<ArrayList<ChunkPos>, ArrayList<TerrainMeshData>> function;
+    private BlockingQueue<Set<ChunkPos>> tasks = new LinkedBlockingQueue<>();
+    private Function<Set<ChunkPos>, Set<Pair<ChunkPos, TerrainMeshData>>> function;
     private boolean running = true;
-    private ArrayList<ChunkPos> currentTask = null;
+    private Set<ChunkPos> currentTask = null;
 
-    public MeshingThread(String name, Function<ArrayList<ChunkPos>, ArrayList<TerrainMeshData>> function) {
+    public MeshingThread(String name, Function<Set<ChunkPos>, Set<Pair<ChunkPos, TerrainMeshData>>> function) {
         super(name);
         setDaemon(true);
         this.function = function;
@@ -26,9 +26,9 @@ public class MeshingThread extends Thread {
         while(running) {
             try {
                 currentTask = tasks.take();
-                ArrayList<TerrainMeshData> result = function.apply(currentTask);
+                Set<Pair<ChunkPos, TerrainMeshData>> result = function.apply(currentTask);
                 if (result != null) {
-                    completed.add(new Pair<ArrayList<ChunkPos>, ArrayList<TerrainMeshData>>(currentTask, result));
+                    completed.add(result);
                 }
                 synchronized (this) {
                     currentTask = null;
@@ -42,14 +42,14 @@ public class MeshingThread extends Thread {
         running = false;
     }
 
-    public synchronized void queueTask(ArrayList<ChunkPos> task) {
+    public synchronized void queueTask(Set<ChunkPos> task) {
         if (!tasks.contains(task) && !task.equals(currentTask)) {
             tasks.add(task);
         }
     }
 
     public synchronized void queueTask(ChunkPos pos) {
-        for (ArrayList<ChunkPos> task : tasks) {
+        for (Set<ChunkPos> task : tasks) {
             if (task.contains(pos)) {
                 return;
             }
@@ -57,14 +57,14 @@ public class MeshingThread extends Thread {
         if (currentTask != null && currentTask.contains(pos)) {
             return;
         }
-        for (Pair<ArrayList<ChunkPos>, ArrayList<TerrainMeshData>> result : completed) {
-            if (result.getKey().contains(pos)) {
-                return;
+        for (Set<Pair<ChunkPos, TerrainMeshData>> result : completed) {
+            for (Pair<ChunkPos, TerrainMeshData>  pair : result) {
+                if (pair.getKey().equals(pos)) {
+                    return;
+                }
             }
         }
 
-        ArrayList<ChunkPos> t = new ArrayList<>();
-        t.add(pos);
-        queueTask(t);
+        queueTask(Collections.singleton(pos));
     }
 }
