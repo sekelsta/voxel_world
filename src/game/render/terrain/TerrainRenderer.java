@@ -24,7 +24,7 @@ public class TerrainRenderer {
 
     protected HashMap<ChunkPos, TerrainMesh> meshes = new HashMap<>();
 
-    protected int neighborhood = 2 + numIterations;
+    protected int neighborhood = 1 + numIterations;
 
     MeshingThread meshingThread;
 
