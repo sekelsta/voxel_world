@@ -37,19 +37,36 @@ public class TerrainRenderer {
     }
 
     private Set<Pair<ChunkPos, TerrainMeshData>> calculateBatch(Set<ChunkPos> batchChunks) {
-        Set<Pair<ChunkPos, TerrainMeshData>> results = new HashSet<>();
+        Set<ChunkPos> valid = new HashSet<>();
         for (ChunkPos chunkPos : batchChunks) {
+            if (isRenderable(chunkPos)) {
+                valid.add(chunkPos);
+            }
+        }
+        Set<Pair<ChunkPos, TerrainMeshData>> results = new HashSet<>();
+        for (ChunkPos chunkPos : valid) {
             lockNearby(chunkPos.x, chunkPos.y, chunkPos.z);
         }
-        for (ChunkPos chunkPos : batchChunks) {
+        for (ChunkPos chunkPos : valid) {
             results.add(new Pair<>(chunkPos,
                 new MergedOctahedrons(terrain).getMesh(numIterations, weight, chunkPos.x, chunkPos.y, chunkPos.z)
             ));
         }
-        for (ChunkPos chunkPos : batchChunks) {
+        for (ChunkPos chunkPos : valid) {
             unlockNearby(chunkPos.x, chunkPos.y, chunkPos.z);
         }
         return results;
+    }
+
+    private boolean isRenderable(ChunkPos chunkPos) {
+        for (int cx = chunkPos.x - 1; cx <= chunkPos.x + 1; ++cx) {
+            for (int cy = chunkPos.y - 1; cy <= chunkPos.y + 1; ++cy) {
+                if (terrain.getColumnIfLoaded(cx, cy) == null) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private void lockNearby(int chunkX, int chunkY, int chunkZ) {
