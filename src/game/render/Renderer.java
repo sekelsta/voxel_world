@@ -27,7 +27,7 @@ public class Renderer implements IFramebufferSizeListener {
     private MaterialShader shader = MaterialShader.load("/shaders/basic.vsh", "/shaders/basic.fsh");
     private ShaderProgram shader2D = ShaderProgram.load("/shaders/2d.vsh", "/shaders/2d.fsh");
     private ShaderProgram fireShader = ShaderProgram.load("/shaders/fire.vsh", "/shaders/fire.fsh");
-    private ShaderProgram terrainShader = ShaderProgram.load("/shaders/terrain.vsh", "/shaders/terrain.fsh");
+    private MaterialShader terrainShader = MaterialShader.load("/shaders/terrain.vsh", "/shaders/terrain.fsh");
     private ShaderProgram starShader = ShaderProgram.load("/shaders/stars.vsh", "/shaders/stars.fsh");
     private ShaderProgram atmosphereShader = ShaderProgram.load("/shaders/atmosphere.vsh", "/shaders/atmosphere.fsh");
     private Frustum frustum = new Frustum();
@@ -141,13 +141,23 @@ public class Renderer implements IFramebufferSizeListener {
         }
 
         Vector3f sunPos = world.getSunPosition(lerp);
+        Vector3f moonPos = world.getMoonPosition(lerp);
 
         // Move to camera coords
         camera.transform(matrixStack, lerp);
-        Vector4f tlight = new Vector4f(sunPos);
-        matrixStack.getResult().transform(tlight);
+        Vector3f cameraspace_sun = matrixStack.getResult().transform(new Vector4f(sunPos)).toVec3();
+        Vector3f cameraspace_moon = matrixStack.getResult().transform(new Vector4f(moonPos)).toVec3();
+
+        Vector3f sun_to_camera = new Vector3f(0, 0, 0);
+        Vector3f.subtract(cameraspace_sun, sun_to_camera, sun_to_camera);
+        sun_to_camera.normalize();
+        Vector3f camera_to_moon = new Vector3f(0, 0, 0);
+        Vector3f.subtract(camera_to_moon, cameraspace_moon, camera_to_moon);
+        camera_to_moon.normalize();
 
         Vector3f sunColor = skyRenderer.getSunColor(new Vector3f(camera.getX(lerp), camera.getY(lerp), camera.getZ(lerp)), sunPos);
+        float moonFullness = (1 + sun_to_camera.dot(camera_to_moon)) / 2;
+        Vector3f moonColor = skyRenderer.getSunColor(new Vector3f(camera.getX(lerp), camera.getY(lerp), camera.getZ(lerp)), moonPos).scale(0.1f * moonFullness);
 
         starShader.use();
         starShader.setUniform("projection", perspective);
@@ -161,19 +171,20 @@ public class Renderer implements IFramebufferSizeListener {
 
         terrainShader.use();
         terrainShader.setUniform("projection", perspective);
-        terrainShader.setUniform("light_pos", tlight.toVec3());
-        terrainShader.setUniform("light_color", sunColor);
+        terrainShader.setLight(0, cameraspace_sun, sunColor);
+        terrainShader.setLight(1, cameraspace_moon, moonColor);
         terrainRenderer.render(matrixStack, frustum, lerp);
 
         shader.use();
         shader.setUniform("projection", perspective);
-        shader.setUniform("light_pos", tlight.toVec3());
 
+        shader.setLight(0, cameraspace_sun, SkyRenderer.solar_spectrum);
+        shader.setLight(1, cameraspace_moon, new Vector3f(0, 0, 0));
         shader.setReflectance(0);
-        shader.setUniform("light_color", SkyRenderer.solar_spectrum);
         skyRenderer.renderMoon(matrixStack, lerp, frustum.getFar());
         shader.setDefaultMaterial();
-        shader.setUniform("light_color", sunColor);
+        shader.setUniform("lights[0].color", sunColor);
+        shader.setUniform("lights[1].color", moonColor);
 
         // Render entities
         for (Entity entity : world.getMobs()) {

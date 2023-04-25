@@ -362,6 +362,14 @@ public class World implements IEntitySpace {
         return pos;
     }
 
+    public Vector3f getMoonPosition(float lerp) {
+        // Roughly 1% of the real-life distance, 385,000 km
+        float moonDistance = 3850000;
+        Vector3f pos = new Vector3f(0, 0, -1 * moonDistance);
+        Matrix3f rotation = getMoonRotation(lerp);
+        return rotation.transform(pos);
+    }
+
     private boolean isNetworkServer() {
         return authoritative && game.getNetworkManager() != null;
     }

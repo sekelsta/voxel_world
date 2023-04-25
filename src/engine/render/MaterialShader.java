@@ -1,5 +1,7 @@
 package sekelsta.engine.render;
 
+import shadowfox.math.Vector3f;
+
 public class MaterialShader extends ShaderProgram {
     public MaterialShader(String vertexSource, String fragmentSource) {
         super(vertexSource, fragmentSource);
@@ -19,6 +21,11 @@ public class MaterialShader extends ShaderProgram {
 
     public void setScattering(float scattering) {
         setFloat("scattering", scattering);
+    }
+
+    public void setLight(int n, Vector3f position, Vector3f color) {
+        setUniform("lights[" + n + "].position", position);
+        setUniform("lights[" + n + "].color", color);
     }
 
     public void setDefaultMaterial() {
