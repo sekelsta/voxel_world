@@ -70,7 +70,6 @@ public class Texture {
         return height;
     }
 
-    // TODO: This shouldn't need to exist?
     public int getHandle() {
         return handle;
     }
