@@ -146,6 +146,10 @@ public class Terrain {
         {
             short block = getBlockIfLoaded(blockX, blockY, blockZ);
             if (foundValidStart && canPointAt(block)) {
+                if (terrainRenderer != null 
+                        && !terrainRenderer.isMeshed(ChunkPos.fromBlockPos(blockX, blockY, blockZ))) {
+                    return null;
+                }
                 return new RaycastResult(blockX, blockY, blockZ, hitDirection);
             }
             foundValidStart = foundValidStart || !canPointAt(block);

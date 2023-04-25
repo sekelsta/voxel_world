@@ -200,6 +200,10 @@ public class TerrainRenderer {
         }
     }
 
+    public boolean isMeshed(ChunkPos chunkPos) {
+        return meshes.containsKey(chunkPos);
+    }
+
     public void clean() {
         meshingThread.setDone();
         for (TerrainMesh mesh : meshes.values()) {

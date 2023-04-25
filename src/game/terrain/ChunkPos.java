@@ -19,6 +19,10 @@ public class ChunkPos {
         this.z = base.z + direction.z;
     }
 
+    public static ChunkPos fromBlockPos(int blockX, int blockY, int blockZ) {
+        return new ChunkPos(Chunk.toChunkPos(blockX), Chunk.toChunkPos(blockY), Chunk.toChunkPos(blockZ));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this) {
