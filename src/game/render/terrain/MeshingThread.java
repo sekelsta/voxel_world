@@ -43,9 +43,38 @@ public class MeshingThread extends Thread {
     }
 
     public synchronized void queueTask(Set<ChunkPos> task) {
-        if (!tasks.contains(task) && !task.equals(currentTask)) {
+        ArrayList<Set<ChunkPos>> oldTasks = new ArrayList<>();
+        ArrayList<Set<ChunkPos>> mergedTasks = new ArrayList<>();
+        while (currentTask == null && !tasks.isEmpty()) {
+            Thread.yield();
+        }
+        tasks.drainTo(oldTasks);
+
+        boolean merged = false;
+        for (Set<ChunkPos> oldTask : oldTasks) {
+            boolean overlap = false;
+            for (ChunkPos item : oldTask) {
+                if (task.contains(item)) {
+                    overlap = true;
+                    break;
+                }
+            }
+            if (overlap) {
+                task.addAll(oldTask);
+            }
+            else {
+                mergedTasks.add(oldTask);
+                merged = true;
+            }
+        }
+
+        if (merged) {
             tasks.add(task);
         }
+        else {
+            mergedTasks.add(task);
+        }
+        tasks.addAll(mergedTasks);
     }
 
     public synchronized void queueTask(ChunkPos pos) {
