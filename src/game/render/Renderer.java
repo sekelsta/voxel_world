@@ -157,7 +157,7 @@ public class Renderer implements IFramebufferSizeListener {
 
         Vector3f sunColor = skyRenderer.getSunColor(new Vector3f(camera.getX(lerp), camera.getY(lerp), camera.getZ(lerp)), sunPos);
         float moonFullness = (1 + sun_to_camera.dot(camera_to_moon)) / 2;
-        Vector3f moonColor = skyRenderer.getSunColor(new Vector3f(camera.getX(lerp), camera.getY(lerp), camera.getZ(lerp)), moonPos).scale(0.1f * moonFullness);
+        Vector3f moonColor = skyRenderer.getSunColor(new Vector3f(camera.getX(lerp), camera.getY(lerp), camera.getZ(lerp)), moonPos).scale(0.136f * moonFullness);
 
         starShader.use();
         starShader.setUniform("projection", perspective);
