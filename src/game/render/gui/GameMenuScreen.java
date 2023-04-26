@@ -8,11 +8,9 @@ import sekelsta.game.Game;
 
 public class GameMenuScreen extends Screen {
     private Overlay overlay;
-    private Game game;
 
-    public GameMenuScreen(Overlay overlay, Game game) {
+    public GameMenuScreen(Overlay overlay) {
         this.overlay = overlay;
-        this.game = game;
         setup();
     }
 
@@ -24,16 +22,17 @@ public class GameMenuScreen extends Screen {
     }
 
     private void setup() {
+        Game game = overlay.getGame();
         BitmapFont font = Fonts.getButtonFont();
         addSelectableItem(new TextButton(font, "Resume", () -> game.escape()));
         if (game.isNetworked()) {
-            items.add(new TextElement(font, "Host LAN game", GuiElement.GRAY));
+            addItem(new TextElement(font, "Host LAN game", GuiElement.GRAY));
         }
         else {
             addSelectableItem(new TextButton(font, "Host LAN game",
-                        () -> overlay.pushScreen(new HostScreen(overlay, game))));
+                        () -> overlay.pushScreen(new HostScreen(overlay))));
         }
-        addSelectableItem(new TextButton(font, "Options", () -> overlay.pushScreen(new OptionsScreen(overlay, game))));
+        addSelectableItem(new TextButton(font, "Options", () -> overlay.pushScreen(new OptionsScreen(overlay))));
         addSelectableItem(new TextButton(font, "Quit", () -> game.exitWorld())); 
     }
 

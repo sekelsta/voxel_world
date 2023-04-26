@@ -6,13 +6,14 @@ import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
 
 public class ConnectingScreen extends Screen {
-    private Game game;
+    private Overlay overlay;
 
-    public ConnectingScreen(Overlay overlay, Game game, String address) {
-        this.game = game;
-        items.add(new TextElement(Fonts.getTitleFont(), "Connecting..."));
+    public ConnectingScreen(Overlay overlay, String address) {
+        this.overlay = overlay;
+        Game game = overlay.getGame();
+        addItem(new TextElement(Fonts.getTitleFont(), "Connecting..."));
         BitmapFont font = Fonts.getButtonFont();
-        items.add(new TextElement(font, address));
+        addItem(new TextElement(font, address));
         this.addSelectableItem(new TextButton(font, "Cancel", () -> {
             game.cancelConnecting();
             overlay.popScreen();
@@ -21,6 +22,7 @@ public class ConnectingScreen extends Screen {
 
     @Override
     public void onEscape() {
+        Game game = overlay.getGame();
         game.cancelConnecting();
     }
 }

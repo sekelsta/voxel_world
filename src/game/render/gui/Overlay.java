@@ -21,7 +21,7 @@ public class Overlay {
 
     public Overlay(Game game) {
         this.game = game;
-        screenStack.push(new MainMenuScreen(this, game));
+        screenStack.push(new MainMenuScreen(this));
     }
 
     public void pushScreen(Screen screen) {
@@ -44,6 +44,10 @@ public class Overlay {
 
     public boolean hasScreen() {
         return screenStack.size() > 0;
+    }
+
+    public Game getGame() {
+        return game;
     }
 
     public float getScale() {
@@ -77,7 +81,7 @@ public class Overlay {
             popScreen();
         }
         else {
-            pushScreen(new GameMenuScreen(this, game));
+            pushScreen(new GameMenuScreen(this));
         }
     }
 

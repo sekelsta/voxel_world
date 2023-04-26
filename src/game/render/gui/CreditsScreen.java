@@ -11,7 +11,7 @@ public class CreditsScreen extends Screen {
         try (Scanner scanner = new Scanner(CreditsScreen.class.getResourceAsStream("/assets/credits.txt"))) {
             scanner.useDelimiter("\n");
             while(scanner.hasNext()) {
-                items.add(new TextElement(Fonts.getTextFont(), scanner.next()));
+                addItem(new TextElement(Fonts.getTextFont(), scanner.next()));
             }
         }
         catch (Exception e) {

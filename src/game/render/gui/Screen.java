@@ -1,11 +1,12 @@
 package sekelsta.game.render.gui;
 
 import java.util.*;
+import sekelsta.engine.Pair;
 import sekelsta.engine.render.gui.*;
 
 public class Screen {
     protected SelectableElementList selectable = new SelectableElementList();
-    protected List<GuiElement> items = new ArrayList<>();
+    protected List<Pair<GuiElement, Float>> items = new ArrayList<>();
 
     public void refresh() {
         // Do nothing
@@ -16,8 +17,21 @@ public class Screen {
     }
 
     protected void addSelectableItem(GuiElement item) {
-        items.add(item);
+        addItem(item);
         selectable.add(item);
+    }
+
+    protected void addSelectableItem(GuiElement item, float spacing) {
+        addItem(item, spacing);
+        selectable.add(item);
+    }
+
+    protected void addItem(GuiElement item) {
+        addItem(item, 1.25f);
+    }
+
+    protected void addItem(GuiElement item, float spacing) {
+       items.add(new Pair<>(item, spacing));
     }
 
     public boolean pausesGame() {
@@ -110,17 +124,17 @@ public class Screen {
     public void blit(double screenWidth, double screenHeight) {
         int height = 0;
         for (int i = 0; i < items.size(); ++i) {
-            int h = items.get(i).getHeight();
-            height += h;
-            if (i + 1 != items.size()) {
-                height += h / 4;
-            }
+            Pair<GuiElement, Float> pair = items.get(i);
+            int h = pair.getKey().getHeight();
+            height += (i + 1 == items.size()) ? h : h * pair.getValue();
         }
         int yPos = ((int)screenHeight - height) / 2;
         GuiElement selected = selectable.getSelected();
-        for (GuiElement item : items) {
+        for (Pair<GuiElement, Float> pair : items) {
+            GuiElement item = pair.getKey();
+            float spacing = pair.getValue();
             item.position(((int)screenWidth - item.getWidth()) / 2, yPos);
-            yPos += (int)(1.25 * item.getHeight());
+            yPos += (int)(spacing * item.getHeight());
             item.blit(null, item == selected);
         }
     }

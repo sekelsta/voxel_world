@@ -2,6 +2,7 @@ package sekelsta.game.render.gui;
 
 import java.util.ArrayList;
 
+import sekelsta.engine.Pair;
 import sekelsta.engine.render.SpriteBatch;
 import sekelsta.engine.render.Texture;
 import sekelsta.engine.render.gui.*;
@@ -14,17 +15,18 @@ public class OptionsScreen extends Screen {
     private Slider slider;
     private TextChoice uiScale;
 
-    public OptionsScreen(Overlay overlay, Game game) {
+    public OptionsScreen(Overlay overlay) {
+        Game game = overlay.getGame();
         BitmapFont font = Fonts.getButtonFont();
 
-        items.add(new TextElement(font, "Audio volume:"));
+        addItem(new TextElement(font, "Audio volume:"));
         slider = new Slider(
             game.getSettings().getVolume(),
             () -> game.getSettings().setVolume(slider.getValue())
         );
         addSelectableItem(slider);
 
-        items.add(new TextElement(font, "UI Scale:"));
+        addItem(new TextElement(font, "UI Scale:"));
         ArrayList<String> scales = new ArrayList<>();
         scales.add("Small");
         scales.add("Medium");
@@ -57,18 +59,18 @@ public class OptionsScreen extends Screen {
 
         int height = 0;
         for (int i = 0; i < items.size(); ++i) {
-            int h = items.get(i).getHeight();
-            height += h;
-            if (i + 1 != items.size()) {
-                height += h / 4;
-            }
+            Pair<GuiElement, Float> pair = items.get(i);
+            int h = pair.getKey().getHeight();
+            height += (i + 1 == items.size()) ? h : h * pair.getValue();
         }
         int yPos = ((int)screenHeight - height) / 2;
         GuiElement selected = selectable.getSelected();
-        for (GuiElement item : items) {
+        for (Pair<GuiElement, Float> pair : items) {
+            GuiElement item = pair.getKey();
+            float spacing = pair.getValue();
             item.position(((int)screenWidth - item.getWidth()) / 2, yPos);
-            yPos += (int)(1.25 * item.getHeight());
-            item.blit(spritebatch, item == selected);
+            yPos += (int)(spacing * item.getHeight());
+            item.blit(null, item == selected);
         }
 
         spritebatch.render();

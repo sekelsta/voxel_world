@@ -109,7 +109,7 @@ public class Game implements ILoopable, INetworked {
         this.input.setCamera(null);
         this.input.setPlayer(null);
         this.renderer.setWorld(null);
-        overlay.pushScreen(new MainMenuScreen(overlay, this));
+        overlay.pushScreen(new MainMenuScreen(overlay));
     }
 
     public void takePawn(Pawn pawn) {

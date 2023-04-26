@@ -6,29 +6,27 @@ import sekelsta.game.Game;
 
 public class PortEntryScreen extends Screen {
     protected Overlay overlay;
-    protected Game game;
 
     protected TextElement title;
     protected TextElement portLabel;
     protected TextInput portInput;
+    protected OptionalText error;
     protected TextButton done;
     protected TextButton cancel;
-    protected String error;
-    protected BitmapFont errorFont;
 
-    protected PortEntryScreen(Overlay overlay, Game game) {
+    protected PortEntryScreen(Overlay overlay) {
         this.overlay = overlay;
-        this.game = game;
+        Game game = overlay.getGame();
 
-        errorFont = Fonts.getButtonFont();
         this.portLabel = new TextElement(Fonts.getButtonFont(), "Enter port number:");
         this.portInput = new TextInput(Fonts.getButtonFont(), String.valueOf(Game.DEFAULT_PORT), "Port");
+        this.error = new OptionalText(Fonts.getTextFont(), Fonts.ERROR_COLOR);
         this.cancel = new TextButton(Fonts.getButtonFont(), "Cancel", () -> game.escape());
     }
 
     protected int tryParsePort(String strPort) {
         if (strPort.equals("")) {
-            error = "Enter a port number";
+            error.setText("Enter a port number");
             return -1;
         }
 
@@ -37,12 +35,12 @@ public class PortEntryScreen extends Screen {
             port = Integer.valueOf(strPort);
         }
         catch (NumberFormatException e) {
-            error = "Could not parse port number";
+            error.setText("Could not parse port number");
             return -1;
         }
 
         if (port == 0) {
-            error = "Enter a non-zero port number";
+            error.setText("Enter a non-zero port number");
             return -1;
         }
 
