@@ -130,12 +130,14 @@ public class Screen {
         }
         int yPos = ((int)screenHeight - height) / 2;
         GuiElement selected = selectable.getSelected();
+        GuiElement textFocus = selectable.getTextFocus();
         for (Pair<GuiElement, Float> pair : items) {
             GuiElement item = pair.getKey();
             float spacing = pair.getValue();
             item.position(((int)screenWidth - item.getWidth()) / 2, yPos);
             yPos += (int)(spacing * item.getHeight());
-            item.blit(null, item == selected);
+            boolean isSelected = item instanceof TextInput ? item == textFocus : item == selected;
+            item.blit(null, isSelected);
         }
     }
 }
