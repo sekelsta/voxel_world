@@ -31,6 +31,10 @@ public class HostScreen extends PortEntryScreen {
         try {
             game.allowConnections(port);
         }
+        catch (IllegalArgumentException e) {
+            error.setText("Invalid port");
+            return;
+        }
         catch (RuntimeBindException e) {
             Log.error("Error: " + e.getMessage());
             error.setText("Error binding port");

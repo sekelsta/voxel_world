@@ -59,7 +59,13 @@ public class JoinScreen extends PortEntryScreen {
         }
 
         Game game = overlay.getGame();
-        game.joinServer(new InetSocketAddress(netAddress, port));
+        try {
+            game.joinServer(new InetSocketAddress(netAddress, port));
+        }
+        catch (IllegalArgumentException e) {
+            error.setText("Invalid port");
+            return;
+        }
         overlay.pushScreen(new ConnectingScreen(overlay, strAddress + ":" + strPort));
 
         game.getSettings().lastJoinedIP = strAddress;
