@@ -1,4 +1,4 @@
-package sekelsta.engine;
+package sekelsta.engine.file;
 
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;

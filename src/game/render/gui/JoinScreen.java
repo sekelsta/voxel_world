@@ -5,7 +5,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
-import sekelsta.engine.Log;
+import sekelsta.engine.file.Log;
 import sekelsta.engine.render.gui.*;
 import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;

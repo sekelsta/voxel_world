@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import sekelsta.engine.Log;
+import sekelsta.engine.file.Log;
 import sekelsta.engine.network.Message;
 
 public class NetworkListener extends Thread {

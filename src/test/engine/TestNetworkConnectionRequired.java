@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import sekelsta.engine.Log;
+import sekelsta.engine.file.Log;
 import sekelsta.engine.network.Connection;
 
 class TestNetworkConnectionRequired {

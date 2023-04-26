@@ -2,8 +2,8 @@ package sekelsta.engine.network;
 
 import java.nio.ByteBuffer;
 
-import sekelsta.engine.Log;
 import sekelsta.engine.SoftwareVersion;
+import sekelsta.engine.file.Log;
 
 public class ServerHello extends Message {
     // Foil casual DDOS amplification attacks. Before the server ever sends a long message to the client, we want

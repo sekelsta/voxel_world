@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import javax.imageio.ImageIO;
 
-import sekelsta.engine.Log;
+import sekelsta.engine.file.Log;
 
 public class ImageUtils {
 

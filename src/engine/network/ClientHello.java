@@ -3,8 +3,8 @@ package sekelsta.engine.network;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 
-import sekelsta.engine.Log;
 import sekelsta.engine.SoftwareVersion;
+import sekelsta.engine.file.Log;
 
 public class ClientHello extends Message {
     private static final int HANDSHAKE_PROTOCOL_VERSION = 0;

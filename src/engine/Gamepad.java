@@ -3,6 +3,8 @@ package sekelsta.engine;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWGamepadState;
 
+import sekelsta.engine.file.Log;
+
 public class Gamepad {
     public final int joystickID;
     private GLFWGamepadState state;

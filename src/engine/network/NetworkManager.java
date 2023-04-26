@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import sekelsta.engine.Log;
+import sekelsta.engine.file.Log;
 import sekelsta.engine.network.Message;
 
 public class NetworkManager {

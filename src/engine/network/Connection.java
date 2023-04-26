@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
-import sekelsta.engine.Log;
+import sekelsta.engine.file.Log;
 
 public class Connection {
     public static final int BUFFER_SIZE = 1024;

@@ -9,6 +9,7 @@ import sekelsta.engine.*;
 import sekelsta.engine.SoftwareVersion;
 import sekelsta.engine.entity.IController;
 import sekelsta.engine.entity.Entity;
+import sekelsta.engine.file.*;
 import sekelsta.engine.network.*;
 import sekelsta.engine.render.Camera;
 import sekelsta.engine.render.Window;

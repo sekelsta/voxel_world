@@ -4,9 +4,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
-import sekelsta.engine.DataFolders;
 import sekelsta.engine.Gameloop;
-import sekelsta.engine.Log;
+import sekelsta.engine.file.*;
 
 public class Main {
     private static int DEFAULT_FRAME_CAP = 120;

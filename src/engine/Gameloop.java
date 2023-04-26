@@ -1,5 +1,7 @@
 package sekelsta.engine;
 
+import sekelsta.engine.file.Log;
+
 public class Gameloop {
     public static final int TICKS_PER_SECOND = 24;
     static final int MAX_FRAME_SKIP = 5;

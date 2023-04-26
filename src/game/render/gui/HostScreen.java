@@ -1,6 +1,6 @@
 package sekelsta.game.render.gui;
 
-import sekelsta.engine.Log;
+import sekelsta.engine.file.Log;
 import sekelsta.engine.network.RuntimeBindException;
 import sekelsta.engine.render.gui.*;
 import sekelsta.engine.render.text.BitmapFont;

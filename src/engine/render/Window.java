@@ -18,9 +18,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import sekelsta.engine.InitialConfig;
 import sekelsta.engine.InputManager;
-import sekelsta.engine.Log;
+import sekelsta.engine.file.InitialConfig;
+import sekelsta.engine.file.Log;
 
 // A wrapper for OpenGL's GLFW window
 public class Window {
