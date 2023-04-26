@@ -72,8 +72,8 @@ void main()
     }
     tMax = min(tMax, distance);
 
-    int num_samples = 5;
-    int num_light_samples = 2;
+    int num_samples = 7;
+    int num_light_samples = 5;
     float step = (tMax - tMin) / num_samples;
     float tCurrent = tMin + 0.5 * step;
     float rayleigh_optical_depth = 0;

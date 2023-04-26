@@ -19,8 +19,8 @@ public class SkyRenderer {
     private static final Vector3f ozone_absorption = new Vector3f(1f, 3f, 0.2f).scale(0.0000005f);
     private static final float rayleigh_height = 8000;
     private static final Vector3f rayleigh_scattering = new Vector3f(0.0000058f, 0.0000135f, 0.0000331f);
-    private static final float mie_height = 1200;
-    private static final float mie_scattering = 0.0004f;
+    private static final float mie_height = 1500;
+    private static final float mie_scattering = 0.0002f;
 
     private final World world;
     private final StarMesh stars;
