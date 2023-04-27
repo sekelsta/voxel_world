@@ -95,7 +95,9 @@ public class Game implements ILoopable, INetworked {
     }
 
     public void startPlaying(SaveName saveName) {
-        new java.io.File(saveName.getPath()).mkdirs();
+        // TODO
+        SaveGame saveGame = new SaveGame(saveName);
+        saveGame.update(1);
 
         this.world = new World(this, true);
         if (isGraphical()) {
@@ -110,7 +112,7 @@ public class Game implements ILoopable, INetworked {
     }
 
     public boolean hasPreviousSave() {
-        return DataFolders.getSaveDir().list().length > 0;
+        return SaveName.listSaveLocations().length > 0;
     }
 
     public void pushLoadOrNewScreen(Consumer<SaveName> onChosen) {

@@ -6,6 +6,7 @@ import sekelsta.engine.file.SaveName;
 import sekelsta.engine.render.gui.*;
 import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
+import sekelsta.game.SaveGame;
 
 public class LoadGameScreen extends Screen {
     protected TextElement title;
@@ -20,6 +21,11 @@ public class LoadGameScreen extends Screen {
         addItem(title);
         addSelectableItem(start);
         addSelectableItem(cancel);
+
+        SaveGame[] saves = SaveGame.loadMetadata();
+        for (SaveGame save : saves) {
+            System.out.println(save);
+        }
     }
 
     @Override

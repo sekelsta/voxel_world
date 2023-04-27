@@ -11,19 +11,33 @@ public class SaveName {
         "lpt0", "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9"
     );
 
-    public final String name;
-    private final String internalName;
+    protected String name;
+    protected final String fileName;
 
     public SaveName(String name) {
         if (name.length() > 255) {
             name = name.substring(0, 255);
         }
         this.name = name;
-        this.internalName = getFilesystemCompatibleName(name, Arrays.asList(DataFolders.getSaveDir().list()));
+        this.fileName = getFilesystemCompatibleName(name, Arrays.asList(listSaveLocations()));
+    }
+
+    protected SaveName(String name, String fileName) {
+        this.name = name;
+        this.fileName = fileName;
+    }
+
+    protected SaveName(SaveName other) {
+        this(other.name, other.fileName);
+    }
+
+    public static String[] listSaveLocations() {
+        DataFolders.getSaveDir().mkdirs();
+        return DataFolders.getSaveDir().list();
     }
 
     public String getPath() {
-        return DataFolders.getUserFolder("saves/" + internalName);
+        return DataFolders.getUserFolder("saves/" + fileName);
     }
 
     // Note: Cannot use Path functions as those depend on the machine running it.
