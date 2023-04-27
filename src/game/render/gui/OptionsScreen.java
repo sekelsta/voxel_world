@@ -70,7 +70,7 @@ public class OptionsScreen extends Screen {
             float spacing = pair.getValue();
             item.position(((int)screenWidth - item.getWidth()) / 2, yPos);
             yPos += (int)(spacing * item.getHeight());
-            item.blit(null, item == selected);
+            item.blit(spritebatch, item == selected);
         }
 
         spritebatch.render();
