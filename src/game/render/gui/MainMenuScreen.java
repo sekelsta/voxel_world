@@ -8,10 +8,13 @@ public class MainMenuScreen extends Screen {
     public MainMenuScreen(Overlay overlay) {
         Game game = overlay.getGame();
         BitmapFont font = Fonts.getButtonFont();
+        if (game.hasPreviousSave()) {
+            addSelectableItem(new TextButton(font, game.getContinueText(), () -> game.continuePrevious()));
+        }
         addSelectableItem(new TextButton(font, "Single player",
-            () -> overlay.pushScreen(new NewGameScreen(overlay))));
+            () -> game.pushLoadOrNewScreen((x) -> game.startPlaying(x))));
         addSelectableItem(new TextButton(font, "Host and play", 
-            () -> overlay.pushScreen(new HostScreen(overlay)))
+            () -> game.pushLoadOrNewScreen((x) -> overlay.pushScreen(new HostScreen(overlay, x))))
         );
         addSelectableItem(new TextButton(font, "Join server", 
             () -> overlay.pushScreen(new JoinScreen(overlay)))

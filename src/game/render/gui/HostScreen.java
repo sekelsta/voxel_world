@@ -1,17 +1,18 @@
 package sekelsta.game.render.gui;
 
 import sekelsta.engine.file.Log;
+import sekelsta.engine.file.SaveName;
 import sekelsta.engine.network.RuntimeBindException;
 import sekelsta.engine.render.gui.*;
 import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
 
 public class HostScreen extends PortEntryScreen {
-    public HostScreen(Overlay overlay) {
+    public HostScreen(Overlay overlay, SaveName saveName) {
         super(overlay);
         this.title = new TextElement(Fonts.getTitleFont(), "Host Multiplayer");
-        BitmapFont font = Fonts.getButtonFont();
-        this.done = new TextButton(font, "Done", () -> tryHostMultiplayer());
+        this.cancel = new TextButton(Fonts.getButtonFont(), "Cancel", () -> overlay.getGame().escape());
+        this.done = new TextButton(Fonts.getButtonFont(), "Done", () -> tryHostMultiplayer(saveName));
         addItem(title);
         addItem(portLabel);
         addSelectableItem(portInput, 2);
@@ -20,7 +21,7 @@ public class HostScreen extends PortEntryScreen {
         addSelectableItem(cancel);
     }
 
-    private void tryHostMultiplayer() {
+    private void tryHostMultiplayer(SaveName saveName) {
         String strPort = portInput.getEnteredText();
         int port = tryParsePort(strPort);
         if (port == -1) {
@@ -41,7 +42,7 @@ public class HostScreen extends PortEntryScreen {
             return;
         }
         if (!game.isInGame()) {
-            game.enterWorld();
+            game.startPlaying(saveName);
         }
         overlay.popScreenIfEquals(this);
     }
@@ -52,7 +53,6 @@ public class HostScreen extends PortEntryScreen {
             return true;
         }
 
-        tryHostMultiplayer();
-        return true;
+        return done.trigger();
     }
 }

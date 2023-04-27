@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import javax.sound.sampled.*;
+import java.util.function.Consumer;
 
 import sekelsta.engine.*;
 import sekelsta.engine.SoftwareVersion;
@@ -84,13 +85,46 @@ public class Game implements ILoopable, INetworked {
         renderTotalTimes = new CircularLongArray(timesStored);
     }
 
-    public void enterWorld() {
+    public void defaultStart() {
+        if (!hasPreviousSave()) {
+            startPlaying(new SaveName("New Game"));
+        }
+        else {
+            continuePrevious();
+        }
+    }
+
+    public void startPlaying(SaveName saveName) {
+        new java.io.File(saveName.getPath()).mkdirs();
+
         this.world = new World(this, true);
         if (isGraphical()) {
             world.spawnLocalPlayer(input);
             input.setPlayer(world.getLocalPlayer());
         }
         initGraphical();
+    }
+
+    public void continuePrevious() {
+        // TODO: Load last save
+    }
+
+    public boolean hasPreviousSave() {
+        return DataFolders.getSaveDir().list().length > 0;
+    }
+
+    public void pushLoadOrNewScreen(Consumer<SaveName> onChosen) {
+        if (hasPreviousSave()) {
+            overlay.pushScreen(new LoadGameScreen(overlay, (name) -> onChosen.accept(name)));
+        }
+        else {
+            overlay.pushScreen(new NewGameScreen(overlay, (name) -> onChosen.accept(name)));
+        }
+    }
+
+    public String getContinueText() {
+        // TODO: Include the name of the save to be loaded, plus "host" or "join" if multiplayer
+        return "Continue";
     }
 
     public void cancelConnecting() {

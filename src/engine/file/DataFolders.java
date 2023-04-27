@@ -1,10 +1,12 @@
 package sekelsta.engine.file;
 
+import java.io.File;
 import java.util.Locale;
 
 public class DataFolders {
     private static String userFolder = null;
     private static String userMachineFolder = null;
+    private static File saveDir = null;
 
     public static void init(String appName) {
         String os = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
@@ -23,6 +25,7 @@ public class DataFolders {
             userMachineFolder = System.getProperty("user.home") + "/.local/share/" + appName;
             userFolder = System.getProperty("user.home") + "/." + appName;
         }
+        saveDir = new File(getUserFolder("saves/"));
     }
 
     // For user-specific but not computer-specific files, like save data
@@ -43,5 +46,9 @@ public class DataFolders {
     // For user-specific and computer-specific files, like window settings
     public static String getUserMachineFolder(String path) {
         return userMachineFolder + "/" + path;
+    }
+
+    public static File getSaveDir() {
+        return saveDir;
     }
 }

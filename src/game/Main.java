@@ -58,14 +58,14 @@ public class Main {
     public static void runSingleplayer() {
         Game game = new Game(true);
         Log.info("Skipping menu screen");
-        game.enterWorld();
+        game.defaultStart();
         new Gameloop(game, DEFAULT_FRAME_CAP).run();
     }
 
     public static void runIntegrated(int port) {
         Log.info("Integrated client-server listening on port " + port);
         Game game = new Game(true);
-        game.enterWorld();
+        game.defaultStart();
         game.allowConnections(port);
         new Gameloop(game, DEFAULT_FRAME_CAP).run();
     }
@@ -89,7 +89,7 @@ public class Main {
     public static void runServer(int port) {
         Log.info("Starting server for port " + port);
         Game game = new Game(false);
-        game.enterWorld();
+        game.defaultStart();
         game.allowConnections(port);
         new Gameloop(game, 1).run();
     }
