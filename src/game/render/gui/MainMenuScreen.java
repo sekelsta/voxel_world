@@ -1,11 +1,25 @@
 package sekelsta.game.render.gui;
 
+import java.util.ArrayList;
+
 import sekelsta.engine.render.gui.*;
 import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
 
 public class MainMenuScreen extends Screen {
+    private Overlay overlay;
+
     public MainMenuScreen(Overlay overlay) {
+        this.overlay = overlay;
+        refresh(); 
+    }
+
+    @Override
+    public void refresh() {
+        // Clear previous values
+        selectable = new SelectableElementList();
+        items = new ArrayList<>();
+
         Game game = overlay.getGame();
         BitmapFont font = Fonts.getButtonFont();
         if (game.hasPreviousSave()) {
@@ -20,6 +34,6 @@ public class MainMenuScreen extends Screen {
             () -> overlay.pushScreen(new JoinScreen(overlay))
         ));
         addSelectableItem(new Button(new TextElement(font, "Options"), () -> overlay.pushScreen(new OptionsScreen(overlay))));
-        addSelectableItem(new Button(new TextElement(font, "Exit"), () -> game.stop()));     
+        addSelectableItem(new Button(new TextElement(font, "Exit"), () -> game.stop()));
     }
 }
