@@ -1,5 +1,6 @@
 package sekelsta.game.render.gui;
 
+import java.awt.Color;
 import java.util.function.Consumer;
 
 import sekelsta.engine.file.SaveName;
@@ -9,31 +10,29 @@ import sekelsta.game.Game;
 import sekelsta.game.SaveGame;
 
 public class LoadGameScreen extends Screen {
-    protected TextElement title;
-    protected TextButton start;
-    protected TextButton cancel;
-
     public LoadGameScreen(Overlay overlay, Consumer<SaveName> onChosen) {
         Game game = overlay.getGame();
-        this.title = new TextElement(Fonts.getTitleFont(), "Load Game");
-        this.start = new TextButton(Fonts.getButtonFont(), "Start", () -> System.out.println("Not yet implemented"));
-        this.cancel = new TextButton(Fonts.getButtonFont(), "Cancel", () -> game.escape());
-        addItem(title);
-        addSelectableItem(start);
-        addSelectableItem(cancel);
+        addItem(new TextElement(Fonts.getTitleFont(), "Load Game"));
 
         SaveGame[] saves = SaveGame.loadMetadata();
-        for (SaveGame save : saves) {
-            System.out.println(save);
-        }
-    }
-
-    @Override
-    public boolean trigger() {
-        if (super.trigger()) {
-            return true;
+        final int MAX_SAVES = 5;
+        for (int i = 0; i < MAX_SAVES && i < saves.length; ++i) {
+            SaveGame save = saves[i];
+            addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), save.getName()),
+                () -> onChosen.accept(save)), 1);
+            addItem(new TextElement(Fonts.getTextFont(), save.getFileName(), Color.LIGHT_GRAY));
         }
 
-        return start.trigger();
+        if (saves.length < MAX_SAVES) {
+            addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), "New Game"), 
+                () -> overlay.pushScreen(new NewGameScreen(overlay, onChosen))
+            ));
+        }
+
+        addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), "Delete Game"), 
+            () -> System.out.println("TODO: Delete game")
+        ));
+
+        addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), "Cancel"), () -> game.escape()));
     }
 }

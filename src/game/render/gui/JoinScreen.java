@@ -21,7 +21,7 @@ public class JoinScreen extends PortEntryScreen {
         BitmapFont font = Fonts.getButtonFont();
         this.addressLabel = new TextElement(font, "Enter server IP address:");
         this.addressInput = new TextInput(font, game.getSettings().lastJoinedIP, "IP address");
-        this.done = new TextButton(font, "Done", () -> tryJoinServer());
+        this.done = new Button(new TextElement(font, "Done"), () -> tryJoinServer());
         addItem(title);
         addItem(addressLabel);
         addSelectableItem(addressInput);

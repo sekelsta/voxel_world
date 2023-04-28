@@ -11,8 +11,8 @@ public class PortEntryScreen extends Screen {
     protected TextElement portLabel;
     protected TextInput portInput;
     protected OptionalText error;
-    protected TextButton done;
-    protected TextButton cancel;
+    protected Button done;
+    protected Button cancel;
 
     protected PortEntryScreen(Overlay overlay) {
         this.overlay = overlay;
@@ -21,7 +21,7 @@ public class PortEntryScreen extends Screen {
         this.portLabel = new TextElement(Fonts.getButtonFont(), "Enter port number:");
         this.portInput = new TextInput(Fonts.getButtonFont(), String.valueOf(Game.DEFAULT_PORT), "Port");
         this.error = new OptionalText(Fonts.getTextFont(), Fonts.ERROR_COLOR);
-        this.cancel = new TextButton(Fonts.getButtonFont(), "Cancel", () -> game.escape());
+        this.cancel = new Button(new TextElement(Fonts.getButtonFont(), "Cancel"), () -> game.escape());
     }
 
     protected int tryParsePort(String strPort) {

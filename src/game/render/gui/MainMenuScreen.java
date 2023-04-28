@@ -1,6 +1,6 @@
 package sekelsta.game.render.gui;
 
-import sekelsta.engine.render.gui.TextButton;
+import sekelsta.engine.render.gui.*;
 import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
 
@@ -9,17 +9,17 @@ public class MainMenuScreen extends Screen {
         Game game = overlay.getGame();
         BitmapFont font = Fonts.getButtonFont();
         if (game.hasPreviousSave()) {
-            addSelectableItem(new TextButton(font, game.getContinueText(), () -> game.continuePrevious()));
+            addSelectableItem(new Button(new TextElement(font, game.getContinueText()), () -> game.continuePrevious()));
         }
-        addSelectableItem(new TextButton(font, "Single player",
+        addSelectableItem(new Button(new TextElement(font, "Single player"),
             () -> game.pushLoadOrNewScreen((x) -> game.startPlaying(x))));
-        addSelectableItem(new TextButton(font, "Host and play", 
+        addSelectableItem(new Button(new TextElement(font, "Host and play"), 
             () -> game.pushLoadOrNewScreen((x) -> overlay.pushScreen(new HostScreen(overlay, x))))
         );
-        addSelectableItem(new TextButton(font, "Join server", 
-            () -> overlay.pushScreen(new JoinScreen(overlay)))
-        );
-        addSelectableItem(new TextButton(font, "Options", () -> overlay.pushScreen(new OptionsScreen(overlay))));
-        addSelectableItem(new TextButton(font, "Exit", () -> game.stop()));     
+        addSelectableItem(new Button(new TextElement(font, "Join server"), 
+            () -> overlay.pushScreen(new JoinScreen(overlay))
+        ));
+        addSelectableItem(new Button(new TextElement(font, "Options"), () -> overlay.pushScreen(new OptionsScreen(overlay))));
+        addSelectableItem(new Button(new TextElement(font, "Exit"), () -> game.stop()));     
     }
 }

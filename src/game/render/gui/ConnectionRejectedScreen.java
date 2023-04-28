@@ -11,6 +11,6 @@ public class ConnectionRejectedScreen extends Screen {
         for (String line : reasonLines) {
             addItem(new TextElement(Fonts.getButtonFont(), line, Fonts.ERROR_COLOR));
         }
-        addSelectableItem(new TextButton(Fonts.getButtonFont(), "Okay", () -> game.escape()));
+        addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), "Okay"), () -> game.escape()));
     }
 }

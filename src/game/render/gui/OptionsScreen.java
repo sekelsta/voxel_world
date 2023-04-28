@@ -42,10 +42,11 @@ public class OptionsScreen extends Screen {
             (v) -> game.getSettings().uiScale = 1 - 0.25f * (v - 1));
         addSelectableItem(uiScale);
 
-        addSelectableItem(new TextButton(font, "Toggle fullscreen", () -> game.toggleFullscreen()));
+        addSelectableItem(new Button(new TextElement(font, "Toggle fullscreen"), () -> game.toggleFullscreen()));
 
-        addSelectableItem(new TextButton(font, "Credits", () -> overlay.pushScreen(new CreditsScreen(game))));
-        addSelectableItem(new TextButton(font, "Done", () -> game.escape()));
+        addSelectableItem(new Button(new TextElement(font, "Credits"), 
+            () -> overlay.pushScreen(new CreditsScreen(game))));
+        addSelectableItem(new Button(new TextElement(font, "Done"), () -> game.escape()));
     }
 
     @Override

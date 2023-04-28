@@ -11,8 +11,8 @@ public class HostScreen extends PortEntryScreen {
     public HostScreen(Overlay overlay, SaveName saveName) {
         super(overlay);
         this.title = new TextElement(Fonts.getTitleFont(), "Host Multiplayer");
-        this.cancel = new TextButton(Fonts.getButtonFont(), "Cancel", () -> overlay.getGame().escape());
-        this.done = new TextButton(Fonts.getButtonFont(), "Done", () -> tryHostMultiplayer(saveName));
+        this.cancel = new Button(new TextElement(Fonts.getButtonFont(), "Cancel"), () -> overlay.getGame().escape());
+        this.done = new Button(new TextElement(Fonts.getButtonFont(), "Done"), () -> tryHostMultiplayer(saveName));
         addItem(title);
         addItem(portLabel);
         addSelectableItem(portInput, 2);

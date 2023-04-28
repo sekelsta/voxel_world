@@ -12,8 +12,8 @@ public class NewGameScreen extends Screen {
     protected TextElement nameLabel;
     protected TextInput nameInput;
     protected OptionalText error;
-    protected TextButton start;
-    protected TextButton cancel;
+    protected Button start;
+    protected Button cancel;
 
     public NewGameScreen(Overlay overlay, Consumer<SaveName> onComplete) {
         Game game = overlay.getGame();
@@ -21,8 +21,8 @@ public class NewGameScreen extends Screen {
         this.nameLabel = new TextElement(Fonts.getButtonFont(), "Enter name:");
         this.nameInput = new TextInput(Fonts.getButtonFont(), "", "Name");
         this.error = new OptionalText(Fonts.getTextFont());
-        this.start = new TextButton(Fonts.getButtonFont(), "Done", () -> tryStart(game, onComplete));
-        this.cancel = new TextButton(Fonts.getButtonFont(), "Cancel", () -> game.escape());
+        this.start = new Button(new TextElement(Fonts.getButtonFont(), "Done"), () -> tryStart(game, onComplete));
+        this.cancel = new Button(new TextElement(Fonts.getButtonFont(), "Cancel"), () -> game.escape());
         addItem(title);
         addItem(nameLabel);
         addSelectableItem(nameInput, 2);

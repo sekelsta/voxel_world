@@ -36,6 +36,14 @@ public class SaveName {
         return DataFolders.getSaveDir().list();
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
     public String getPath() {
         return DataFolders.getUserFolder("saves/" + fileName);
     }

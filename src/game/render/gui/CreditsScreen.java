@@ -2,8 +2,7 @@ package sekelsta.game.render.gui;
 
 import java.util.Scanner;
 
-import sekelsta.engine.render.gui.TextButton;
-import sekelsta.engine.render.gui.TextElement;
+import sekelsta.engine.render.gui.*;
 import sekelsta.game.Game;
 
 public class CreditsScreen extends Screen {
@@ -17,7 +16,7 @@ public class CreditsScreen extends Screen {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
-        addSelectableItem(new TextButton(Fonts.getButtonFont(), "Back", () -> game.escape()));
+        addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), "Back"), () -> game.escape()));
     }
 
     @Override

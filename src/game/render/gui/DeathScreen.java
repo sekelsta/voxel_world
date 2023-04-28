@@ -9,7 +9,7 @@ public class DeathScreen extends Screen {
     public DeathScreen(Game game, Overlay overlay) {
         title = new TextElement(Fonts.getTitleFont(), "You died");
         addItem(title);
-        addSelectableItem(new TextButton(Fonts.getButtonFont(), "Respawn", () -> respawn(game, overlay)));
+        addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), "Respawn"), () -> respawn(game, overlay)));
     }
 
     private void respawn(Game game, Overlay overlay) {

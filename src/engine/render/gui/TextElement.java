@@ -43,6 +43,11 @@ public class TextElement extends GuiElement {
 
     @Override
     public void blit(SpriteBatch spritebatch, boolean focused) {
-        font.blit(text, x, y, color);
+        if (focused) {
+            font.blit(text, x, y, HIGHLIGHT_COLOR);
+        }
+        else {
+            font.blit(text, x, y, color);
+        }
     }
 }
