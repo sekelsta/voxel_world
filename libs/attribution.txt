@@ -10,3 +10,6 @@ PNGDecoder:
 https://github.com/MatthiasMann/twl/blob/master/src/de/matthiasmann/twl/utils/PNGDecoder.java
 BSD 3-clause license
 
+commons-io:
+https://commons.apache.org/proper/commons-io/download_io.cgi
+Apache license

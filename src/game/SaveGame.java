@@ -3,6 +3,8 @@ package sekelsta.game;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.FileUtils;
+
 import sekelsta.engine.file.*;
 
 public class SaveGame extends SaveName {
@@ -54,6 +56,15 @@ public class SaveGame extends SaveName {
     public void update(long newTick) {
         this.tick = newTick;
         write();
+    }
+
+    public void deleteSave() {
+        try {
+            FileUtils.deleteDirectory(new File(getPath()));
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private File getFile() {
