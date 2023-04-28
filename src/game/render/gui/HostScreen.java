@@ -1,18 +1,17 @@
 package sekelsta.game.render.gui;
 
 import sekelsta.engine.file.Log;
-import sekelsta.engine.file.SaveName;
 import sekelsta.engine.network.RuntimeBindException;
 import sekelsta.engine.render.gui.*;
-import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
+import sekelsta.game.SaveGame;
 
 public class HostScreen extends PortEntryScreen {
-    public HostScreen(Overlay overlay, SaveName saveName) {
+    public HostScreen(Overlay overlay, SaveGame saveGame) {
         super(overlay);
         this.title = new TextElement(Fonts.getTitleFont(), "Host Multiplayer");
         this.cancel = new Button(new TextElement(Fonts.getButtonFont(), "Cancel"), () -> overlay.getGame().escape());
-        this.done = new Button(new TextElement(Fonts.getButtonFont(), "Done"), () -> tryHostMultiplayer(saveName));
+        this.done = new Button(new TextElement(Fonts.getButtonFont(), "Done"), () -> tryHostMultiplayer(saveGame));
         addItem(title);
         addItem(portLabel);
         addSelectableItem(portInput, 2);
@@ -21,7 +20,7 @@ public class HostScreen extends PortEntryScreen {
         addSelectableItem(cancel);
     }
 
-    private void tryHostMultiplayer(SaveName saveName) {
+    private void tryHostMultiplayer(SaveGame saveGame) {
         String strPort = portInput.getEnteredText();
         int port = tryParsePort(strPort);
         if (port == -1) {
@@ -42,7 +41,7 @@ public class HostScreen extends PortEntryScreen {
             return;
         }
         if (!game.isInGame()) {
-            game.startPlaying(saveName);
+            game.startPlaying(saveGame);
         }
         overlay.popScreenIfEquals(this);
     }

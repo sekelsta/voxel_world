@@ -1,6 +1,8 @@
 package sekelsta.engine.file;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.*;
 
 public class SaveName {
@@ -34,6 +36,18 @@ public class SaveName {
     public static String[] listSaveLocations() {
         DataFolders.getSaveDir().mkdirs();
         return DataFolders.getSaveDir().list();
+    }
+
+    public static boolean hasPreviousSave() {
+        if (!DataFolders.getSaveDir().exists()) {
+            return false;
+        }
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(DataFolders.getSaveDir().toPath())) {
+            return directoryStream.iterator().hasNext();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String getName() {

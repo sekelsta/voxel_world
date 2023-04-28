@@ -2,10 +2,9 @@ package sekelsta.game.render.gui;
 
 import java.util.function.Consumer;
 
-import sekelsta.engine.file.SaveName;
 import sekelsta.engine.render.gui.*;
-import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
+import sekelsta.game.SaveGame;
 
 public class NewGameScreen extends Screen {
     protected TextElement title;
@@ -15,7 +14,7 @@ public class NewGameScreen extends Screen {
     protected Button start;
     protected Button cancel;
 
-    public NewGameScreen(Overlay overlay, Consumer<SaveName> onComplete) {
+    public NewGameScreen(Overlay overlay, Consumer<SaveGame> onComplete) {
         Game game = overlay.getGame();
         this.title = new TextElement(Fonts.getTitleFont(), "New Game");
         this.nameLabel = new TextElement(Fonts.getButtonFont(), "Enter name:");
@@ -31,7 +30,7 @@ public class NewGameScreen extends Screen {
         addSelectableItem(cancel);
     }
 
-    private void tryStart(Game game, Consumer<SaveName> onComplete) {
+    private void tryStart(Game game, Consumer<SaveGame> onComplete) {
         String name = nameInput.getEnteredText();
         if ("".equals(name)) {
             error.setText("Enter a name", Fonts.ERROR_COLOR);
@@ -43,7 +42,7 @@ public class NewGameScreen extends Screen {
             return;
         }
 
-        onComplete.accept(new SaveName(name));
+        onComplete.accept(SaveGame.createNew(name));
     }
 
     @Override

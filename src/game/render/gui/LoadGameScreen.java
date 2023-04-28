@@ -4,9 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-import sekelsta.engine.file.SaveName;
 import sekelsta.engine.render.gui.*;
-import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
 import sekelsta.game.SaveGame;
 
@@ -15,9 +13,9 @@ public class LoadGameScreen extends Screen {
     static final int MAX_SAVES = 5;
 
     private Overlay overlay;
-    private Consumer<SaveName> onChosen;
+    private Consumer<SaveGame> onChosen;
 
-    public LoadGameScreen(Overlay overlay, Consumer<SaveName> onChosen) {
+    public LoadGameScreen(Overlay overlay, Consumer<SaveGame> onChosen) {
         this.overlay = overlay;
         this.onChosen = onChosen;
         refresh();

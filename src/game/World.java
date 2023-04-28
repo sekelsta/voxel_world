@@ -18,7 +18,7 @@ public class World implements IEntitySpace {
     private final int TICKS_PER_YEAR = 28 * TICKS_PER_DAY;
 
     public final boolean authoritative;
-    private long tick = 0;
+    private long tick;
     private boolean paused;
 
     private final Random random;
@@ -45,11 +45,13 @@ public class World implements IEntitySpace {
 
     private List<List<Runnable>> delayedActions = new ArrayList<>();
 
-    public World(Game game, boolean authoritative) {
+    public World(Game game, SaveGame saveGame) {
+        saveGame.writeIfNew();
         this.game = game;
-        this.authoritative = authoritative;
+        this.authoritative = saveGame != null;
         this.random = new Random();
         this.terrain = new Terrain(game);
+        this.tick = saveGame.getTick();
     }
 
     public Terrain getTerrain() {

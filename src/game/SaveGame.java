@@ -10,14 +10,33 @@ import sekelsta.engine.file.*;
 public class SaveGame extends SaveName {
     private static final byte METADATA_VERSION = 0;
 
-    private long tick;
+    private long tick = 0;
+    private boolean isNew;
 
-    public SaveGame(SaveName saveName) {
+    private SaveGame(SaveName saveName) {
         super(saveName);
+        isNew = true;
     }
 
     private SaveGame(String fileName) {
         super(null, fileName);
+        isNew = false;
+    }
+
+    public static SaveGame getDefault() {
+        if (hasPreviousSave()) {
+            SaveGame saveGame = load(SaveName.listSaveLocations()[0]);
+            return saveGame;
+        }
+        return null;
+    }
+
+    public static boolean hasPreviousSave() {
+        return SaveName.listSaveLocations().length > 0;
+    }
+
+    public static SaveGame createNew(String name) {
+        return new SaveGame(new SaveName(name));
     }
 
     public static SaveGame[] loadMetadata() {
@@ -53,6 +72,10 @@ public class SaveGame extends SaveName {
         return saveGame;
     }
 
+    public long getTick() {
+        return tick;
+    }
+
     public void update(long newTick) {
         this.tick = newTick;
         write();
@@ -65,6 +88,13 @@ public class SaveGame extends SaveName {
         catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void writeIfNew() {
+        if (isNew) {
+            write();
+        }
+        isNew = false;
     }
 
     private File getFile() {

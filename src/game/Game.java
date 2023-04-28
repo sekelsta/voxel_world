@@ -87,19 +87,15 @@ public class Game implements ILoopable, INetworked {
 
     public void defaultStart() {
         if (!hasPreviousSave()) {
-            startPlaying(new SaveName("New Game"));
+            startPlaying(SaveGame.createNew("New Game"));
         }
         else {
             continuePrevious();
         }
     }
 
-    public void startPlaying(SaveName saveName) {
-        // TODO
-        SaveGame saveGame = new SaveGame(saveName);
-        saveGame.update(1);
-
-        this.world = new World(this, true);
+    public void startPlaying(SaveGame saveGame) {
+        this.world = new World(this, saveGame);
         if (isGraphical()) {
             world.spawnLocalPlayer(input);
             input.setPlayer(world.getLocalPlayer());
@@ -108,14 +104,14 @@ public class Game implements ILoopable, INetworked {
     }
 
     public void continuePrevious() {
-        // TODO: Load last save
+        startPlaying(SaveGame.getDefault());
     }
 
     public boolean hasPreviousSave() {
-        return SaveName.listSaveLocations().length > 0;
+        return SaveName.hasPreviousSave();
     }
 
-    public void pushLoadOrNewScreen(Consumer<SaveName> onChosen) {
+    public void pushLoadOrNewScreen(Consumer<SaveGame> onChosen) {
         if (hasPreviousSave()) {
             overlay.pushScreen(new LoadGameScreen(overlay, (name) -> onChosen.accept(name)));
         }
@@ -125,8 +121,7 @@ public class Game implements ILoopable, INetworked {
     }
 
     public String getContinueText() {
-        // TODO: Include the name of the save to be loaded, plus "host" or "join" if multiplayer
-        return "Continue";
+        return "Continue " + SaveGame.getDefault().getName();
     }
 
     public void cancelConnecting() {
@@ -228,7 +223,7 @@ public class Game implements ILoopable, INetworked {
 
     public void joinServer(InetSocketAddress socketAddress) {
         allowConnections(0);
-        this.world = new World(this, false);
+        this.world = new World(this, null);
         networkManager.joinServer(this, socketAddress);
     }
 
