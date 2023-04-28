@@ -133,6 +133,7 @@ public class Game implements ILoopable, INetworked {
 
     public void exitWorld() {
         this.camera = null;
+        world.saveAndExit();
         this.world = null;
         if (networkManager != null) {
             networkManager.close();
@@ -293,6 +294,9 @@ public class Game implements ILoopable, INetworked {
         if (settings != null) {
             settings.save();
             settings = null;
+        }
+        if (world != null) {
+            world.saveAndExit();
         }
     }
 

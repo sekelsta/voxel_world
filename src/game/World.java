@@ -45,8 +45,11 @@ public class World implements IEntitySpace {
 
     private List<List<Runnable>> delayedActions = new ArrayList<>();
 
+    private final SaveGame saveGame;
+
     public World(Game game, SaveGame saveGame) {
         saveGame.writeIfNew();
+        this.saveGame = saveGame;
         this.game = game;
         this.authoritative = saveGame != null;
         this.random = new Random();
@@ -374,5 +377,9 @@ public class World implements IEntitySpace {
 
     private boolean isNetworkServer() {
         return authoritative && game.getNetworkManager() != null;
+    }
+
+    public void saveAndExit() {
+        saveGame.update(tick);
     }
 }
