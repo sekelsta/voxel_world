@@ -37,6 +37,11 @@ public class NewGameScreen extends Screen {
             error.setText("Enter a name", Fonts.ERROR_COLOR);
             return;
         }
+        name = name.strip();
+        if ("".equals(name)) {
+            error.setText("Include visible characters", Fonts.ERROR_COLOR);
+            return;
+        }
 
         onComplete.accept(new SaveName(name));
     }

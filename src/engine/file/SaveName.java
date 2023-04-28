@@ -62,6 +62,10 @@ public class SaveName {
             }
         }
 
+        while (result.length() > 0 && result.charAt(result.length() - 1) == ' ') {
+            result.deleteCharAt(result.length() - 1);
+        }
+
         if (result.length() > MAX_LENGTH) {
             result.delete(MAX_LENGTH, result.length());
         }
