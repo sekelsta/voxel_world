@@ -35,8 +35,8 @@ public class LoadGameScreen extends Screen {
             SaveGame save = saves[i];
             addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), save.getName()),
                 () -> onChosen.accept(save)), 1);
-            addItem(new TextElement(Fonts.getTextFont(), save.getFileName(), Color.LIGHT_GRAY));
         }
+        setLastItemSpacing(2);
 
         if (saves.length < MAX_SAVES) {
             addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), "New Game"), 

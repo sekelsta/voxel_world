@@ -54,6 +54,7 @@ public class Game implements ILoopable, INetworked {
             this.window.setResizeListener(renderer);
             this.input = new Input(this);
             this.window.setInput(input);
+            this.settings = new UserSettings(DataFolders.getUserFolder("settings.toml"));
             this.overlay = new Overlay(this);
             this.input.setOverlay(this.overlay);
             this.input.updateConnectedGamepads();
@@ -71,8 +72,7 @@ public class Game implements ILoopable, INetworked {
                 throw new RuntimeException(e);
             }
 
-            this.settings = new UserSettings(DataFolders.getUserFolder("settings.toml"), this);
-
+            setVolume(settings.volume);
             music.start();
         }
         this.world = null;
@@ -86,16 +86,16 @@ public class Game implements ILoopable, INetworked {
     }
 
     public void defaultStart() {
-        if (!hasPreviousSave()) {
-            startPlaying(SaveGame.createNew("New Game"));
+        SaveGame saveGame = SaveGame.getDefault(settings.lastJoinedWorld);
+        if (saveGame == null) {
+            saveGame = SaveGame.createNew("New Game");
         }
-        else {
-            continuePrevious();
-        }
+        startPlaying(saveGame);
     }
 
     public void startPlaying(SaveGame saveGame) {
         this.world = new World(this, saveGame);
+        settings.lastJoinedWorld = saveGame.getFileName();
         if (isGraphical()) {
             world.spawnLocalPlayer(input);
             input.setPlayer(world.getLocalPlayer());
@@ -103,25 +103,13 @@ public class Game implements ILoopable, INetworked {
         initGraphical();
     }
 
-    public void continuePrevious() {
-        startPlaying(SaveGame.getDefault());
-    }
-
-    public boolean hasPreviousSave() {
-        return SaveName.hasPreviousSave();
-    }
-
     public void pushLoadOrNewScreen(Consumer<SaveGame> onChosen) {
-        if (hasPreviousSave()) {
+        if (SaveName.hasPreviousSave()) {
             overlay.pushScreen(new LoadGameScreen(overlay, (name) -> onChosen.accept(name)));
         }
         else {
             overlay.pushScreen(new NewGameScreen(overlay, (name) -> onChosen.accept(name)));
         }
-    }
-
-    public String getContinueText() {
-        return "Continue " + SaveGame.getDefault().getName();
     }
 
     public void cancelConnecting() {
@@ -399,6 +387,7 @@ public class Game implements ILoopable, INetworked {
     }
 
     public void setVolume(float volume) {
+        volume = Math.min(1f, Math.max(0f, volume));
         FloatControl gainControl = (FloatControl)music.getControl(FloatControl.Type.MASTER_GAIN);
         double decibels = Math.log(volume) / Math.log(2) * 20.0;
         if (decibels < gainControl.getMinimum()) {
@@ -406,6 +395,7 @@ public class Game implements ILoopable, INetworked {
         }
         decibels = Math.min(decibels, gainControl.getMaximum());
         gainControl.setValue((float)decibels);
+        settings.volume = volume;
     }
 
     public void toggleFullscreen() {

@@ -15,8 +15,8 @@ public class DeleteGameScreen extends Screen {
             SaveGame save = saves[i];
             addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), save.getName()),
                 () -> overlay.pushScreen(new ConfirmDeleteScreen(overlay, save))), 1);
-            addItem(new TextElement(Fonts.getTextFont(), save.getFileName(), Color.LIGHT_GRAY));
         }
+        setLastItemSpacing(2);
 
         addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), "Cancel"), () -> game.escape()));
     }

@@ -23,16 +23,16 @@ public class SaveGame extends SaveName {
         isNew = false;
     }
 
-    public static SaveGame getDefault() {
-        if (hasPreviousSave()) {
-            SaveGame saveGame = load(SaveName.listSaveLocations()[0]);
-            return saveGame;
+    public static SaveGame getDefault(String lastJoinedWorld) {
+        if (lastJoinedWorld == null || lastJoinedWorld == "") {
+            return null;
         }
-        return null;
-    }
-
-    public static boolean hasPreviousSave() {
-        return SaveName.listSaveLocations().length > 0;
+        try {
+            return load(lastJoinedWorld);
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 
     public static SaveGame createNew(String name) {

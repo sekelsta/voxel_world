@@ -22,7 +22,7 @@ public class OptionsScreen extends Screen {
         addItem(new TextElement(font, "Audio volume:"));
         slider = new Slider(
             game.getSettings().getVolume(),
-            () -> game.getSettings().setVolume(slider.getValue())
+            () -> game.setVolume(slider.getValue())
         );
         addSelectableItem(slider);
 

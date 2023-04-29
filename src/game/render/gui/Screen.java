@@ -31,7 +31,13 @@ public class Screen {
     }
 
     protected void addItem(GuiElement item, float spacing) {
-       items.add(new Pair<>(item, spacing));
+        items.add(new Pair<>(item, spacing));
+    }
+
+    protected void setLastItemSpacing(float spacing) {
+        int index = items.size() - 1;
+        GuiElement element = items.get(index).getKey();
+        items.set(index, new Pair<GuiElement, Float>(element, spacing));
     }
 
     public boolean pausesGame() {

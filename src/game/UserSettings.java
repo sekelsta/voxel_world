@@ -9,15 +9,14 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 
 public class UserSettings {
-    private final Game game;
     private final String filePath;
 
     public String lastJoinedIP;
-    private float volume;
+    public String lastJoinedWorld;
+    public float volume;
     public float uiScale;
 
-    public UserSettings(String filePath, Game game) {
-        this.game = game;
+    public UserSettings(String filePath) {
         this.filePath = filePath;
 
         Toml toml = new Toml();
@@ -29,12 +28,14 @@ public class UserSettings {
 
         Double configVolume = toml.getDouble("volume");
         float v = configVolume == null? 0.5f : (float)configVolume.doubleValue();
-        setVolume(v);
+        this.volume = Math.min(1f, Math.max(0f, v));
 
         lastJoinedIP = toml.getString("lastJoinedIP");
         if (lastJoinedIP == null) {
             lastJoinedIP = "";
         }
+
+        lastJoinedWorld = toml.getString("lastJoinedWorld");
 
         Double configScale = toml.getDouble("uiScale");
         uiScale = configScale == null? 1f : (float)configScale.doubleValue();
@@ -44,16 +45,12 @@ public class UserSettings {
         return volume;
     }
 
-    public void setVolume(float volume) {
-        this.volume = Math.min(1f, Math.max(0f, volume));
-        game.setVolume(this.volume);
-    }
-
     public void save() {
         TomlWriter tomlWriter = new TomlWriter();
         HashMap<String, Object> map = new HashMap<>();
 
         map.put("lastJoinedIP", this.lastJoinedIP);
+        map.put("lastJoinedWorld", this.lastJoinedWorld);
         map.put("volume", this.volume);
         map.put("uiScale", this.uiScale);
 

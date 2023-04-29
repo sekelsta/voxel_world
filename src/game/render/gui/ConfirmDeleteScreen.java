@@ -13,8 +13,7 @@ public class ConfirmDeleteScreen extends Screen {
         addItem(new TextElement(Fonts.getButtonFont(), "Are you sure you want to delete this save?"));
 
 
-        addItem(new TextElement(Fonts.getButtonFont(), saveToDelete.getName()), 1);
-        addItem(new TextElement(Fonts.getTextFont(), saveToDelete.getFileName(), Color.LIGHT_GRAY));
+        addItem(new TextElement(Fonts.getButtonFont(), saveToDelete.getName()), 2);
 
         addSelectableItem(new Button(new TextElement(Fonts.getButtonFont(), "Yes, delete"), () -> {
             saveToDelete.deleteSave();

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import sekelsta.engine.render.gui.*;
 import sekelsta.engine.render.text.BitmapFont;
 import sekelsta.game.Game;
+import sekelsta.game.SaveGame;
 
 public class MainMenuScreen extends Screen {
     private Overlay overlay;
@@ -22,8 +23,9 @@ public class MainMenuScreen extends Screen {
 
         Game game = overlay.getGame();
         BitmapFont font = Fonts.getButtonFont();
-        if (game.hasPreviousSave()) {
-            addSelectableItem(new Button(new TextElement(font, game.getContinueText()), () -> game.continuePrevious()));
+        SaveGame prev = SaveGame.getDefault(game.getSettings().lastJoinedWorld);
+        if (prev != null) {
+            addSelectableItem(new Button(new TextElement(font, "Continue " + prev.getName()), () -> game.defaultStart()));
         }
         addSelectableItem(new Button(new TextElement(font, "Single player"),
             () -> game.pushLoadOrNewScreen((x) -> game.startPlaying(x))));

@@ -48,13 +48,15 @@ public class World implements IEntitySpace {
     private final SaveGame saveGame;
 
     public World(Game game, SaveGame saveGame) {
-        saveGame.writeIfNew();
+        if (saveGame != null) {
+            saveGame.writeIfNew();
+            this.tick = saveGame.getTick();
+        }
         this.saveGame = saveGame;
         this.game = game;
         this.authoritative = saveGame != null;
         this.random = new Random();
         this.terrain = new Terrain(game);
-        this.tick = saveGame.getTick();
     }
 
     public Terrain getTerrain() {
@@ -380,6 +382,8 @@ public class World implements IEntitySpace {
     }
 
     public void saveAndExit() {
-        saveGame.update(tick);
+        if (saveGame != null) {
+            saveGame.update(tick);
+        }
     }
 }
