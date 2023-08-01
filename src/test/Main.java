@@ -13,8 +13,8 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
-import sekelsta.engine.network.NetworkManager;
-import sekelsta.engine.network.MessageContext;
+import shadowfox.network.NetworkManager;
+import shadowfox.network.MessageContext;
 
 public class Main {
     public static void main(String[] args) {

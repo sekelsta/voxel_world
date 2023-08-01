@@ -2,8 +2,8 @@ package sekelsta.game.render.terrain;
 
 import java.util.ArrayList;
 
-import sekelsta.engine.render.mesh.Mesh;
-import sekelsta.tools.Vertex;
+import shadowfox.render.mesh.Mesh;
+import shadowfox.tools.Vertex;
 
 public class TerrainMeshData {
     public final int numVertices;

@@ -2,7 +2,7 @@ package sekelsta.game.render.gui;
 
 import java.util.Scanner;
 
-import sekelsta.engine.render.gui.*;
+import shadowfox.render.gui.*;
 import sekelsta.game.Game;
 
 public class CreditsScreen extends Screen {

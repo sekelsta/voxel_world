@@ -8,11 +8,11 @@ import org.lwjgl.opengl.GL14C;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL30C;
 
-import sekelsta.engine.Particle;
-import sekelsta.engine.entity.Entity;
-import sekelsta.engine.render.*;
-import sekelsta.engine.render.entity.EntityRenderer;
-import sekelsta.engine.render.mesh.RigidMesh;
+import shadowfox.Particle;
+import shadowfox.entity.Entity;
+import shadowfox.render.*;
+import shadowfox.render.entity.EntityRenderer;
+import shadowfox.render.mesh.RigidMesh;
 import sekelsta.game.Game;
 import sekelsta.game.Ray;
 import sekelsta.game.RaycastResult;
@@ -20,7 +20,7 @@ import sekelsta.game.World;
 import sekelsta.game.render.gui.Overlay;
 import sekelsta.game.render.terrain.TerrainRenderer;
 import shadowfox.math.*;
-import sekelsta.tools.ObjParser;
+import shadowfox.tools.ObjParser;
 
 public class Renderer implements IFramebufferSizeListener {
     private TerrainRenderer terrainRenderer = null;

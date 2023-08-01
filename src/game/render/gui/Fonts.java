@@ -3,7 +3,7 @@ package sekelsta.game.render.gui;
 import java.awt.Font;
 import java.awt.Color;
 
-import sekelsta.engine.render.text.BitmapFont;
+import shadowfox.render.text.BitmapFont;
 
 public class Fonts {
     private static BitmapFont buttonFont; 

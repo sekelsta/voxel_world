@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import sekelsta.engine.network.ByteVector;
+import shadowfox.network.ByteVector;
 
 class TestByteVector {
     @Test

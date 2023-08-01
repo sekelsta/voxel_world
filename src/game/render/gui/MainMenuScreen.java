@@ -2,8 +2,8 @@ package sekelsta.game.render.gui;
 
 import java.util.ArrayList;
 
-import sekelsta.engine.render.gui.*;
-import sekelsta.engine.render.text.BitmapFont;
+import shadowfox.render.gui.*;
+import shadowfox.render.text.BitmapFont;
 import sekelsta.game.Game;
 import sekelsta.game.SaveGame;
 

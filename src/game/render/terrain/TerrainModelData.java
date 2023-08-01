@@ -1,7 +1,7 @@
 package sekelsta.game.render.terrain;
 
 import java.util.*;
-import sekelsta.tools.Vertex;
+import shadowfox.tools.Vertex;
 import shadowfox.math.Vector2f;
 import shadowfox.math.Vector3f;
 

@@ -2,9 +2,9 @@ package sekelsta.game.network;
 
 import java.nio.ByteBuffer;
 
-import sekelsta.engine.entity.EntityType;
-import sekelsta.engine.entity.Entity;
-import sekelsta.engine.network.*;
+import shadowfox.entity.EntityType;
+import shadowfox.entity.Entity;
+import shadowfox.network.*;
 import sekelsta.game.Game;
 import sekelsta.game.World;
 import sekelsta.game.RemoteController;

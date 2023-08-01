@@ -3,10 +3,10 @@ package sekelsta.game.render.terrain;
 import java.awt.Color;
 import java.util.*;
 
-import sekelsta.engine.AABB;
-import sekelsta.engine.Pair;
-import sekelsta.engine.render.*;
-import sekelsta.engine.render.mesh.RigidMesh;
+import shadowfox.AABB;
+import shadowfox.Pair;
+import shadowfox.render.*;
+import shadowfox.render.mesh.RigidMesh;
 import sekelsta.game.Vector2i;
 import sekelsta.game.terrain.*;
 import shadowfox.math.Vector3f;

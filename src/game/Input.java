@@ -2,12 +2,12 @@ package sekelsta.game;
 
 import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
-import sekelsta.engine.InputManager;
-import sekelsta.engine.Gamepad;
-import sekelsta.engine.entity.IController;
-import sekelsta.engine.file.Log;
-import sekelsta.engine.render.Camera;
-import sekelsta.engine.render.Window;
+import shadowfox.InputManager;
+import shadowfox.Gamepad;
+import shadowfox.entity.IController;
+import shadowfox.file.Log;
+import shadowfox.render.Camera;
+import shadowfox.render.Window;
 import sekelsta.game.entity.Pawn;
 import sekelsta.game.render.Renderer;
 import sekelsta.game.render.gui.Overlay;

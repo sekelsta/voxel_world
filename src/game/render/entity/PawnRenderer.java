@@ -2,12 +2,12 @@ package sekelsta.game.render.entity;
 
 import java.util.Scanner;
 
-import sekelsta.engine.render.*;
-import sekelsta.engine.render.entity.EntityRenderer;
-import sekelsta.engine.render.mesh.RigidMesh;
+import shadowfox.render.*;
+import shadowfox.render.entity.EntityRenderer;
+import shadowfox.render.mesh.RigidMesh;
 import sekelsta.game.entity.Pawn;
 
-import sekelsta.tools.ObjParser;
+import shadowfox.tools.ObjParser;
 
 public final class PawnRenderer extends EntityRenderer<Pawn> {
     private Texture[] skins = new Texture[Pawn.NUM_SKINS];

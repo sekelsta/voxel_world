@@ -2,10 +2,10 @@ package sekelsta.test.engine;
 
 import java.nio.ByteBuffer;
 
-import sekelsta.engine.network.ByteVector;
-import sekelsta.engine.network.INetworked;
-import sekelsta.engine.network.Message;
-import sekelsta.engine.network.NetworkDirection;
+import shadowfox.network.ByteVector;
+import shadowfox.network.INetworked;
+import shadowfox.network.Message;
+import shadowfox.network.NetworkDirection;
 
 class ByteMessage extends Message {
     byte[] bytes;

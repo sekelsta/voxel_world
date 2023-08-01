@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
-import sekelsta.engine.Pair;
+import shadowfox.Pair;
 import sekelsta.game.terrain.ChunkPos;
 
 public class MeshingThread extends Thread {

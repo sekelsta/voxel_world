@@ -2,9 +2,9 @@ package sekelsta.game.entity;
 
 import java.nio.ByteBuffer;
 import java.util.Random;
-import sekelsta.engine.Particle;
-import sekelsta.engine.entity.*;
-import sekelsta.engine.network.ByteVector;
+import shadowfox.Particle;
+import shadowfox.entity.*;
+import shadowfox.network.ByteVector;
 import sekelsta.game.Input;
 import sekelsta.game.RemotePlayer;
 import sekelsta.game.World;

@@ -2,11 +2,11 @@ package sekelsta.game.render.gui;
 
 import java.util.ArrayList;
 
-import sekelsta.engine.Pair;
-import sekelsta.engine.render.SpriteBatch;
-import sekelsta.engine.render.Texture;
-import sekelsta.engine.render.gui.*;
-import sekelsta.engine.render.text.BitmapFont;
+import shadowfox.Pair;
+import shadowfox.render.SpriteBatch;
+import shadowfox.render.Texture;
+import shadowfox.render.gui.*;
+import shadowfox.render.text.BitmapFont;
 import sekelsta.game.Game;
 
 public class OptionsScreen extends Screen {

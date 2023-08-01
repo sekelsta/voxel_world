@@ -9,8 +9,8 @@ import java.util.Random;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import sekelsta.engine.network.Connection;
-import sekelsta.engine.network.Message;
+import shadowfox.network.Connection;
+import shadowfox.network.Message;
 
 class TestMessageSize {
     private ExtendedNetworkManager network = new ExtendedNetworkManager(0);

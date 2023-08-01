@@ -2,8 +2,8 @@ package sekelsta.game.render;
 
 import java.util.Scanner;
 
-import sekelsta.engine.render.mesh.RigidMesh;
-import sekelsta.tools.ObjParser;
+import shadowfox.render.mesh.RigidMesh;
+import shadowfox.tools.ObjParser;
 
 public class Meshes {
     private static Meshes instance;

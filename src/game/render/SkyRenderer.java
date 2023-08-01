@@ -2,10 +2,10 @@ package sekelsta.game.render;
 
 import java.util.Random;
 
-import sekelsta.engine.render.*;
-import sekelsta.engine.render.mesh.RigidMesh;
+import shadowfox.render.*;
+import shadowfox.render.mesh.RigidMesh;
 import sekelsta.game.World;
-import sekelsta.tools.ObjParser;
+import shadowfox.tools.ObjParser;
 import shadowfox.math.Matrix4f;
 import shadowfox.math.Vector3f;
 

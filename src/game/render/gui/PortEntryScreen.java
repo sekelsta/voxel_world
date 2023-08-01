@@ -1,7 +1,7 @@
 package sekelsta.game.render.gui;
 
-import sekelsta.engine.render.gui.*;
-import sekelsta.engine.render.text.BitmapFont;
+import shadowfox.render.gui.*;
+import shadowfox.render.text.BitmapFont;
 import sekelsta.game.Game;
 
 public class PortEntryScreen extends Screen {

@@ -2,9 +2,9 @@ package sekelsta.game.network;
 
 import java.nio.ByteBuffer;
 
-import sekelsta.engine.entity.Entity;
-import sekelsta.engine.file.Log;
-import sekelsta.engine.network.*;
+import shadowfox.entity.Entity;
+import shadowfox.file.Log;
+import shadowfox.network.*;
 import sekelsta.game.Game;
 import sekelsta.game.entity.Pawn;
 

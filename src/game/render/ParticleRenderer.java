@@ -10,8 +10,8 @@ import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryUtil;
 
-import sekelsta.engine.Particle;
-import sekelsta.engine.render.*;
+import shadowfox.Particle;
+import shadowfox.render.*;
 import shadowfox.math.Matrix4f;
 
 public class ParticleRenderer {

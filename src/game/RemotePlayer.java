@@ -1,6 +1,6 @@
 package sekelsta.game;
 
-import sekelsta.engine.entity.Entity;
+import shadowfox.entity.Entity;
 
 public class RemotePlayer extends RemoteController {
     public final long connectionID;

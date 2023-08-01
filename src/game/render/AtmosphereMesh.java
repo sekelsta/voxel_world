@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
-import sekelsta.engine.render.mesh.Mesh;
+import shadowfox.render.mesh.Mesh;
 import shadowfox.math.Matrix4f;
 import shadowfox.math.Vector3f;
 import shadowfox.math.Vector4f;

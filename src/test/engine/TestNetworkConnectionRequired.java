@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import sekelsta.engine.file.Log;
-import sekelsta.engine.network.Connection;
+import shadowfox.file.Log;
+import shadowfox.network.Connection;
 
 class TestNetworkConnectionRequired {
     private static class InitialByteMessage extends ByteMessage {

@@ -1,8 +1,8 @@
 package sekelsta.game.render.gui;
 
 import java.util.*;
-import sekelsta.engine.Pair;
-import sekelsta.engine.render.gui.*;
+import shadowfox.Pair;
+import shadowfox.render.gui.*;
 
 public class Screen {
     protected SelectableElementList selectable = new SelectableElementList();

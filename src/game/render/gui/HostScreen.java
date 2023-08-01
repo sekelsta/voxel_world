@@ -1,8 +1,8 @@
 package sekelsta.game.render.gui;
 
-import sekelsta.engine.file.Log;
-import sekelsta.engine.network.RuntimeBindException;
-import sekelsta.engine.render.gui.*;
+import shadowfox.file.Log;
+import shadowfox.network.RuntimeBindException;
+import shadowfox.render.gui.*;
 import sekelsta.game.Game;
 import sekelsta.game.SaveGame;
 

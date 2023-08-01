@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import sekelsta.engine.SoftwareVersion;
-import sekelsta.engine.network.Connection;
+import shadowfox.SoftwareVersion;
+import shadowfox.network.Connection;
 
 class TestHandshake {
     private ExtendedNetworkManager server = new ExtendedNetworkManager(4321);

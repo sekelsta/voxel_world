@@ -4,9 +4,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
-import sekelsta.engine.network.INetworked;
-import sekelsta.engine.network.NetworkDirection;
-import sekelsta.engine.network.NetworkManager;
+import shadowfox.network.INetworked;
+import shadowfox.network.NetworkDirection;
+import shadowfox.network.NetworkManager;
 
 // Note: This could be improved by removing the requirement to wait between when a message is sent and when it arrives.
 // As is with real sockets, there may be a small chance tests could fail even if the code is correct.

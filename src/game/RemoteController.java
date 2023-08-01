@@ -2,8 +2,8 @@ package sekelsta.game;
 
 import java.util.*;
 
-import sekelsta.engine.entity.IController;
-import sekelsta.engine.entity.Entity;
+import shadowfox.entity.IController;
+import shadowfox.entity.Entity;
 
 public class RemoteController implements IController {
 

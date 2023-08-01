@@ -2,11 +2,11 @@ package sekelsta.test.engine;
 
 import java.util.ArrayList;
 
-import sekelsta.engine.SoftwareVersion;
-import sekelsta.engine.network.Connection;
-import sekelsta.engine.network.INetworked;
-import sekelsta.engine.network.Message;
-import sekelsta.engine.network.NetworkManager;
+import shadowfox.SoftwareVersion;
+import shadowfox.network.Connection;
+import shadowfox.network.INetworked;
+import shadowfox.network.Message;
+import shadowfox.network.NetworkManager;
 
 public class NetworkedGame implements INetworked {
     // Note this only includes messages that add themselves to this list

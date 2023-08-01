@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 
-import sekelsta.engine.file.*;
+import shadowfox.file.*;
 
 public class SaveGame extends SaveName {
     private static final byte METADATA_VERSION = 0;

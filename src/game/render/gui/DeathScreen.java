@@ -1,6 +1,6 @@
 package sekelsta.game.render.gui;
 
-import sekelsta.engine.render.gui.*;
+import shadowfox.render.gui.*;
 import sekelsta.game.Game;
 
 public class DeathScreen extends Screen {   

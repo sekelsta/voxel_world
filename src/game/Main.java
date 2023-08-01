@@ -4,8 +4,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
-import sekelsta.engine.Gameloop;
-import sekelsta.engine.file.*;
+import shadowfox.Gameloop;
+import shadowfox.file.*;
 
 public class Main {
     private static int DEFAULT_FRAME_CAP = 120;

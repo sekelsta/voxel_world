@@ -2,7 +2,7 @@ package sekelsta.game.render.gui;
 
 import java.util.function.Consumer;
 
-import sekelsta.engine.render.gui.*;
+import shadowfox.render.gui.*;
 import sekelsta.game.Game;
 import sekelsta.game.SaveGame;
 

@@ -1,7 +1,7 @@
 package sekelsta.game.network;
 
 import java.nio.ByteBuffer;
-import sekelsta.engine.network.*;
+import shadowfox.network.*;
 import sekelsta.game.Game;
 import sekelsta.game.World;
 import sekelsta.game.entity.Pawn;
