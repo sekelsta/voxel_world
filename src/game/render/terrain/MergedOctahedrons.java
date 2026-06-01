@@ -814,7 +814,8 @@ public class MergedOctahedrons {
             byte r = quickPseudorandom(x, y, z);
             byte r2 = quickPseudorandom(x/2, y/2, z/2);
             byte r3 = quickPseudorandom((x + 1) / 2, (y + 1) / 2, (z + 1) / 2);
-            float s = 0.5f * (r2 - 128) / 256 + 0.5f * (r3 - 128) / 256 + 0.25f * (r - 127) / 256;
+            // Don't forget, Java bytes are signed
+            float s = 0.5f * r2 / 256 + 0.5f * r3 / 256 + 0.25f * r / 256;
             s = 0.25f * s / terrain.blockSize;
             v.position.add(v.normal.x * s, v.normal.y * s, v.normal.z * s);
         }
